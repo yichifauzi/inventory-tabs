@@ -2,21 +2,18 @@
   "schemaVersion": 1,
   "id": "inventorytabs",
   "version": "${version}",
-
   "name": "Inventory Tabs",
   "description": "Adds tabs to your inventory that lead to nearby blocks.",
   "authors": [
     "KQP"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/inventory-tabs",
-    "sources": "https://github.com/cakewhip/inventorytabs/",
-    "issues": "https://github.com/cakewhip/inventorytabs/issues"
+    "homepage": "https://github.com/LiamMCW/inventorytabs",
+    "sources": "https://github.com/LiamMCW/inventorytabs",
+    "issues": "https://github.com/LiamMCW/inventorytabs/issues"
   },
-
   "license": "MIT",
   "icon": "assets/inventorytabs/icon.png",
-
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -29,19 +26,9 @@
   "mixins": [
     "inventorytabs.mixins.json"
   ],
-
   "depends": {
-    "fabricloader": ">=0.7.4",
+    "fabricloader": ">=0.11.6",
     "fabric": "*",
-    "minecraft": "1.16.4"
-  },
-  "suggests": {
-    "flamingo": "*"
-  },
-  "custom": {
-    "modupdater": {
-      "strategy": "curseforge",
-      "projectID": 400285
-    }
+    "minecraft": ">=0.36.0"
   }
 }
