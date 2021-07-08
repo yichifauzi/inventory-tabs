@@ -3,6 +3,7 @@ package com.kqp.inventorytabs.tabs.tab;
 import com.kqp.inventorytabs.mixin.accessor.ScreenAccessor;
 import com.kqp.inventorytabs.tabs.render.TabRenderInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
@@ -29,8 +30,8 @@ public abstract class Tab {
     public abstract void open();
 
     /**
-     * Returns true if the tab should stop being displayed.
-     * Should be synced up with the provider that provides this tab.
+     * Returns true if the tab should stop being displayed. Should be synced up with
+     * the provider that provides this tab.
      *
      * @return
      */
@@ -50,8 +51,8 @@ public abstract class Tab {
     }
 
     /**
-     * Returns the tab's priority when being displayed.
-     * The player's inventory is at 100.
+     * Returns the tab's priority when being displayed. The player's inventory is at
+     * 100.
      *
      * @return
      */
@@ -61,7 +62,8 @@ public abstract class Tab {
 
     /**
      * Renders the tab's icon
-     * @param matrices MatrixStack
+     *
+     * @param matrices      MatrixStack
      * @param tabRenderInfo TabRenderInfo
      * @param currentScreen HandledScreen
      */
@@ -72,8 +74,7 @@ public abstract class Tab {
         itemRenderer.zOffset = 100.0F;
         RenderSystem.enableRescaleNormal();
         itemRenderer.renderInGuiWithOverrides(renderItemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
-        itemRenderer.renderGuiItemOverlay(textRenderer, renderItemStack, tabRenderInfo.itemX,
-                tabRenderInfo.itemY);
+        itemRenderer.renderGuiItemOverlay(textRenderer, renderItemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
         itemRenderer.zOffset = 0.0F;
     }
 }

@@ -1,10 +1,11 @@
 package com.kqp.inventorytabs.tabs.provider;
 
+import java.util.List;
+
 import com.kqp.inventorytabs.tabs.tab.PlayerInventoryTab;
 import com.kqp.inventorytabs.tabs.tab.Tab;
-import net.minecraft.client.network.ClientPlayerEntity;
 
-import java.util.List;
+import net.minecraft.client.network.ClientPlayerEntity;
 
 public class PlayerInventoryTabProvider implements TabProvider {
     @Override

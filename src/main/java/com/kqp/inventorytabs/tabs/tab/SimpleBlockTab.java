@@ -1,8 +1,11 @@
 package com.kqp.inventorytabs.tabs.tab;
 
+import java.util.Objects;
+
 import com.kqp.inventorytabs.init.InventoryTabs;
 import com.kqp.inventorytabs.tabs.provider.BlockTabProvider;
 import com.kqp.inventorytabs.util.BlockUtil;
+
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -19,8 +22,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-
-import java.util.Objects;
 
 /**
  * Generic tab for blocks.

@@ -1,10 +1,13 @@
 package com.kqp.inventorytabs.tabs.render;
 
+import java.awt.Rectangle;
+
 import com.kqp.inventorytabs.init.InventoryTabs;
 import com.kqp.inventorytabs.mixin.accessor.HandledScreenAccessor;
 import com.kqp.inventorytabs.tabs.TabManager;
 import com.kqp.inventorytabs.tabs.tab.Tab;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -13,15 +16,12 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-import java.awt.*;
-
 /**
  * Handles the rendering of tabs.
  */
 @Environment(EnvType.CLIENT)
 public class TabRenderer {
-    private static final Identifier TABS_TEXTURE =
-        new Identifier("textures/gui/container/creative_inventory/tabs.png");
+    private static final Identifier TABS_TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
     private static final Identifier BUTTONS_TEXTURE = InventoryTabs.id("textures/gui/buttons.png");
 
     public static final int TAB_WIDTH = 28;
@@ -91,15 +91,7 @@ public class TabRenderer {
         int u = 0;
         u += tabManager.canGoBackAPage() && hovered ? BUTTON_WIDTH * 2 : 0;
         int v = tabManager.canGoBackAPage() ? 0 : 13;
-        currentScreen.drawTexture(
-            matrices,
-            x,
-            y,
-            u,
-            v,
-            BUTTON_WIDTH,
-            BUTTON_HEIGHT
-        );
+        currentScreen.drawTexture(matrices, x, y, u, v, BUTTON_WIDTH, BUTTON_HEIGHT);
 
         // Drawing forward button
         x = oX + width + 4;
@@ -108,15 +100,7 @@ public class TabRenderer {
         u = 15;
         u += tabManager.canGoForwardAPage() && hovered ? BUTTON_WIDTH * 2 : 0;
         v = tabManager.canGoForwardAPage() ? 0 : 13;
-        currentScreen.drawTexture(
-            matrices,
-            x,
-            y,
-            u,
-            v,
-            BUTTON_WIDTH,
-            BUTTON_HEIGHT
-        );
+        currentScreen.drawTexture(matrices, x, y, u, v, BUTTON_WIDTH, BUTTON_HEIGHT);
     }
 
     private void drawPageText(MatrixStack matrices) {
@@ -148,13 +132,7 @@ public class TabRenderer {
             int x = (oX - textRenderer.getWidth(text)) / 2;
             int y = oY - 34;
 
-            MinecraftClient.getInstance().textRenderer.draw(
-                matrices,
-                text,
-                x,
-                y,
-                color
-            );
+            MinecraftClient.getInstance().textRenderer.draw(matrices, text, x, y, color);
 
             RenderSystem.popMatrix();
         }
@@ -164,15 +142,8 @@ public class TabRenderer {
         HandledScreen<?> currentScreen = tabManager.getCurrentScreen();
 
         MinecraftClient.getInstance().getTextureManager().bindTexture(TABS_TEXTURE);
-        currentScreen.drawTexture(
-            matrices,
-            tabRenderInfo.x,
-            tabRenderInfo.y,
-            tabRenderInfo.texU,
-            tabRenderInfo.texV,
-            tabRenderInfo.texW,
-            tabRenderInfo.texH
-        );
+        currentScreen.drawTexture(matrices, tabRenderInfo.x, tabRenderInfo.y, tabRenderInfo.texU, tabRenderInfo.texV,
+                tabRenderInfo.texW, tabRenderInfo.texH);
 
         tabRenderInfo.tabReference.renderTabIcon(matrices, tabRenderInfo, currentScreen);
     }
@@ -185,8 +156,7 @@ public class TabRenderer {
                 Rectangle itemRec = new Rectangle(tabRenderInfo.itemX, tabRenderInfo.itemY, 16, 16);
 
                 if (itemRec.contains(mouseX, mouseY)) {
-                    tabManager.getCurrentScreen()
-                        .renderTooltip(matrices, tabRenderInfo.tabReference.getHoverText(),
+                    tabManager.getCurrentScreen().renderTooltip(matrices, tabRenderInfo.tabReference.getHoverText(),
                             (int) mouseX, (int) mouseY);
                 }
             }
@@ -202,12 +172,8 @@ public class TabRenderer {
 
         TabRenderInfo[] tabRenderInfo = new TabRenderInfo[numVisibleTabs];
 
-        int x =
-            (currentScreen.width - ((HandledScreenAccessor) currentScreen).getBackgroundWidth()) /
-                2;
-        int y =
-            (currentScreen.height - ((HandledScreenAccessor) currentScreen).getBackgroundHeight()) /
-                2;
+        int x = (currentScreen.width - ((HandledScreenAccessor) currentScreen).getBackgroundWidth()) / 2;
+        int y = (currentScreen.height - ((HandledScreenAccessor) currentScreen).getBackgroundHeight()) / 2;
 
         for (int i = 0; i < numVisibleTabs; i++) {
             if (startingIndex + i < tabManager.tabs.size()) {
@@ -235,8 +201,7 @@ public class TabRenderer {
                         tabInfo.y = y - 28;
                     }
                 } else {
-                    tabInfo.y =
-                        y + ((HandledScreenAccessor) currentScreen).getBackgroundHeight() - 4;
+                    tabInfo.y = y + ((HandledScreenAccessor) currentScreen).getBackgroundHeight() - 4;
                 }
 
                 // Calc texture dimensions

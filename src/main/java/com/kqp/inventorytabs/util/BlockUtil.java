@@ -11,8 +11,7 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class BlockUtil {
-    public static BlockHitResult getLineOfSight(BlockPos pos, PlayerEntity player,
-                                                double distance) {
+    public static BlockHitResult getLineOfSight(BlockPos pos, PlayerEntity player, double distance) {
         World world = player.world;
         BlockState blockState = world.getBlockState(pos);
         double distanceSquared = distance * distance;
@@ -23,8 +22,7 @@ public class BlockUtil {
         for (int i = 0; i < SIGHT_OFFSETS.length; i++) {
             Vec3d blockPosCheck = blockVec.add(SIGHT_OFFSETS[i]);
 
-            BlockHitResult result =
-                getBlockHitResult(playerHead, blockPosCheck, distanceSquared, world, pos,
+            BlockHitResult result = getBlockHitResult(playerHead, blockPosCheck, distanceSquared, world, pos,
                     blockState);
 
             if (result != null) {
@@ -37,23 +35,16 @@ public class BlockUtil {
         return null;
     }
 
-    private static BlockHitResult getBlockHitResult(Vec3d playerHead, Vec3d blockVec,
-                                                    double distanceSquared, World world,
-                                                    BlockPos pos, BlockState blockState) {
+    private static BlockHitResult getBlockHitResult(Vec3d playerHead, Vec3d blockVec, double distanceSquared,
+            World world, BlockPos pos, BlockState blockState) {
         if (blockVec.subtract(playerHead).lengthSquared() >= distanceSquared) {
             return null;
         }
 
-        BlockHitResult result = world.raycast(new RaycastContext(
-            playerHead,
-            blockVec,
-            RaycastContext.ShapeType.OUTLINE,
-            RaycastContext.FluidHandling.NONE,
-            MinecraftClient.getInstance().player
-        ));
+        BlockHitResult result = world.raycast(new RaycastContext(playerHead, blockVec, RaycastContext.ShapeType.OUTLINE,
+                RaycastContext.FluidHandling.NONE, MinecraftClient.getInstance().player));
 
-        if (result != null && result.getType() == HitResult.Type.BLOCK &&
-            result.getBlockPos().equals(pos)) {
+        if (result != null && result.getType() == HitResult.Type.BLOCK && result.getBlockPos().equals(pos)) {
             return result;
         }
 
@@ -61,43 +52,24 @@ public class BlockUtil {
     }
 
     private static final Vec3d[] SIGHT_OFFSETS = {
-        // Center
-        new Vec3d(0.5D, 0.5D, 0.5D),
+            // Center
+            new Vec3d(0.5D, 0.5D, 0.5D),
 
-        // Corners
-        new Vec3d(0.0D, 0.0D, 0.0D),
-        new Vec3d(1.0D, 0.0D, 0.0D),
-        new Vec3d(0.0D, 1.0D, 0.0D),
-        new Vec3d(0.0D, 0.0D, 1.0D),
-        new Vec3d(1.0D, 1.0D, 0.0D),
-        new Vec3d(0.0D, 1.0D, 1.0D),
-        new Vec3d(1.0D, 0.0D, 1.0D),
-        new Vec3d(1.0D, 1.0D, 1.0D),
+            // Corners
+            new Vec3d(0.0D, 0.0D, 0.0D), new Vec3d(1.0D, 0.0D, 0.0D), new Vec3d(0.0D, 1.0D, 0.0D),
+            new Vec3d(0.0D, 0.0D, 1.0D), new Vec3d(1.0D, 1.0D, 0.0D), new Vec3d(0.0D, 1.0D, 1.0D),
+            new Vec3d(1.0D, 0.0D, 1.0D), new Vec3d(1.0D, 1.0D, 1.0D),
 
-        // Side centers
-        new Vec3d(0.5D, 0D, 0.5D),
-        new Vec3d(0.5D, 1D, 0.5D),
-        new Vec3d(0.0D, 0.5D, 0.5D),
-        new Vec3d(1.0D, 0.5D, 0.5D),
-        new Vec3d(0.5D, 0.5D, 0.0D),
-        new Vec3d(0.5D, 0.5D, 1.0D),
+            // Side centers
+            new Vec3d(0.5D, 0D, 0.5D), new Vec3d(0.5D, 1D, 0.5D), new Vec3d(0.0D, 0.5D, 0.5D),
+            new Vec3d(1.0D, 0.5D, 0.5D), new Vec3d(0.5D, 0.5D, 0.0D), new Vec3d(0.5D, 0.5D, 1.0D),
 
-        // Corners, slightly in
-        new Vec3d(0.2D, 0.2D, 0.2D),
-        new Vec3d(0.8D, 0.2D, 0.2D),
-        new Vec3d(0.2D, 0.8D, 0.2D),
-        new Vec3d(0.2D, 0.2D, 0.8D),
-        new Vec3d(0.8D, 0.8D, 0.2D),
-        new Vec3d(0.2D, 0.8D, 0.8D),
-        new Vec3d(0.8D, 0.2D, 0.8D),
-        new Vec3d(0.8D, 0.8D, 0.8D),
+            // Corners, slightly in
+            new Vec3d(0.2D, 0.2D, 0.2D), new Vec3d(0.8D, 0.2D, 0.2D), new Vec3d(0.2D, 0.8D, 0.2D),
+            new Vec3d(0.2D, 0.2D, 0.8D), new Vec3d(0.8D, 0.8D, 0.2D), new Vec3d(0.2D, 0.8D, 0.8D),
+            new Vec3d(0.8D, 0.2D, 0.8D), new Vec3d(0.8D, 0.8D, 0.8D),
 
-        // Side centers, slightly in
-        new Vec3d(0.5D, 0.2D, 0.5D),
-        new Vec3d(0.5D, 0.8D, 0.5D),
-        new Vec3d(0.2D, 0.5D, 0.5D),
-        new Vec3d(0.8D, 0.5D, 0.5D),
-        new Vec3d(0.5D, 0.5D, 0.2D),
-        new Vec3d(0.5D, 0.5D, 0.8D),
-    };
+            // Side centers, slightly in
+            new Vec3d(0.5D, 0.2D, 0.5D), new Vec3d(0.5D, 0.8D, 0.5D), new Vec3d(0.2D, 0.5D, 0.5D),
+            new Vec3d(0.8D, 0.5D, 0.5D), new Vec3d(0.5D, 0.5D, 0.2D), new Vec3d(0.5D, 0.5D, 0.8D), };
 }

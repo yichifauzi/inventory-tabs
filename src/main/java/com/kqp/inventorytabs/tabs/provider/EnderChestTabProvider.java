@@ -1,7 +1,13 @@
 package com.kqp.inventorytabs.tabs.provider;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.kqp.inventorytabs.tabs.tab.ChestTab;
 import com.kqp.inventorytabs.tabs.tab.Tab;
+
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -9,14 +15,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
- * Provides tabs for ender chests.
- * Limits amount of ender chest tabs to only one and takes into account if it's blocked.
+ * Provides tabs for ender chests. Limits amount of ender chest tabs to only one
+ * and takes into account if it's blocked.
  */
 public class EnderChestTabProvider extends BlockTabProvider {
     @Override
@@ -25,18 +26,13 @@ public class EnderChestTabProvider extends BlockTabProvider {
 
         Set<ChestTab> tabsToRemove = new HashSet<>();
 
-        List<ChestTab> chestTabs = tabs.stream()
-            .filter(tab -> tab instanceof ChestTab)
-            .map(tab -> (ChestTab) tab)
-            .filter(tab -> tab.blockId == Registry.BLOCK.getId(Blocks.ENDER_CHEST))
-            .collect(Collectors.toList());
+        List<ChestTab> chestTabs = tabs.stream().filter(tab -> tab instanceof ChestTab).map(tab -> (ChestTab) tab)
+                .filter(tab -> tab.blockId == Registry.BLOCK.getId(Blocks.ENDER_CHEST)).collect(Collectors.toList());
 
         World world = player.world;
 
         // Add any chests that are blocked
-        chestTabs.stream()
-            .filter(tab -> ChestBlock.isChestBlocked(world, tab.blockPos))
-            .forEach(tabsToRemove::add);
+        chestTabs.stream().filter(tab -> ChestBlock.isChestBlocked(world, tab.blockPos)).forEach(tabsToRemove::add);
 
         boolean found = false;
 

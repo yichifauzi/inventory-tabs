@@ -43,10 +43,8 @@ public class PlayerInventoryTab extends Tab {
 
     private static ItemStack getRenderItemStack() {
         ItemStack itemStack = new ItemStack(Blocks.PLAYER_HEAD);
-        itemStack.getOrCreateTag().putString(
-                "SkullOwner",
-                MinecraftClient.getInstance().player.getGameProfile().getName()
-        );
+        itemStack.getOrCreateTag().putString("SkullOwner",
+                MinecraftClient.getInstance().player.getGameProfile().getName());
 
         return itemStack;
     }

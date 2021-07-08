@@ -1,5 +1,10 @@
 package com.kqp.inventorytabs.tabs;
 
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import com.kqp.inventorytabs.api.TabProviderRegistry;
 import com.kqp.inventorytabs.init.InventoryTabsClient;
 import com.kqp.inventorytabs.interf.TabManagerContainer;
@@ -8,6 +13,9 @@ import com.kqp.inventorytabs.tabs.render.TabRenderInfo;
 import com.kqp.inventorytabs.tabs.render.TabRenderer;
 import com.kqp.inventorytabs.tabs.tab.Tab;
 import com.kqp.inventorytabs.util.MouseUtil;
+
+import org.lwjgl.glfw.GLFW;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -16,12 +24,6 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.sound.SoundEvents;
-import org.lwjgl.glfw.GLFW;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Manages everything related to tabs.
@@ -67,10 +69,8 @@ public class TabManager {
         });
 
         // Sort
-        tabs.sort(Comparator
-            .comparing(Tab::getPriority).reversed()
-            .thenComparing(tab -> tab.getHoverText().getString())
-        );
+        tabs.sort(
+                Comparator.comparing(Tab::getPriority).reversed().thenComparing(tab -> tab.getHoverText().getString()));
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -80,14 +80,13 @@ public class TabManager {
             int x = (currentScreen.width - guiWidth) / 2;
             int y = (currentScreen.height - guiHeight) / 2;
 
-            if (mouseX > x && mouseX < x + guiWidth
-                && mouseY > y && mouseY < y + guiHeight) {
+            if (mouseX > x && mouseX < x + guiWidth && mouseY > y && mouseY < y + guiHeight) {
                 return false;
             }
 
             // Check back button
             if (new Rectangle(x - TabRenderer.BUTTON_WIDTH - 4, y - 16, TabRenderer.BUTTON_WIDTH,
-                TabRenderer.BUTTON_HEIGHT).contains(mouseX, mouseY)) {
+                    TabRenderer.BUTTON_HEIGHT).contains(mouseX, mouseY)) {
                 if (canGoBackAPage()) {
                     setCurrentPage(currentPage - 1);
                     playClick();
@@ -97,8 +96,8 @@ public class TabManager {
             }
 
             // Check forward button
-            if (new Rectangle(x + guiWidth + 4, y - 16, TabRenderer.BUTTON_WIDTH,
-                TabRenderer.BUTTON_HEIGHT).contains(mouseX, mouseY)) {
+            if (new Rectangle(x + guiWidth + 4, y - 16, TabRenderer.BUTTON_WIDTH, TabRenderer.BUTTON_HEIGHT)
+                    .contains(mouseX, mouseY)) {
                 if (canGoForwardAPage()) {
                     setCurrentPage(currentPage + 1);
                     playClick();
@@ -114,12 +113,8 @@ public class TabManager {
 
                 if (tabRenderInfo != null) {
                     if (tabRenderInfo.tabReference != currentTab) {
-                        Rectangle rect = new Rectangle(
-                            tabRenderInfo.x,
-                            tabRenderInfo.y,
-                            tabRenderInfo.texW,
-                            tabRenderInfo.texH
-                        );
+                        Rectangle rect = new Rectangle(tabRenderInfo.x, tabRenderInfo.y, tabRenderInfo.texW,
+                                tabRenderInfo.texH);
 
                         if (rect.contains(mouseX, mouseY)) {
                             onTabClick(tabRenderInfo.tabReference);
@@ -139,7 +134,7 @@ public class TabManager {
             int currentTabIndex = tabs.indexOf(currentTab);
 
             if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),
-                GLFW.GLFW_KEY_LEFT_SHIFT)) {
+                    GLFW.GLFW_KEY_LEFT_SHIFT)) {
                 if (currentTabIndex > 0) {
                     onTabClick(tabs.get(currentTabIndex - 1));
                 }
@@ -176,7 +171,7 @@ public class TabManager {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player.currentScreenHandler != null) {
             client.getNetworkHandler()
-                .sendPacket(new CloseHandledScreenC2SPacket(client.player.currentScreenHandler.syncId));
+                    .sendPacket(new CloseHandledScreenC2SPacket(client.player.currentScreenHandler.syncId));
         }
 
         // Open new tab
@@ -256,6 +251,6 @@ public class TabManager {
 
     public static void playClick() {
         MinecraftClient.getInstance().getSoundManager()
-            .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 }

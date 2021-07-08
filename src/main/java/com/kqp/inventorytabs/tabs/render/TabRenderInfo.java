@@ -1,6 +1,7 @@
 package com.kqp.inventorytabs.tabs.render;
 
 import com.kqp.inventorytabs.tabs.tab.Tab;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
