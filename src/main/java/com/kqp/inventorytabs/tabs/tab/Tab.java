@@ -1,6 +1,6 @@
 package com.kqp.inventorytabs.tabs.tab;
 
-import com.kqp.inventorytabs.mixin.client.accessor.ScreenAccessor;
+import com.kqp.inventorytabs.mixin.accessor.ScreenAccessor;
 import com.kqp.inventorytabs.tabs.render.TabRenderInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
@@ -66,7 +66,7 @@ public abstract class Tab {
      * @param currentScreen HandledScreen
      */
     @Environment(EnvType.CLIENT)
-    public void renderTabIcon(MatrixStack matrices, TabRenderInfo tabRenderInfo, HandledScreen currentScreen) {
+    public void renderTabIcon(MatrixStack matrices, TabRenderInfo tabRenderInfo, HandledScreen<?> currentScreen) {
         ItemRenderer itemRenderer = ((ScreenAccessor) currentScreen).getItemRenderer();
         TextRenderer textRenderer = ((ScreenAccessor) currentScreen).getTextRenderer();
         itemRenderer.zOffset = 100.0F;

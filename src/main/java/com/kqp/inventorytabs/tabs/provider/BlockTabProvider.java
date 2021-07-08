@@ -1,15 +1,16 @@
 package com.kqp.inventorytabs.tabs.provider;
 
+import java.util.List;
+
 import com.kqp.inventorytabs.init.InventoryTabs;
 import com.kqp.inventorytabs.tabs.tab.Tab;
 import com.kqp.inventorytabs.util.BlockUtil;
+
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
-import java.util.List;
 
 /**
  * Tab provider that exposes tabs based on nearby blocks.
@@ -30,22 +31,18 @@ public abstract class BlockTabProvider implements TabProvider {
                     if (matches(world, blockPos)) {
                         boolean add = false;
 
-                        if (InventoryTabs.getConfig().doSightChecks()) {
-                            BlockHitResult hitResult =
-                                BlockUtil.getLineOfSight(blockPos, player, 5D);
+                        if (InventoryTabs.getConfig().doSightChecksFlag) {
+                            BlockHitResult hitResult = BlockUtil.getLineOfSight(blockPos, player, 5D);
 
                             if (hitResult != null) {
                                 add = true;
                             }
                         } else {
-                            Vec3d playerHead =
-                                player.getPos().add(0D, player.getEyeHeight(player.getPose()), 0D);
-                            Vec3d blockVec =
-                                new Vec3d(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D,
+                            Vec3d playerHead = player.getPos().add(0D, player.getEyeHeight(player.getPose()), 0D);
+                            Vec3d blockVec = new Vec3d(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D,
                                     blockPos.getZ() + 0.5D);
 
-                            if (blockVec.subtract(playerHead).lengthSquared() <=
-                                SEARCH_DISTANCE * SEARCH_DISTANCE) {
+                            if (blockVec.subtract(playerHead).lengthSquared() <= SEARCH_DISTANCE * SEARCH_DISTANCE) {
                                 add = true;
                             }
                         }

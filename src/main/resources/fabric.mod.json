@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "icon": "assets/inventorytabs/icon.png",
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "main": [
       "com.kqp.inventorytabs.init.InventoryTabs"
@@ -28,7 +28,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.11.6",
-    "fabric": "*",
-    "minecraft": ">=0.36.0"
+    "fabric": ">=0.36.0",
+    "minecraft": "1.16.5"
   }
 }

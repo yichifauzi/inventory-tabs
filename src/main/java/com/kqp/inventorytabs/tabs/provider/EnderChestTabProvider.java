@@ -23,7 +23,7 @@ public class EnderChestTabProvider extends BlockTabProvider {
     public void addAvailableTabs(ClientPlayerEntity player, List<Tab> tabs) {
         super.addAvailableTabs(player, tabs);
 
-        Set<ChestTab> tabsToRemove = new HashSet();
+        Set<ChestTab> tabsToRemove = new HashSet<>();
 
         List<ChestTab> chestTabs = tabs.stream()
             .filter(tab -> tab instanceof ChestTab)

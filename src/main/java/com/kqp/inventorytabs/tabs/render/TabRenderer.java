@@ -1,7 +1,7 @@
 package com.kqp.inventorytabs.tabs.render;
 
 import com.kqp.inventorytabs.init.InventoryTabs;
-import com.kqp.inventorytabs.mixin.client.accessor.HandledScreenAccessor;
+import com.kqp.inventorytabs.mixin.accessor.HandledScreenAccessor;
 import com.kqp.inventorytabs.tabs.TabManager;
 import com.kqp.inventorytabs.tabs.tab.Tab;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -75,7 +75,7 @@ public class TabRenderer {
     }
 
     private void drawButtons(MatrixStack matrices, double mouseX, double mouseY) {
-        HandledScreen currentScreen = tabManager.getCurrentScreen();
+        HandledScreen<?> currentScreen = tabManager.getCurrentScreen();
 
         MinecraftClient.getInstance().getTextureManager().bindTexture(BUTTONS_TEXTURE);
 
@@ -137,7 +137,7 @@ public class TabRenderer {
                 color = ((int) (0xFF * transparency) << 24) | color;
             }
 
-            HandledScreen currentScreen = tabManager.getCurrentScreen();
+            HandledScreen<?> currentScreen = tabManager.getCurrentScreen();
             TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
             int height = ((HandledScreenAccessor) currentScreen).getBackgroundHeight();
@@ -161,7 +161,7 @@ public class TabRenderer {
     }
 
     private void renderTab(MatrixStack matrices, TabRenderInfo tabRenderInfo) {
-        HandledScreen currentScreen = tabManager.getCurrentScreen();
+        HandledScreen<?> currentScreen = tabManager.getCurrentScreen();
 
         MinecraftClient.getInstance().getTextureManager().bindTexture(TABS_TEXTURE);
         currentScreen.drawTexture(
@@ -194,7 +194,7 @@ public class TabRenderer {
     }
 
     public TabRenderInfo[] getTabRenderInfos() {
-        HandledScreen currentScreen = tabManager.getCurrentScreen();
+        HandledScreen<?> currentScreen = tabManager.getCurrentScreen();
 
         int maxRowLength = tabManager.getMaxRowLength();
         int numVisibleTabs = maxRowLength * 2;

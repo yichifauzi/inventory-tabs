@@ -3,7 +3,7 @@ package com.kqp.inventorytabs.tabs;
 import com.kqp.inventorytabs.api.TabProviderRegistry;
 import com.kqp.inventorytabs.init.InventoryTabsClient;
 import com.kqp.inventorytabs.interf.TabManagerContainer;
-import com.kqp.inventorytabs.mixin.client.accessor.HandledScreenAccessor;
+import com.kqp.inventorytabs.mixin.accessor.HandledScreenAccessor;
 import com.kqp.inventorytabs.tabs.render.TabRenderInfo;
 import com.kqp.inventorytabs.tabs.render.TabRenderer;
 import com.kqp.inventorytabs.tabs.tab.Tab;
@@ -31,14 +31,14 @@ public class TabManager {
     public final List<Tab> tabs;
     public Tab currentTab;
 
-    private HandledScreen currentScreen;
+    private HandledScreen<?> currentScreen;
     public int currentPage = 0;
     public boolean tabOpenedRecently;
 
     public final TabRenderer tabRenderer;
 
     public TabManager() {
-        this.tabs = new ArrayList();
+        this.tabs = new ArrayList<>();
         this.tabRenderer = new TabRenderer(this);
     }
 
@@ -156,7 +156,7 @@ public class TabManager {
         return false;
     }
 
-    public void onScreenOpen(HandledScreen screen) {
+    public void onScreenOpen(HandledScreen<?> screen) {
         refreshAvailableTabs();
 
         setCurrentScreen(screen);
@@ -206,11 +206,11 @@ public class TabManager {
         return maxRowLength;
     }
 
-    public void setCurrentScreen(HandledScreen screen) {
+    public void setCurrentScreen(HandledScreen<?> screen) {
         this.currentScreen = screen;
     }
 
-    public HandledScreen getCurrentScreen() {
+    public HandledScreen<?> getCurrentScreen() {
         return currentScreen;
     }
 

@@ -1,7 +1,13 @@
 package com.kqp.inventorytabs.tabs.provider;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.kqp.inventorytabs.tabs.tab.SimpleBlockTab;
 import com.kqp.inventorytabs.tabs.tab.Tab;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,49 +19,36 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
- * Provides tabs for shulker boxes.
- * Takes into account if it's blocked.
+ * Provides tabs for shulker boxes. Takes into account if it's blocked.
  */
 public class ShulkerBoxTabProvider extends BlockTabProvider {
     @Override
     public void addAvailableTabs(ClientPlayerEntity player, List<Tab> tabs) {
         super.addAvailableTabs(player, tabs);
 
-        Set<SimpleBlockTab> tabsToRemove = new HashSet();
+        Set<SimpleBlockTab> tabsToRemove = new HashSet<>();
 
-        List<SimpleBlockTab> shulkerTabs = tabs.stream()
-            .filter(tab -> tab instanceof SimpleBlockTab)
-            .map(tab -> (SimpleBlockTab) tab)
-            .filter(tab -> Registry.BLOCK.get(tab.blockId) instanceof ShulkerBoxBlock)
-            .collect(Collectors.toList());
-
-        World world = player.world;
+        List<SimpleBlockTab> shulkerTabs = tabs.stream().filter(tab -> tab instanceof SimpleBlockTab)
+                .map(tab -> (SimpleBlockTab) tab)
+                .filter(tab -> Registry.BLOCK.get(tab.blockId) instanceof ShulkerBoxBlock).collect(Collectors.toList());
 
         // Add any chests that are blocked
-        shulkerTabs.stream()
-            .filter(tab -> {
-                BlockEntity blockEntity = player.world.getBlockEntity(tab.blockPos);
+        shulkerTabs.stream().filter(tab -> {
+            BlockEntity blockEntity = player.world.getBlockEntity(tab.blockPos);
 
-                if (blockEntity instanceof ShulkerBoxBlockEntity) {
-                    BlockState blockState = player.world.getBlockState(tab.blockPos);
-                    Direction direction = blockState.get(ShulkerBoxBlock.FACING);
+            if (blockEntity instanceof ShulkerBoxBlockEntity) {
+                BlockState blockState = player.world.getBlockState(tab.blockPos);
+                Direction direction = blockState.get(ShulkerBoxBlock.FACING);
 
-                    if (((ShulkerBoxBlockEntity) blockEntity).getAnimationStage() ==
-                        ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
-                        return !player.world.isSpaceEmpty(
-                            ShulkerLidCollisions.getLidCollisionBox(tab.blockPos, direction));
-                    }
+                if (((ShulkerBoxBlockEntity) blockEntity)
+                        .getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
+                    return !player.world.isSpaceEmpty(ShulkerLidCollisions.getLidCollisionBox(tab.blockPos, direction));
                 }
+            }
 
-                return false;
-            })
-            .forEach(tabsToRemove::add);
+            return false;
+        }).forEach(tabsToRemove::add);
 
         tabs.removeAll(tabsToRemove);
     }

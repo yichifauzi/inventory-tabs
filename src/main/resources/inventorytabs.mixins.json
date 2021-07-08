@@ -4,17 +4,13 @@
   "package": "com.kqp.inventorytabs.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ConfigSyncer"
-  ],
-  "client": [
-    "client.accessor.HandledScreenAccessor",
-    "client.accessor.ScreenAccessor",
-    "client.CartographyTableScreenTabAdder",
-    "client.LoomScreenTabAdder",
-    "client.ServerConfigResetter",
-    "client.StonecutterScreenTabAdder",
-    "client.TabManagerContainerImplementer",
-    "client.VanillaScreenTabAdder"
+    "accessor.HandledScreenAccessor",
+    "accessor.ScreenAccessor",
+    "CartographyTableScreenTabAdder",
+    "LoomScreenTabAdder",
+    "StonecutterScreenTabAdder",
+    "TabManagerContainerImplementer",
+    "VanillaScreenTabAdder"
   ],
   "injectors": {
     "defaultRequire": 1

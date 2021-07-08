@@ -30,9 +30,7 @@ public class SimpleBlockTab extends Tab {
     public final BlockPos blockPos;
 
     public SimpleBlockTab(Identifier blockId, BlockPos blockPos) {
-        super(new ItemStack(
-                MinecraftClient.getInstance().player.world.getBlockState(blockPos).getBlock()
-        ));
+        super(new ItemStack(MinecraftClient.getInstance().player.world.getBlockState(blockPos).getBlock()));
         this.blockId = blockId;
         this.blockPos = blockPos;
     }
@@ -42,31 +40,20 @@ public class SimpleBlockTab extends Tab {
         MinecraftClient client = MinecraftClient.getInstance();
         BlockHitResult hitResult = null;
 
-        if (InventoryTabs.getConfig().doSightChecks()) {
+        if (InventoryTabs.getConfig().doSightChecksFlag) {
             hitResult = BlockUtil.getLineOfSight(blockPos, client.player, 5D);
         } else {
-            hitResult = new BlockHitResult(
-                client.player.getPos(),
-                Direction.EAST,
-                blockPos,
-                false
-            );
+            hitResult = new BlockHitResult(client.player.getPos(), Direction.EAST, blockPos, false);
         }
 
         if (hitResult != null) {
             if (InventoryTabs.getConfig().rotatePlayer) {
-                MinecraftClient.getInstance().player.lookAt(
-                    EntityAnchorArgumentType.EntityAnchor.EYES,
-                    getBlockVec3d()
-                );
+                MinecraftClient.getInstance().player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES,
+                        getBlockVec3d());
             }
 
-            MinecraftClient.getInstance().interactionManager.interactBlock(
-                client.player,
-                client.player.clientWorld,
-                Hand.MAIN_HAND,
-                hitResult
-            );
+            MinecraftClient.getInstance().interactionManager.interactBlock(client.player, client.player.clientWorld,
+                    Hand.MAIN_HAND, hitResult);
         }
     }
 
@@ -74,12 +61,11 @@ public class SimpleBlockTab extends Tab {
     public boolean shouldBeRemoved() {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
 
-        if (!Registry.BLOCK.getId(player.world.getBlockState(blockPos).getBlock())
-            .equals(blockId)) {
+        if (!Registry.BLOCK.getId(player.world.getBlockState(blockPos).getBlock()).equals(blockId)) {
             return true;
         }
 
-        if (InventoryTabs.getConfig().doSightChecks()) {
+        if (InventoryTabs.getConfig().doSightChecksFlag) {
             if (BlockUtil.getLineOfSight(blockPos, player, 5D) == null) {
                 return true;
             }
@@ -87,8 +73,8 @@ public class SimpleBlockTab extends Tab {
 
         Vec3d playerHead = player.getPos().add(0D, player.getEyeHeight(player.getPose()), 0D);
 
-        return getBlockVec3d().subtract(playerHead).lengthSquared() >
-            BlockTabProvider.SEARCH_DISTANCE * BlockTabProvider.SEARCH_DISTANCE;
+        return getBlockVec3d().subtract(playerHead).lengthSquared() > BlockTabProvider.SEARCH_DISTANCE
+                * BlockTabProvider.SEARCH_DISTANCE;
     }
 
     @Override
@@ -110,11 +96,7 @@ public class SimpleBlockTab extends Tab {
     }
 
     private Vec3d getBlockVec3d() {
-        return new Vec3d(
-            blockPos.getX() + 0.5D,
-            blockPos.getY() + 0.5D,
-            blockPos.getZ() + 0.5D
-        );
+        return new Vec3d(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D);
     }
 
     @Override
