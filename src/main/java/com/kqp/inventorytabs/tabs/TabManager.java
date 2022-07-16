@@ -1,10 +1,5 @@
 package com.kqp.inventorytabs.tabs;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import com.kqp.inventorytabs.api.TabProviderRegistry;
 import com.kqp.inventorytabs.init.InventoryTabsClient;
 import com.kqp.inventorytabs.interf.TabManagerContainer;
@@ -15,18 +10,20 @@ import com.kqp.inventorytabs.tabs.render.TabRenderingHints;
 import com.kqp.inventorytabs.tabs.tab.PlayerInventoryTab;
 import com.kqp.inventorytabs.tabs.tab.Tab;
 import com.kqp.inventorytabs.util.MouseUtil;
-
-import net.fabricmc.loader.api.FabricLoader;
-import org.lwjgl.glfw.GLFW;
-
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.sound.SoundEvents;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Manages everything related to tabs.
@@ -148,9 +145,7 @@ public class TabManager {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (InventoryTabsClient.NEXT_TAB_KEY_BIND.matchesKey(keyCode, scanCode)) {
             int currentTabIndex = tabs.indexOf(currentTab);
-
-            if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(),
-                    GLFW.GLFW_KEY_LEFT_SHIFT)) {
+            if (Screen.hasShiftDown()) {
                 if (currentTabIndex > 0) {
                     onTabClick(tabs.get(currentTabIndex - 1));
                 } else {
