@@ -215,7 +215,7 @@ public class TabManager {
             if (prevCursorStack != null && !prevCursorStack.isEmpty()) {
                 this.prevCursorStackSlot = client.player.getInventory().getEmptySlot();
 
-                if (this.prevCursorStackSlot != 1 && client.interactionManager != null) {
+                if (this.prevCursorStackSlot != -1 && client.interactionManager != null) {
                     // Put the cursor stack there
                     handler.getSlotIndex(client.player.getInventory(), this.prevCursorStackSlot).ifPresent((screenSlot) -> {
                         client.interactionManager.clickSlot(
