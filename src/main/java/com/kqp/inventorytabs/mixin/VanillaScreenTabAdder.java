@@ -3,6 +3,7 @@ package com.kqp.inventorytabs.mixin;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.kqp.inventorytabs.init.InventoryTabsClient;
 import com.kqp.inventorytabs.interf.TabManagerContainer;
 import com.kqp.inventorytabs.tabs.TabManager;
 import com.kqp.inventorytabs.tabs.render.TabRenderingHints;
@@ -11,6 +12,9 @@ import com.kqp.inventorytabs.tabs.tab.Tab;
 import com.kqp.inventorytabs.util.ChestUtil;
 
 import net.fabricmc.loader.api.FabricLoader;
+
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,34 +25,34 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.AbstractFurnaceScreen;
-import net.minecraft.client.gui.screen.ingame.AnvilScreen;
-import net.minecraft.client.gui.screen.ingame.BrewingStandScreen;
-import net.minecraft.client.gui.screen.ingame.CartographyTableScreen;
-import net.minecraft.client.gui.screen.ingame.CraftingScreen;
-import net.minecraft.client.gui.screen.ingame.EnchantmentScreen;
-import net.minecraft.client.gui.screen.ingame.Generic3x3ContainerScreen;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
-import net.minecraft.client.gui.screen.ingame.GrindstoneScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.HopperScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.gui.screen.ingame.LoomScreen;
-import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
-import net.minecraft.client.gui.screen.ingame.SmithingScreen;
-import net.minecraft.client.gui.screen.ingame.StonecutterScreen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 @Mixin(HandledScreen.class)
-public class VanillaScreenTabAdder implements TabRenderingHints {
+public class VanillaScreenTabAdder extends Screen implements TabRenderingHints {
     private static final boolean isBRBLoaded = FabricLoader.getInstance().isModLoaded("brb"); // Better Recipe Book compat
+
+    protected VanillaScreenTabAdder(Text title) {
+        super(title);
+    }
+
+    @Inject(method = "init", at = @At("HEAD"))
+    private void initRestoreStack(CallbackInfo callbackInfo) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        TabManager tabManager = ((TabManagerContainer) client).getTabManager();
+        if (tabManager.screenOpenedViaTab()) {
+            tabManager.restoreCursorStack(client.interactionManager, client.player, ((HandledScreen<?>) (Object) this).getScreenHandler());
+            tabManager.tabOpenedRecently = true; // Preserve value for later
+        }
+    }
+
     @Inject(method = "init", at = @At("RETURN"))
     private void initTabRenderer(CallbackInfo callbackInfo) {
-        if (screenSupported()) {
+        if (InventoryTabsClient.screenSupported(this)) {
             MinecraftClient client = MinecraftClient.getInstance();
             TabManager tabManager = ((TabManagerContainer) client).getTabManager();
 
@@ -58,7 +62,7 @@ public class VanillaScreenTabAdder implements TabRenderingHints {
 
             if ((Object) this instanceof InventoryScreen) {
                 tabOpened = tabManager.tabs.get(0);
-            } else if (!tabManager.screenOpenedViaTab()) {
+            } else if (!tabManager.screenOpenedViaTab()) { // Consumes flag
                 // If the screen was NOT opened via tab,
                 // check what block player is looking at for context
 
@@ -70,7 +74,7 @@ public class VanillaScreenTabAdder implements TabRenderingHints {
                     matchingBlockPositions.add(blockPos);
 
                     // For double chests
-                    World world = MinecraftClient.getInstance().player.world;
+                    World world = client.player.world;
                     if (world.getBlockState(blockPos).getBlock() instanceof ChestBlock) {
                         if (ChestUtil.isDouble(world, blockPos)) {
                             matchingBlockPositions.add(ChestUtil.getOtherChestBlockPos(world, blockPos));
@@ -99,7 +103,7 @@ public class VanillaScreenTabAdder implements TabRenderingHints {
     @Inject(method = "render", at = @At("HEAD"))
     protected void drawBackgroundTabs(MatrixStack matrices, int mouseX, int mouseY, float delta,
             CallbackInfo callbackInfo) {
-        if (screenSupported()) {
+        if (InventoryTabsClient.screenSupported(this)) {
             if (!screenDoesDumbBlock()) {
                 MinecraftClient client = MinecraftClient.getInstance();
                 TabManager tabManager = ((TabManagerContainer) client).getTabManager();
@@ -112,7 +116,7 @@ public class VanillaScreenTabAdder implements TabRenderingHints {
     @Inject(method = "render", at = @At("TAIL"))
     protected void drawForegroundTabs(MatrixStack matrices, int mouseX, int mouseY, float delta,
             CallbackInfo callbackInfo) {
-        if (screenSupported()) {
+        if (InventoryTabsClient.screenSupported(this)) {
             MinecraftClient client = MinecraftClient.getInstance();
             TabManager tabManager = ((TabManagerContainer) client).getTabManager();
 
@@ -123,7 +127,7 @@ public class VanillaScreenTabAdder implements TabRenderingHints {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> callbackInfo) {
-        if (screenSupported()) {
+        if (InventoryTabsClient.screenSupported(this)) {
             TabManager tabManager = ((TabManagerContainer) MinecraftClient.getInstance()).getTabManager();
 
             if (tabManager.mouseClicked(mouseX, mouseY, button)) {
@@ -134,7 +138,7 @@ public class VanillaScreenTabAdder implements TabRenderingHints {
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     public void keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> callbackInfo) {
-        if (screenSupported()) {
+        if (InventoryTabsClient.screenSupported(this)) {
             TabManager tabManager = ((TabManagerContainer) MinecraftClient.getInstance()).getTabManager();
 
             if (tabManager.keyPressed(keyCode, scanCode, modifiers)) {
@@ -172,19 +176,6 @@ public class VanillaScreenTabAdder implements TabRenderingHints {
     @Override
     public int getBottomRowYOffset() {
         return screenNeedsOffset() ? -1 : 0;
-    }
-
-    private boolean screenSupported() {
-        HandledScreen<?> screen = (HandledScreen<?>) (Object) this;
-
-        return screen instanceof GenericContainerScreen || screen instanceof InventoryScreen
-                || screen instanceof AbstractFurnaceScreen || screen instanceof AnvilScreen
-                || screen instanceof CraftingScreen || screen instanceof ShulkerBoxScreen
-                || screen instanceof EnchantmentScreen || screen instanceof BrewingStandScreen
-                || screen instanceof SmithingScreen || screen instanceof CartographyTableScreen
-                || screen instanceof LoomScreen || screen instanceof StonecutterScreen
-                || screen instanceof GrindstoneScreen || screen instanceof HopperScreen
-                || screen instanceof Generic3x3ContainerScreen;
     }
 
     private boolean screenDoesDumbBlock() {
