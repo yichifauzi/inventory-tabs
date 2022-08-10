@@ -12,12 +12,13 @@ import com.kqp.inventorytabs.mixin.accessor.HandledScreenAccessor;
 import com.kqp.inventorytabs.tabs.render.TabRenderInfo;
 import com.kqp.inventorytabs.tabs.render.TabRenderer;
 import com.kqp.inventorytabs.tabs.render.TabRenderingHints;
-import com.kqp.inventorytabs.tabs.tab.PlayerInventoryTab;
 import com.kqp.inventorytabs.tabs.tab.Tab;
 import com.kqp.inventorytabs.util.MouseUtil;
 
-import net.fabricmc.loader.api.FabricLoader;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.SlotActionType;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,7 +26,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundEvents;
@@ -43,6 +43,7 @@ public class TabManager {
     private HandledScreen<?> currentScreen;
     public int currentPage = 0;
     public boolean tabOpenedRecently;
+    public int prevCursorStackSlot = -1;
 
     public final TabRenderer tabRenderer;
 
@@ -184,22 +185,58 @@ public class TabManager {
         MouseUtil.tryPop();
     }
 
+    public void restoreCursorStack(ClientPlayerInteractionManager manager, ClientPlayerEntity player, ScreenHandler currentHandler) {
+        // Try restore the cursor stack if it exists and wasn't dropped.
+        if (manager!= null && this.prevCursorStackSlot != -1) {
+            currentHandler.getSlotIndex(player.getInventory(), this.prevCursorStackSlot).ifPresent((screenSlot) ->{
+                manager.clickSlot(
+                        currentHandler.syncId,
+                        screenSlot,
+                        0, // Mouse Left Click
+                        SlotActionType.PICKUP,
+                        player
+                );
+            });
+            this.prevCursorStackSlot = -1;
+        }
+    }
+
     public void onTabClick(Tab tab) {
         // Push current mouse position
         // This is to persist mouse position across screens
         MouseUtil.push();
 
         // Set tab open flag
-        if (!(tab instanceof PlayerInventoryTab)) {
-            tabOpenedRecently = true;
-        }
+        tabOpenedRecently = true;
 
-        // Close any handled screens
-        // This fixes the inventory desync issue
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player.currentScreenHandler != null) {
-            client.getNetworkHandler()
-                    .sendPacket(new CloseHandledScreenC2SPacket(client.player.currentScreenHandler.syncId));
+        ScreenHandler handler = client.player.currentScreenHandler;
+        this.prevCursorStackSlot = -1;
+
+        if (handler != null) {
+
+            // Preserve the cursor stack
+            ItemStack prevCursorStack = client.player.currentScreenHandler.getCursorStack();
+            if (prevCursorStack != null && !prevCursorStack.isEmpty()) {
+                this.prevCursorStackSlot = client.player.getInventory().getEmptySlot();
+
+                if (this.prevCursorStackSlot != 1 && client.interactionManager != null) {
+                    // Put the cursor stack there
+                    handler.getSlotIndex(client.player.getInventory(), this.prevCursorStackSlot).ifPresent((screenSlot) -> {
+                        client.interactionManager.clickSlot(
+                                handler.syncId,
+                                screenSlot,
+                                0, // Mouse Left Click
+                                SlotActionType.PICKUP,
+                                client.player
+                        );
+                    });
+                }
+            }
+
+            // Close any handled screens
+            // This fixes the inventory desync issue
+            client.getNetworkHandler().sendPacket(new CloseHandledScreenC2SPacket(handler.syncId));
         }
 
         // Open new tab
