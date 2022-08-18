@@ -1,17 +1,15 @@
 package com.kqp.inventorytabs.api;
 
+import com.kqp.inventorytabs.init.InventoryTabs;
+import com.kqp.inventorytabs.tabs.provider.*;
+import net.minecraft.block.*;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.kqp.inventorytabs.init.InventoryTabs;
-import com.kqp.inventorytabs.tabs.provider.*;
-
-import net.minecraft.block.*;
-import net.minecraft.item.Item;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 /**
  * Registry for tab providers.
@@ -42,7 +40,7 @@ public class TabProviderRegistry {
             if (block instanceof BlockEntityProvider) {
                 if (block instanceof AbstractChestBlock) {
                     registerChest(block);
-                } else if (!(block instanceof BedBlock) && !(block instanceof AbstractBannerBlock) && !(block instanceof AbstractSignBlock) && !(block instanceof AbstractSkullBlock) && !(block instanceof BeehiveBlock) && !(block instanceof BellBlock) && !(block instanceof CampfireBlock) && !(block instanceof ConduitBlock) && !(block instanceof DaylightDetectorBlock) && !(block instanceof EndGatewayBlock) && !(block instanceof EndPortalBlock) && !(block instanceof JukeboxBlock) && !(block instanceof PistonExtensionBlock) && !(block instanceof SculkCatalystBlock) && !(block instanceof SculkSensorBlock) && !(block instanceof SculkShriekerBlock) && !(block instanceof SpawnerBlock)) {
+                } else if (!(block instanceof BedBlock) && !(block instanceof AbstractBannerBlock) && !(block instanceof AbstractSignBlock) && !(block instanceof AbstractSkullBlock) && !(block instanceof BeehiveBlock) && !(block instanceof BellBlock) && !(block instanceof CampfireBlock) && !(block instanceof ConduitBlock) && !(block instanceof DaylightDetectorBlock) && !(block instanceof EndGatewayBlock) && !(block instanceof EndPortalBlock) && !(block instanceof JukeboxBlock) && !(block instanceof PistonExtensionBlock) && !(block instanceof SculkCatalystBlock) && !(block instanceof SculkSensorBlock) && !(block instanceof SculkShriekerBlock) && !(block instanceof SpawnerBlock) && !(block instanceof CommandBlock) && !(block instanceof StructureBlock) && !(block instanceof JigsawBlock)) {
                     registerSimpleBlock(block);
                 }
             } else if ((block instanceof CraftingTableBlock && !(block instanceof FletchingTableBlock)) || block instanceof AnvilBlock || block instanceof CartographyTableBlock || block instanceof GrindstoneBlock || block instanceof LoomBlock || block instanceof StonecutterBlock) {
