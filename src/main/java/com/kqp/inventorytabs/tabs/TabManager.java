@@ -77,10 +77,14 @@ public class TabManager {
             }
         }
 
-        // Add new tabs
-        TabProviderRegistry.getTabProviders().forEach(tabProvider -> {
-            tabProvider.addAvailableTabs(MinecraftClient.getInstance().player, tabs);
-        });
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+
+        if (player != null && player.isAlive()) {
+            // Add new tabs
+            TabProviderRegistry.getTabProviders().forEach(tabProvider -> {
+                tabProvider.addAvailableTabs(player, tabs);
+            });
+        }
 
         if (currentTab != null) {
             for (int i = 0; i < tabs.size(); i++) {
