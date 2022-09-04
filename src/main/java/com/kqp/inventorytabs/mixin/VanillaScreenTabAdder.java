@@ -39,6 +39,16 @@ public abstract class VanillaScreenTabAdder extends Screen implements TabRenderi
     protected VanillaScreenTabAdder(Text title) {
         super(title);
     }
+
+    @Inject(method = "init", at = @At("HEAD"))
+    private void initRestoreStack(CallbackInfo callbackInfo) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        TabManager tabManager = ((TabManagerContainer) client).getTabManager();
+        if (tabManager.screenOpenedViaTab()) {
+            tabManager.restoreCursorStack(client.interactionManager, client.player, ((HandledScreen<?>) (Object) this).getScreenHandler());
+            tabManager.tabOpenedRecently = true; // Preserve value for later
+        }
+    }
     
     @Inject(method = "init", at = @At("RETURN"))
     private void initTabRenderer(CallbackInfo callbackInfo) {
@@ -52,7 +62,7 @@ public abstract class VanillaScreenTabAdder extends Screen implements TabRenderi
 
             if ((Object) this instanceof InventoryScreen) {
                 tabOpened = tabManager.tabs.get(0);
-            } else if (!tabManager.screenOpenedViaTab()) {
+            } else if (!tabManager.screenOpenedViaTab()) { // Consumes flag
                 // If the screen was NOT opened via tab,
                 // check what block player is looking at for context
 
@@ -64,7 +74,7 @@ public abstract class VanillaScreenTabAdder extends Screen implements TabRenderi
                     matchingBlockPositions.add(blockPos);
 
                     // For double chests
-                    World world = MinecraftClient.getInstance().player.world;
+                    World world = client.player.world;
                     if (world.getBlockState(blockPos).getBlock() instanceof ChestBlock) {
                         if (ChestUtil.isDouble(world, blockPos)) {
                             matchingBlockPositions.add(ChestUtil.getOtherChestBlockPos(world, blockPos));
