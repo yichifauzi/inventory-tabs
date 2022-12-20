@@ -12,11 +12,11 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class ChestTab extends SimpleBlockTab {
     ItemStack itemStack;
     public ChestTab(Identifier blockId, BlockPos blockPos) {
         super(blockId, blockPos);
-        this.itemStack = new ItemStack(Registry.BLOCK.get(blockId));
+        this.itemStack = new ItemStack(Registries.BLOCK.get(blockId));
     }
 
     @Override

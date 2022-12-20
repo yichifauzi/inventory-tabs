@@ -1,23 +1,20 @@
 package com.kqp.inventorytabs.tabs.provider;
 
+import com.kqp.inventorytabs.tabs.tab.ChestTab;
+import com.kqp.inventorytabs.tabs.tab.Tab;
+import com.kqp.inventorytabs.util.ChestUtil;
+import net.minecraft.block.Block;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.kqp.inventorytabs.tabs.tab.ChestTab;
-import com.kqp.inventorytabs.tabs.tab.Tab;
-import com.kqp.inventorytabs.util.ChestUtil;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 
 /**
  * Provides tabs for chests. Limits double chests to having only one tab and
@@ -33,7 +30,7 @@ public class ChestTabProvider extends BlockTabProvider {
         Set<ChestTab> tabsToRemove = new HashSet<>();
 
         List<ChestTab> chestTabs = tabs.stream().filter(tab -> tab instanceof ChestTab).map(tab -> (ChestTab) tab)
-                .filter(tab -> chestBlocks.contains(tab.blockId)).collect(Collectors.toList());
+                .filter(tab -> chestBlocks.contains(tab.blockId)).toList();
 
         World world = player.world;
 
@@ -52,7 +49,7 @@ public class ChestTabProvider extends BlockTabProvider {
     }
 
     public void addChestBlock(Block block) {
-        chestBlocks.add(Registry.BLOCK.getId(block));
+        chestBlocks.add(Registries.BLOCK.getId(block));
     }
 
     public void addChestBlock(Identifier blockId) {
@@ -71,11 +68,11 @@ public class ChestTabProvider extends BlockTabProvider {
     public boolean matches(World world, BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
 
-        return chestBlocks.contains(Registry.BLOCK.getId(block));
+        return chestBlocks.contains(Registries.BLOCK.getId(block));
     }
 
     @Override
     public Tab createTab(World world, BlockPos pos) {
-        return new ChestTab(Registry.BLOCK.getId(world.getBlockState(pos).getBlock()), pos);
+        return new ChestTab(Registries.BLOCK.getId(world.getBlockState(pos).getBlock()), pos);
     }
 }
