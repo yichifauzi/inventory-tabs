@@ -10,7 +10,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -27,7 +26,7 @@ public class TabRenderer {
     private static final Identifier TABS_TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
     private static final Identifier BUTTONS_TEXTURE = InventoryTabs.id("textures/gui/buttons.png");
 
-    public static final int TAB_WIDTH = 28;
+    public static final int TAB_WIDTH = 26;
     public static final int TAB_HEIGHT = 32;
     public static final int BUTTON_WIDTH = 15;
     public static final int BUTTON_HEIGHT = 13;
@@ -227,14 +226,14 @@ public class TabRenderer {
                 }
 
                 // Calc texture dimensions
-                tabInfo.texW = 28;
+                tabInfo.texW = TAB_WIDTH;
                 tabInfo.texH = 32;
 
                 // Calc texture U
                 if (i == 0 || i == maxRowLength) {
                     tabInfo.texU = 0;
                 } else {
-                    tabInfo.texU = 28;
+                    tabInfo.texU = TAB_WIDTH;
                 }
 
                 // Calc texture V

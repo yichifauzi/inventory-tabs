@@ -1,20 +1,18 @@
 package com.kqp.inventorytabs.api;
 
-import java.util.*;
-
 import com.kqp.inventorytabs.init.InventoryTabs;
 import com.kqp.inventorytabs.interf.TabManagerContainer;
 import com.kqp.inventorytabs.tabs.provider.*;
-
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static net.minecraft.util.registry.Registry.BLOCK_KEY;
+import java.util.*;
 
 /**
  * Registry for tab providers.
@@ -43,7 +41,7 @@ public class TabProviderRegistry {
             InventoryTabs.id("inventory_tab_provider"), new InventoryTabProvider());
 
     public static void init(String configMsg) {
-        LOGGER.info("InventoryTabs: Attempting to "+configMsg+" config...");
+        LOGGER.info("InventoryTabs: Attempting to " + configMsg + " config...");
         if (InventoryTabs.getConfig().debugEnabled) {
             LOGGER.warn("InventoryTabs: DEBUG ENABLED");
         }
@@ -57,7 +55,7 @@ public class TabProviderRegistry {
                 blockSet.add(overrideEntry);
             }
         }
-        Registry.BLOCK.forEach(block -> {
+        Registries.BLOCK.forEach(block -> {
             if (block instanceof BlockEntityProvider) {
                 if (block instanceof AbstractChestBlock) {
                     registerChest(block);
@@ -76,7 +74,7 @@ public class TabProviderRegistry {
         MinecraftClient client = MinecraftClient.getInstance();
         TabManagerContainer tabManagerContainer = (TabManagerContainer) client;
         tabManagerContainer.getTabManager().removeTabs();
-        LOGGER.info(configMsg.equals("save") ? "InventoryTabs: Config saved!": "InventoryTabs: Config "+configMsg+"ed!");
+        LOGGER.info(configMsg.equals("save") ? "InventoryTabs: Config saved!" : "InventoryTabs: Config " + configMsg + "ed!");
     }
 
     private static void modCompatAdd() {
@@ -89,6 +87,7 @@ public class TabProviderRegistry {
         registerInventoryTab(new Identifier("onastick", "stonecutter_on_a_stick"));
         registerInventoryTab(new Identifier("craftingpad", "craftingpad"));
     }
+
     public static boolean isValid(String overrideEntry, String[] splitEntry, Set<String> invalidSet) {
         if (splitEntry.length != 2) {
             invalidSet.add(overrideEntry);
@@ -96,6 +95,7 @@ public class TabProviderRegistry {
         }
         return true;
     }
+
     private static void configRemove(Set<String> blockSet) {
         for (String overrideEntry : blockSet) {
             if (InventoryTabs.getConfig().debugEnabled) {
@@ -104,13 +104,14 @@ public class TabProviderRegistry {
             removeSimpleBlock(new Identifier(overrideEntry));
         }
     }
+
     private static void configRemove(Block block, Set<String> tagSet, Set<String> invalidSet) {
         for (String overrideEntry : tagSet) {
             String[] splitEntry = overrideEntry.split(":"); // split into two parts: tag id, item name
             if (isValid(overrideEntry, splitEntry, invalidSet)) {
                 List<TagKey<Block>> blockStream = block.getRegistryEntry().streamTags().toList();
                 for (TagKey<Block> tagKey : blockStream) {
-                    if (block.getRegistryEntry().isIn(TagKey.of(BLOCK_KEY, new Identifier(splitEntry[0], splitEntry[1])))) {
+                    if (block.getRegistryEntry().isIn(TagKey.of(RegistryKeys.BLOCK, new Identifier(splitEntry[0], splitEntry[1])))) {
                         removeSimpleBlock(block);
                         if (InventoryTabs.getConfig().debugEnabled) {
                             LOGGER.info("Excluding: " + block);
@@ -129,6 +130,7 @@ public class TabProviderRegistry {
             registerSimpleBlock(new Identifier(included_tab));
         }
     }
+
     public static void registerInventoryTab(Identifier itemId) {
         INVENTORY_TAB_PROVIDER.addItem(itemId);
     }
@@ -160,6 +162,7 @@ public class TabProviderRegistry {
     public static void removeSimpleBlock(Block block) {
         SIMPLE_BLOCK_TAB_PROVIDER.removeBlock(block);
     }
+
     public static void removeSimpleBlock(Identifier blockId) {
         SIMPLE_BLOCK_TAB_PROVIDER.removeBlock(blockId);
     }

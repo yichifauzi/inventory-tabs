@@ -11,10 +11,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import java.util.Objects;
 
 public class SimpleEntityTab extends Tab {
@@ -23,7 +23,7 @@ public class SimpleEntityTab extends Tab {
     public final Entity entity;
 
     public SimpleEntityTab(Entity entity) {
-        super(new ItemStack(Registry.ITEM.get(new Identifier("minecraft", "barrier"))));
+        super(new ItemStack(Registries.ITEM.get(new Identifier("minecraft", "barrier"))));
         this.entity = entity;
         this.entityPos = entity.getPos();
         this.entityId = EntityType.getId(entity.getType());
@@ -77,6 +77,6 @@ public class SimpleEntityTab extends Tab {
     }
 
     public ItemStack getItemStack() {
-        return entity.getPickBlockStack() != null ? entity.getPickBlockStack() : new ItemStack(Registry.ITEM.get(new Identifier("minecraft", "barrier")));
+        return entity.getPickBlockStack() != null ? entity.getPickBlockStack() : new ItemStack(Registries.ITEM.get(new Identifier("minecraft", "barrier")));
     }
 }

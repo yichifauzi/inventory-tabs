@@ -11,8 +11,8 @@ import com.kqp.inventorytabs.tabs.tab.Tab;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 /**
@@ -27,7 +27,7 @@ public class EnderChestTabProvider extends BlockTabProvider {
         Set<ChestTab> tabsToRemove = new HashSet<>();
 
         List<ChestTab> chestTabs = tabs.stream().filter(tab -> tab instanceof ChestTab).map(tab -> (ChestTab) tab)
-                .filter(tab -> tab.blockId == Registry.BLOCK.getId(Blocks.ENDER_CHEST)).collect(Collectors.toList());
+                .filter(tab -> tab.blockId == Registries.BLOCK.getId(Blocks.ENDER_CHEST)).toList();
 
         World world = player.world;
 
@@ -56,6 +56,6 @@ public class EnderChestTabProvider extends BlockTabProvider {
 
     @Override
     public Tab createTab(World world, BlockPos pos) {
-        return new ChestTab(Registry.BLOCK.getId(Blocks.ENDER_CHEST), pos);
+        return new ChestTab(Registries.BLOCK.getId(Blocks.ENDER_CHEST), pos);
     }
 }

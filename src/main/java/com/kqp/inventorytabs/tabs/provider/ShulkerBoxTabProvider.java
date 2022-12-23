@@ -14,8 +14,8 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 /**
@@ -30,7 +30,7 @@ public class ShulkerBoxTabProvider extends BlockTabProvider {
 
         List<SimpleBlockTab> shulkerTabs = tabs.stream().filter(tab -> tab instanceof SimpleBlockTab)
                 .map(tab -> (SimpleBlockTab) tab)
-                .filter(tab -> Registry.BLOCK.get(tab.blockId) instanceof ShulkerBoxBlock).collect(Collectors.toList());
+                .filter(tab -> Registries.BLOCK.get(tab.blockId) instanceof ShulkerBoxBlock).toList();
 
         // Add any chests that are blocked
         shulkerTabs.stream().filter(tab -> {
@@ -56,6 +56,6 @@ public class ShulkerBoxTabProvider extends BlockTabProvider {
 
     @Override
     public Tab createTab(World world, BlockPos pos) {
-        return new SimpleBlockTab(Registry.BLOCK.getId(world.getBlockState(pos).getBlock()), pos);
+        return new SimpleBlockTab(Registries.BLOCK.getId(world.getBlockState(pos).getBlock()), pos);
     }
 }

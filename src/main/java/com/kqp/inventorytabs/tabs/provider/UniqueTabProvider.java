@@ -4,9 +4,9 @@ import com.kqp.inventorytabs.tabs.tab.SimpleBlockTab;
 import com.kqp.inventorytabs.tabs.tab.Tab;
 import net.minecraft.block.Block;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -32,7 +32,7 @@ public class UniqueTabProvider extends BlockTabProvider {
     }
 
     public void addUniqueBlock(Block block) {
-        uniqueBlocks.add(Registry.BLOCK.getId(block));
+        uniqueBlocks.add(Registries.BLOCK.getId(block));
     }
 
     public void addUniqueBlock(Identifier blockId) {
@@ -44,11 +44,11 @@ public class UniqueTabProvider extends BlockTabProvider {
     }
     @Override
     public boolean matches(World world, BlockPos pos) {
-        return uniqueBlocks.contains(Registry.BLOCK.getId(world.getBlockState(pos).getBlock()));
+        return uniqueBlocks.contains(Registries.BLOCK.getId(world.getBlockState(pos).getBlock()));
     }
 
     @Override
     public Tab createTab(World world, BlockPos pos) {
-        return new SimpleBlockTab(Registry.BLOCK.getId(world.getBlockState(pos).getBlock()), pos);
+        return new SimpleBlockTab(Registries.BLOCK.getId(world.getBlockState(pos).getBlock()), pos);
     }
 }
