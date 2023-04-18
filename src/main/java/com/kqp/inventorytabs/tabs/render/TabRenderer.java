@@ -117,7 +117,6 @@ public class TabRenderer {
             int color = 0xFFFFFFFF;
 
             if (pageTextRefreshTime <= 20) {
-                RenderSystem.disableTexture();
                 RenderSystem.enableBlend();
                 // RenderSystem.disableAlphaTest();
                 RenderSystem.defaultBlendFunc();

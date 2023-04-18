@@ -70,10 +70,11 @@ public abstract class Tab {
     public void renderTabIcon(MatrixStack matrices, TabRenderInfo tabRenderInfo, HandledScreen<?> currentScreen) {
         ItemRenderer itemRenderer = ((ScreenAccessor) currentScreen).getItemRenderer();
         TextRenderer textRenderer = ((ScreenAccessor) currentScreen).getTextRenderer();
-        itemRenderer.zOffset = 100.0F;
+        matrices.push();
+        matrices.translate(0, 0, 100.0F);
         // RenderSystem.enableRescaleNormal();
-        itemRenderer.renderInGuiWithOverrides(renderItemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
-        itemRenderer.renderGuiItemOverlay(textRenderer, renderItemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
-        itemRenderer.zOffset = 0.0F;
+        itemRenderer.renderInGuiWithOverrides(matrices, renderItemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
+        itemRenderer.renderGuiItemOverlay(matrices, textRenderer, renderItemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
+        matrices.pop();
     }
 }

@@ -53,10 +53,11 @@ public class SimpleEntityTab extends Tab {
         ItemStack itemStack = getItemStack();
         ItemRenderer itemRenderer = ((ScreenAccessor) currentScreen).getItemRenderer();
         TextRenderer textRenderer = ((ScreenAccessor) currentScreen).getTextRenderer();
-        itemRenderer.zOffset = 100.0F;
-        itemRenderer.renderInGuiWithOverrides(itemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
-        itemRenderer.renderGuiItemOverlay(textRenderer, itemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
-        itemRenderer.zOffset = 0.0F;
+        matrices.push();
+        matrices.translate(0, 0, 100.0F);
+        itemRenderer.renderInGuiWithOverrides(matrices, itemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
+        itemRenderer.renderGuiItemOverlay(matrices, textRenderer, itemStack, tabRenderInfo.itemX, tabRenderInfo.itemY);
+        matrices.pop();
     }
 
     @Override
