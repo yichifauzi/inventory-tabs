@@ -13,12 +13,16 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InventoryTabsClient implements ClientModInitializer {
     public static final KeyBinding NEXT_TAB_KEY_BIND = KeyBindingHelper.registerKeyBinding(new KeyBinding(
             "inventorytabs.key.next_tab", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_TAB, "key.categories.inventory"));
 
     public static boolean serverDoSightCheckFlag = true;
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(InventoryTabs.ID);
 
     @Override
     public void onInitializeClient() {
