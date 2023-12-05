@@ -3,28 +3,7 @@ package folk.sisby.inventory_tabs.providers;
 import folk.sisby.inventory_tabs.InventoryTabs;
 import folk.sisby.inventory_tabs.tabs.BlockTab;
 import folk.sisby.inventory_tabs.tabs.Tab;
-import net.minecraft.block.AbstractBannerBlock;
-import net.minecraft.block.AbstractSkullBlock;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.BeehiveBlock;
-import net.minecraft.block.BellBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.CampfireBlock;
-import net.minecraft.block.ChiseledBookshelfBlock;
-import net.minecraft.block.CommandBlock;
-import net.minecraft.block.ComparatorBlock;
-import net.minecraft.block.ConduitBlock;
-import net.minecraft.block.DaylightDetectorBlock;
-import net.minecraft.block.EndGatewayBlock;
-import net.minecraft.block.EndPortalBlock;
-import net.minecraft.block.JigsawBlock;
-import net.minecraft.block.JukeboxBlock;
-import net.minecraft.block.SpawnerBlock;
-import net.minecraft.block.StructureBlock;
-import net.minecraft.block.piston.PistonExtensionBlock;
-import net.minecraft.block.sculk.SculkSensorBlock;
-import net.minecraft.block.sign.AbstractSignBlock;
+import net.minecraft.block.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -56,7 +35,6 @@ public class SimpleBlockTabProvider extends BlockTabProvider {
         blacklist.put(InventoryTabs.id("sculk_sensor_block"), b -> b instanceof SculkSensorBlock);
         blacklist.put(InventoryTabs.id("spawner_block"), b -> b instanceof SpawnerBlock);
         blacklist.put(InventoryTabs.id("structure_block"), b -> b instanceof StructureBlock);
-        blacklist.put(InventoryTabs.id("chiseled_bookshelf_block"), b -> b instanceof ChiseledBookshelfBlock);
         matches.put(InventoryTabs.id("block_entity_provider_blacklist"), b -> b instanceof BlockEntityProvider && blacklist.values().stream().noneMatch(p -> p.test(b)));
     }
 

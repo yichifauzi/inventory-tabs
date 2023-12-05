@@ -20,12 +20,11 @@ import folk.sisby.inventory_tabs.providers.UniqueItemTabProvider;
 import folk.sisby.inventory_tabs.providers.VehicleInventoryTabProvider;
 import folk.sisby.inventory_tabs.util.RegistryValue;
 import net.minecraft.entity.EntityType;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Holder;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Holder;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -62,9 +61,9 @@ public class TabProviders {
     public static void reload(DynamicRegistryManager manager) {
         InventoryTabs.LOGGER.info("[InventoryTabs] Reloading tab providers.");
         refreshConfigPlaceholders();
-        reloadRegistryProviders(manager, RegistryKeys.BLOCK, getProviders(BlockTabProvider.class), InventoryTabs.CONFIG.blockProviderOverrides);
-        warmEntities = reloadRegistryProviders(manager, RegistryKeys.ENTITY_TYPE, getProviders(EntityTabProvider.class), InventoryTabs.CONFIG.entityProviderOverrides);
-        reloadRegistryProviders(manager, RegistryKeys.ITEM, getProviders(ItemTabProvider.class), InventoryTabs.CONFIG.itemProviderOverrides);
+        reloadRegistryProviders(manager, Registry.BLOCK_KEY, getProviders(BlockTabProvider.class), InventoryTabs.CONFIG.blockProviderOverrides);
+        warmEntities = reloadRegistryProviders(manager, Registry.ENTITY_TYPE_KEY, getProviders(EntityTabProvider.class), InventoryTabs.CONFIG.entityProviderOverrides);
+        reloadRegistryProviders(manager, Registry.ITEM_KEY, getProviders(ItemTabProvider.class), InventoryTabs.CONFIG.itemProviderOverrides);
         TabManager.clearTabs();
         InventoryTabs.LOGGER.info("[InventoryTabs] Finished reloading tab providers.");
     }
@@ -96,7 +95,7 @@ public class TabProviders {
         }
         // Add values to providers
         for (Map.Entry<RegistryKey<T>, T> entry : manager.get(registryKey).getEntries()) {
-            Holder<T> holder = manager.getHolderProvider().getLookup(registryKey).orElseThrow().getHolderOrThrow(entry.getKey());
+            Holder<T> holder = manager.get(registryKey).getHolder(entry.getKey()).get();
 
             Optional<Map.Entry<RegistryValue<T>, RegistryTabProvider<T>>> override = overrides.entrySet().stream().filter(e -> e.getKey().is(holder)).findFirst();
             if (override.isPresent()) {

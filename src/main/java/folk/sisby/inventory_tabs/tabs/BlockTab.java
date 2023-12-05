@@ -47,7 +47,7 @@ public class BlockTab implements Tab {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (!PlayerUtil.inRange(player, pos)) return false;
         if (InventoryTabs.CONFIG.rotatePlayer) player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, Vec3d.ofCenter(pos));
-        MinecraftClient.getInstance().interactionManager.interactBlock(player, Hand.MAIN_HAND, new BlockHitResult(pos.ofCenter(), Direction.EAST, pos, false));
+        MinecraftClient.getInstance().interactionManager.interactBlock(player, Hand.MAIN_HAND, new BlockHitResult(Vec3d.of(pos), Direction.EAST, pos, false));
         return true;
     }
 
@@ -70,7 +70,7 @@ public class BlockTab implements Tab {
     }
 
     protected void refreshPreviewAtPos(World world, BlockPos previewPos) {
-        List<ItemFrameEntity> itemFrames = world.getNonSpectatingEntities(ItemFrameEntity.class, new Box(previewPos.ofCenter(), previewPos.ofCenter()).expand(0.7));
+        List<ItemFrameEntity> itemFrames = world.getNonSpectatingEntities(ItemFrameEntity.class, new Box(Vec3d.of(previewPos), Vec3d.of(previewPos)).expand(0.7));
         if (!itemFrames.isEmpty()) {
             itemStack = itemFrames.get(0).getHeldItemStack();
             if (itemStack.hasCustomName()) hoverText = itemStack.getName().copy().formatted(Formatting.ITALIC);
@@ -80,7 +80,7 @@ public class BlockTab implements Tab {
         }
         List<SignBlockEntity> signs = BlockUtil.getAttachedBlocks(world, previewPos, (w, p) -> w.getBlockEntity(p) instanceof SignBlockEntity sbe ? sbe : null);
         if (!signs.isEmpty()) {
-            String name = Arrays.stream(signs.get(0).getFrontText().getMessages(false)).map(Text::getString).filter(s -> !s.isBlank()).collect(Collectors.joining(" "));
+            String name = Arrays.stream(signs.get(0).getTexts(false)).map(Text::getString).filter(s -> !s.isBlank()).collect(Collectors.joining(" "));
             if (!name.isBlank()) hoverText = Text.literal(name).formatted(Formatting.ITALIC);
         }
     }

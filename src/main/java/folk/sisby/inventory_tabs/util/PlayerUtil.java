@@ -7,13 +7,14 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
 public class PlayerUtil {
     public static final int REACH = 5;
     public static final double BLOCK_REACH_SQUARE = REACH * REACH;
     public static boolean inRange(PlayerEntity player, BlockPos pos) {
-        if (pos.ofCenter().squaredDistanceTo(player.getEyePos()) > BLOCK_REACH_SQUARE) return false;
+        if (Vec3d.of(pos).squaredDistanceTo(player.getEyePos()) > BLOCK_REACH_SQUARE) return false;
         BlockHitResult result = raycast(player, pos);
         return pos.equals(result.getBlockPos());
     }
@@ -26,7 +27,7 @@ public class PlayerUtil {
     }
 
     public static BlockHitResult raycast(PlayerEntity player, BlockPos pos) {
-        return player.getWorld().raycast(new RaycastContext(player.getEyePos(), pos.ofCenter(), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, player));
+        return player.getWorld().raycast(new RaycastContext(player.getEyePos(), Vec3d.of(pos), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, player));
     }
 
     public static EntityHitResult raycast(PlayerEntity player, Entity entity) {

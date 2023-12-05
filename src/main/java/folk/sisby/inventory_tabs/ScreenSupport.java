@@ -4,8 +4,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.HorseScreen;
-import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class ScreenSupport {
             if (DENY.values().stream().anyMatch(p -> p.test(hs))) return false;
             if (ALLOW.values().stream().anyMatch(p -> p.test(hs))) return true;
             try {
-                Identifier handlerId = Registries.SCREEN_HANDLER_TYPE.getId(hs.getScreenHandler().getType());
+                Identifier handlerId = Registry.SCREEN_HANDLER.getId(hs.getScreenHandler().getType());
                 if (InventoryTabs.CONFIG.tabDisplayFilter.deny.stream().map(Identifier::tryParse).toList().contains(handlerId)) return false;
                 if (InventoryTabs.CONFIG.tabDisplayFilter.allow.stream().map(Identifier::tryParse).toList().contains(handlerId)) return true;
             } catch (UnsupportedOperationException ignored) {

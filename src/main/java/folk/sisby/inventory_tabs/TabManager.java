@@ -1,5 +1,6 @@
 package folk.sisby.inventory_tabs;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import folk.sisby.inventory_tabs.duck.InventoryTabsScreen;
 import folk.sisby.inventory_tabs.tabs.BlockTab;
 import folk.sisby.inventory_tabs.tabs.EntityTab;
@@ -11,15 +12,15 @@ import folk.sisby.inventory_tabs.util.MouseUtil;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.packet.c2s.play.HandledScreenCloseC2SPacket;
+import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -192,7 +193,7 @@ public class TabManager {
         HandlerSlotUtil.push(MinecraftClient.getInstance().player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler());
         skipRestore = true;
         tabOpenedRecently = true;
-        MinecraftClient.getInstance().getNetworkHandler().sendPacket(new HandledScreenCloseC2SPacket(currentScreen.getScreenHandler().syncId));
+        MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CloseHandledScreenC2SPacket(currentScreen.getScreenHandler().syncId));
         if (tab.open()) {
             onOpenTab(tab);
             if (!skipRestore) {
@@ -237,27 +238,33 @@ public class TabManager {
         return tabs.size() / (tabPositions.size() + 1);
     }
 
-    public static void renderBackground(GuiGraphics graphics) {
+    public static void renderBackground(MatrixStack matrices) {
         tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
         int i = 0;
         for (WidgetPosition pos : tabPositions) {
             Tab tab = getTab(currentPage * tabPositions.size() + i);
-            if (pos != null && tab != null) tab.renderBackground(graphics, pos, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
+            if (pos != null && tab != null) tab.renderBackground(currentScreen, matrices, pos, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
             i++;
         }
     }
 
-    public static void renderForeground(GuiGraphics graphics, double mouseX, double mouseY) {
+    public static void renderForeground(MatrixStack matrices, double mouseX, double mouseY) {
         int i = 0;
         for (WidgetPosition pos : tabPositions) {
             Tab tab = getTab(currentPage * tabPositions.size() + i);
-            if (pos != null && tab != null) tab.renderForeground(graphics, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
+            if (pos != null && tab != null) tab.renderForeground(currentScreen, matrices, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
+            i++;
+        }
+        i = 0;
+        for (WidgetPosition pos : tabPositions) {
+            Tab tab = getTab(currentPage * tabPositions.size() + i);
+            if (pos != null && tab != null) tab.renderTooltips(currentScreen, matrices, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
             i++;
         }
 
         if (getMaximumPage() > 0) {
-            drawButton(graphics, mouseX, mouseY, true);
-            drawButton(graphics, mouseX, mouseY, false);
+            drawButton(matrices, mouseX, mouseY, true);
+            drawButton(matrices, mouseX, mouseY, false);
         }
     }
 
@@ -270,19 +277,20 @@ public class TabManager {
         return new Rect2i(pos.x, pos.y + (pos.up ? -TAB_HEIGHT : TAB_HEIGHT), TAB_WIDTH, TAB_HEIGHT);
     }
     
-    private static void drawButton(GuiGraphics graphics, double mouseX, double mouseY, boolean left) {
+    private static void drawButton(MatrixStack matrices, double mouseX, double mouseY, boolean left) {
         Rect2i rect = getPageButton(left);
         boolean hovered = rect.contains((int) mouseX, (int) mouseY);
         boolean active = left ? currentPage > 0 : currentPage < getMaximumPage();
         int u = BUTTON_WIDTH * (left ? 0 : 1);
         int v = BUTTON_HEIGHT * (active ? hovered ? 2 : 1 : 0);
-        graphics.drawTexture(BUTTONS_TEXTURE, rect.getX(), rect.getY(), u, v, rect.getWidth(), rect.getHeight());
-        if (hovered) graphics.drawTooltip(currentScreen.getTextRenderer(), Text.literal((currentPage + 1) + "/" + (getMaximumPage() + 1)), (int) mouseX, (int) mouseY);
+        RenderSystem.setShaderTexture(0, BUTTONS_TEXTURE);
+        currentScreen.drawTexture(matrices, rect.getX(), rect.getY(), u, v, rect.getWidth(), rect.getHeight());
+        if (hovered) currentScreen.renderTooltip(matrices, Text.literal((currentPage + 1) + "/" + (getMaximumPage() + 1)), (int) mouseX, (int) mouseY);
     }
 
     public static void playClick() {
         MinecraftClient.getInstance().getSoundManager()
-                .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
+                .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
 }

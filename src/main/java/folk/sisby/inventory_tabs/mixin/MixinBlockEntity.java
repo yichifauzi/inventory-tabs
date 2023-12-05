@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BlockEntity.class)
 public class MixinBlockEntity {
-    @Inject(method = "toSyncedNbt", at = @At("RETURN"))
+    @Inject(method = "toInitialChunkDataNbt", at = @At("RETURN"))
     public void sendCustomNames(CallbackInfoReturnable<NbtCompound> cir) {
         if (((BlockEntity) (Object) this) instanceof LockableContainerBlockEntity lcbe) {
             cir.getReturnValue().putString("CustomName", Text.Serializer.toJson(lcbe.getCustomName()));

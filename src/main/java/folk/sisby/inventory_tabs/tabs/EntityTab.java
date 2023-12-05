@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerInteractionWithEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
@@ -32,7 +32,7 @@ public class EntityTab implements Tab {
     public boolean open() {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (player == null || player.getVehicle() == entity) return false;
-        player.networkHandler.sendPacket(PlayerInteractionWithEntityC2SPacket.interact(entity, sneakInteract, player.getActiveHand()));
+        player.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.interact(entity, sneakInteract, player.getActiveHand()));
         if (sneakInteract) player.networkHandler.sendPacket(new ClientCommandC2SPacket(player, ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
         return true;
     }

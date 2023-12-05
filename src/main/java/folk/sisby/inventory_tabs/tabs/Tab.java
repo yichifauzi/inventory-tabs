@@ -1,11 +1,11 @@
 package folk.sisby.inventory_tabs.tabs;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import folk.sisby.inventory_tabs.InventoryTabs;
 import folk.sisby.inventory_tabs.TabManager;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -48,18 +48,25 @@ public interface Tab {
         return 0;
     }
 
-    default void renderBackground(GuiGraphics graphics, WidgetPosition pos, int width, int height, boolean current) {
+    default void renderBackground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
-        if (!current) graphics.drawTexture(TABS_TEXTURE, pos.x, y, TabManager.TAB_WIDTH, pos.up ? 0 : (TabManager.TAB_HEIGHT * 2), width, height);
+        RenderSystem.setShaderTexture(0, TABS_TEXTURE);
+        if (!current) screen.drawTexture(matrices, pos.x, y, TabManager.TAB_WIDTH, pos.up ? 0 : (TabManager.TAB_HEIGHT * 2), width, height);
     }
 
-    default void renderForeground(GuiGraphics graphics, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
+    default void renderForeground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
-        if (current) graphics.drawTexture(TABS_TEXTURE, pos.x, y, TabManager.TAB_WIDTH, TabManager.TAB_HEIGHT + (pos.up ? 0 : (TabManager.TAB_HEIGHT * 2)), width, height);
+        RenderSystem.setShaderTexture(0, TABS_TEXTURE);
+        if (current) screen.drawTexture(matrices, pos.x, y, TabManager.TAB_WIDTH, TabManager.TAB_HEIGHT + (pos.up ? 0 : (TabManager.TAB_HEIGHT * 2)), width, height);
         int itemPadding = Math.max(0, (width - 16) / 2);
-        graphics.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding);
+        screen.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding, null);
+    }
+
+    default void renderTooltips(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
+        int y = pos.y + (pos.up ? -height + 4 : height - 4);
+        int itemPadding = Math.max(0, (width - 16) / 2);
         if (new Rect2i(pos.x + itemPadding, y + itemPadding, 16, 16).contains((int) mouseX, (int) mouseY)) {
-            graphics.drawTooltip(MinecraftClient.getInstance().textRenderer, getHoverText(), (int) mouseX, (int) mouseY);
+            screen.renderTooltip(matrices, getHoverText(), (int) mouseX, (int) mouseY);
         }
     }
 }
