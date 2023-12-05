@@ -146,9 +146,9 @@ public class TabManager {
                 return true;
             }
 
-            for (int i = 0; i < tabPositions.size(); i++) {
+            for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
                 WidgetPosition pos = tabPositions.get(i);
-                Tab tab = getTab(currentPage * tabPositions.size() + i);
+                Tab tab = tabs.get(currentPage * tabPositions.size() + i);
                 if (pos != null && tab != null && tab != currentTab) {
                     if (getTabArea(pos).contains((int) mouseX, (int) mouseY)) {
                         onTabClick(tab);
@@ -208,25 +208,7 @@ public class TabManager {
     public static void onOpenTab(Tab tab) {
         if (currentTab != null && currentTab != tab) currentTab.onClose(currentScreen);
         currentTab = tab;
-        setCurrentPage(indexOf(tab) / tabPositions.size());
-    }
-
-    public static int indexOf(Tab tab) {
-        int i = 0;
-        for (Tab t : tabs) {
-            if (t.equals(tab)) return i;
-            i++;
-        }
-        return -1;
-    }
-
-    public static Tab getTab(int index) {
-        int i = 0;
-        for (Tab t : tabs) {
-            if (i == index) return t;
-            i++;
-        }
-        return null;
+        setCurrentPage(tabs.indexOf(tab) / tabPositions.size());
     }
 
     public static void setCurrentPage(int page) {
@@ -239,20 +221,18 @@ public class TabManager {
 
     public static void renderBackground(GuiGraphics graphics) {
         tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
-        int i = 0;
-        for (WidgetPosition pos : tabPositions) {
-            Tab tab = getTab(currentPage * tabPositions.size() + i);
+        for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
+            WidgetPosition pos = tabPositions.get(i);
+            Tab tab = tabs.get(currentPage * tabPositions.size() + i);
             if (pos != null && tab != null) tab.renderBackground(graphics, pos, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
-            i++;
         }
     }
 
     public static void renderForeground(GuiGraphics graphics, double mouseX, double mouseY) {
-        int i = 0;
-        for (WidgetPosition pos : tabPositions) {
-            Tab tab = getTab(currentPage * tabPositions.size() + i);
+        for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
+            WidgetPosition pos = tabPositions.get(i);
+            Tab tab = tabs.get(currentPage * tabPositions.size() + i);
             if (pos != null && tab != null) tab.renderForeground(graphics, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
-            i++;
         }
 
         if (getMaximumPage() > 0) {
