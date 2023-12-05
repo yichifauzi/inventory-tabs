@@ -36,7 +36,7 @@ public class ItemTab implements Tab {
             OptionalInt slotIndex = handler.getSlotIndex(player.getInventory(), slot);
             if (slotIndex.isPresent()) {
                 MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slotIndex.getAsInt(), player.getInventory().selectedSlot, SlotActionType.SWAP, player);
-                MinecraftClient.getInstance().interactionManager.interactItem(player, Hand.MAIN_HAND);
+                MinecraftClient.getInstance().interactionManager.interactItem(player, player.world, Hand.MAIN_HAND);
                 HandlerSlotUtil.mainHandSwapSlot = slot;
                 return true;
             }

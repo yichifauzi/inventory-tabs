@@ -30,18 +30,7 @@ public record RegistryValue<T>(Either<Holder<T>, TagKey<T>> value) {
         }
     }
 
-    public String toRegistryString() {
-        return value
-                .map(
-                        holder -> holder.getKey()
-                                .map(RegistryKey::getValue)
-                                .map(Identifier::toString)
-                                .orElse(null),
-                        tag -> "#" + tag.id()
-                );
-    }
-
     public boolean is(Holder<T> value) {
-        return this.value.map((v) -> v.equals(value), value::isIn);
+        return this.value.map((v) -> v.equals(value), value::hasTag);
     }
 }

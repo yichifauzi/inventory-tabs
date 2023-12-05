@@ -6,7 +6,7 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -34,7 +34,7 @@ public class ChestBlockTab extends BlockTab {
     public void refreshPreview(World world) {
         boolean isDouble = isDouble(world, pos);
         itemStack = new ItemStack(block);
-        hoverText = Text.translatable(isDouble ? "container.chestDouble" : "container.chest");
+        hoverText = new TranslatableText(isDouble ? "container.chestDouble" : "container.chest");
         if (pos != leftPos) refreshPreviewAtPos(world, pos);
         if (isDouble) {
             BlockPos otherPos = getOtherChestBlockPos(world, pos);

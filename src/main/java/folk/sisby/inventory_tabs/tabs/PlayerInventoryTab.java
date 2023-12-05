@@ -5,10 +5,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
 
 public class PlayerInventoryTab implements Tab {
-    public static final Text TITLE = Text.translatable("gui.inventory_tabs.tab.inventory");
+    public static final Text TITLE = new TranslatableText("gui.inventory_tabs.tab.inventory");
     public ItemStack itemStack;
 
     public PlayerInventoryTab() {

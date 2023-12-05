@@ -8,6 +8,7 @@ import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
@@ -47,7 +48,7 @@ public class BlockTab implements Tab {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if (!PlayerUtil.inRange(player, pos)) return false;
         if (InventoryTabs.CONFIG.rotatePlayer) player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, Vec3d.ofCenter(pos));
-        MinecraftClient.getInstance().interactionManager.interactBlock(player, Hand.MAIN_HAND, new BlockHitResult(Vec3d.of(pos), Direction.EAST, pos, false));
+        MinecraftClient.getInstance().interactionManager.interactBlock(player, (ClientWorld) player.world, Hand.MAIN_HAND, new BlockHitResult(Vec3d.of(pos), Direction.EAST, pos, false));
         return true;
     }
 
@@ -81,7 +82,7 @@ public class BlockTab implements Tab {
         List<SignBlockEntity> signs = BlockUtil.getAttachedBlocks(world, previewPos, (w, p) -> w.getBlockEntity(p) instanceof SignBlockEntity sbe ? sbe : null);
         if (!signs.isEmpty()) {
             String name = Arrays.stream(signs.get(0).getTexts(false)).map(Text::getString).filter(s -> !s.isBlank()).collect(Collectors.joining(" "));
-            if (!name.isBlank()) hoverText = Text.literal(name).formatted(Formatting.ITALIC);
+            if (!name.isBlank()) hoverText = Text.of(name).copy().formatted(Formatting.ITALIC);
         }
     }
 

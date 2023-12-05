@@ -285,7 +285,7 @@ public class TabManager {
         int v = BUTTON_HEIGHT * (active ? hovered ? 2 : 1 : 0);
         RenderSystem.setShaderTexture(0, BUTTONS_TEXTURE);
         currentScreen.drawTexture(matrices, rect.getX(), rect.getY(), u, v, rect.getWidth(), rect.getHeight());
-        if (hovered) currentScreen.renderTooltip(matrices, Text.literal((currentPage + 1) + "/" + (getMaximumPage() + 1)), (int) mouseX, (int) mouseY);
+        if (hovered) currentScreen.renderTooltip(matrices, Text.of((currentPage + 1) + "/" + (getMaximumPage() + 1)), (int) mouseX, (int) mouseY);
     }
 
     public static void playClick() {

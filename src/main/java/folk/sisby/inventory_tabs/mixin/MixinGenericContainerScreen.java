@@ -28,8 +28,8 @@ public abstract class MixinGenericContainerScreen extends HandledScreen<GenericC
         if (InventoryTabs.CONFIG.consistentChests) {
             if (rows == 6 && InventoryTabs.CONFIG.compactChests) {
                 this.backgroundHeight -= 30;
-                this.title = Text.empty();
-                this.playerInventoryTitle = Text.empty();
+                this.title = Text.of("");
+                this.playerInventoryTitle = Text.of("");
             } else {
                 this.backgroundHeight -= 2;
                 this.playerInventoryTitleY = this.backgroundHeight - 94;
