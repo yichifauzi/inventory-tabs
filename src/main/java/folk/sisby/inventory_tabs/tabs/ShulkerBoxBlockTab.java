@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 public class ShulkerBoxBlockTab extends BlockTab {
     public ShulkerBoxBlockTab(World world, BlockPos pos) {
-        super(-50, world, pos);
+        super(-50, world, pos, false);
     }
 
     @Override

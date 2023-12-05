@@ -19,7 +19,7 @@ public class ChestBlockTab extends BlockTab {
     public BlockPos leftPos;
 
     public ChestBlockTab(int priority, World world, BlockPos pos) {
-        super(priority, world, pos);
+        super(priority, world, pos, false);
         shouldBeRemoved(world, false);
     }
 

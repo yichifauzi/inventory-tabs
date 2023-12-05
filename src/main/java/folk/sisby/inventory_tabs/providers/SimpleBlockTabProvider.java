@@ -62,7 +62,7 @@ public class SimpleBlockTabProvider extends BlockTabProvider {
 
     @Override
     public Tab createTab(World world, BlockPos pos) {
-        return new BlockTab(30, world, pos);
+        return new BlockTab(30, world, pos, isUnique());
     }
 
     @Override

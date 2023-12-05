@@ -1,5 +1,6 @@
 package folk.sisby.inventory_tabs.tabs;
 
+import folk.sisby.inventory_tabs.util.HandlerSlotUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -18,10 +19,12 @@ import java.util.OptionalInt;
 public class ItemTab implements Tab {
     public final ItemStack stack;
     public final int slot;
+    public final boolean unique;
 
-    public ItemTab(ItemStack stack, int slot) {
+    public ItemTab(ItemStack stack, int slot, boolean unique) {
         this.stack = stack;
         this.slot = slot;
+        this.unique = unique;
     }
 
     @Override
@@ -32,9 +35,9 @@ public class ItemTab implements Tab {
             ScreenHandler handler = hs.getScreenHandler();
             OptionalInt slotIndex = handler.getSlotIndex(player.getInventory(), slot);
             if (slotIndex.isPresent()) {
-                MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slotIndex.getAsInt(), 40, SlotActionType.SWAP, player);
-                stack.use(MinecraftClient.getInstance().world, player, Hand.OFF_HAND);
-                MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slotIndex.getAsInt(), 40, SlotActionType.SWAP, player);
+                MinecraftClient.getInstance().interactionManager.clickSlot(handler.syncId, slotIndex.getAsInt(), player.getInventory().selectedSlot, SlotActionType.SWAP, player);
+                MinecraftClient.getInstance().interactionManager.interactItem(player, Hand.MAIN_HAND);
+                HandlerSlotUtil.mainHandSwapSlot = slot;
                 return true;
             }
         }
@@ -60,6 +63,12 @@ public class ItemTab implements Tab {
 
     @Override
     public boolean equals(Object other) {
-        return other != null && getClass() == other.getClass() && Objects.equals(slot, ((ItemTab) other).slot);
+        if (other == null) return false;
+        if (unique) {
+            return other instanceof ItemTab it && Objects.equals(stack.getItem(), it.stack.getItem()) ||
+                    other instanceof BlockTab bt && Objects.equals(stack.getItem(), bt.block.asItem());
+        } else {
+            return other instanceof ItemTab it && Objects.equals(slot, it.slot);
+        }
     }
 }

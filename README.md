@@ -41,10 +41,9 @@ Blocks, Entity Types, and Items can be manually assigned to specific concrete ta
 
 Provider IDs can be set to `""` to prevent tabs being provided for that object. 
 
-Provider IDs are automatically populated further down in the config, where you can disable the default matching logic for each provider (e.g. the Chest provider matching all AbstractChestBlocks).</br> 
-This is effectively a more fine-tuned whitelisting mode.
+All present provider IDs are automatically populated under `[registryProviderDefaults]`, where you can disable the default matching logic for each provider (e.g. the chest provider matching all AbstractChestBlocks).
 
-If a handled screen shouldn't display tabs, or should display tabs but isn't, its ID can be added to the `allow` and `deny` lists in `tabDisplayFilter`. Read the config for more information.
+If a handled screen shouldn't display tabs, or should display tabs but isn't, its handler ID can be added to the `allow` and `deny` lists in `[tabDisplayFilter]`.
 
 ### Addons
 

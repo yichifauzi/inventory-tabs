@@ -30,11 +30,13 @@ public class BlockTab implements Tab {
     public final int priority;
     public final Block block;
     public final BlockPos pos;
+    public final boolean unique;
     public ItemStack itemStack;
     public Text hoverText;
 
-    public BlockTab(int priority, World world, BlockPos pos) {
+    public BlockTab(int priority, World world, BlockPos pos, boolean unique) {
         this.priority = priority;
+        this.unique = unique;
         this.block = world.getBlockState(pos).getBlock();
         this.pos = pos;
         refreshPreview(world);
@@ -96,6 +98,12 @@ public class BlockTab implements Tab {
 
     @Override
     public boolean equals(Object other) {
-        return other != null && getClass() == other.getClass() && Objects.equals(pos, ((BlockTab) other).pos);
+        if (other == null) return false;
+        if (unique) {
+            return other instanceof ItemTab it && Objects.equals(block.asItem(), it.stack.getItem()) ||
+                    other instanceof BlockTab bt && Objects.equals(block, bt.block);
+        } else {
+            return other instanceof BlockTab bt && Objects.equals(pos, bt.pos);
+        }
     }
 }

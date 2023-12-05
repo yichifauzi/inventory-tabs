@@ -5,8 +5,9 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
-public class CursorStackUtil {
+public class HandlerSlotUtil {
     private static int stashSlot = -1;
+    public static int mainHandSwapSlot = -1;
 
     public static void push(ClientPlayerEntity player, ClientPlayerInteractionManager manager, ScreenHandler handler) {
         if (!handler.getCursorStack().isEmpty()) {
@@ -34,6 +35,16 @@ public class CursorStackUtil {
                     player
             ));
             stashSlot = -1;
+        }
+        if (mainHandSwapSlot != -1) {
+            handler.getSlotIndex(player.getInventory(), mainHandSwapSlot).ifPresent((screenSlot) -> manager.clickSlot(
+                    handler.syncId,
+                    screenSlot,
+                    player.getInventory().selectedSlot,
+                    SlotActionType.SWAP,
+                    player
+            ));
+            mainHandSwapSlot = -1;
         }
     }
 }
