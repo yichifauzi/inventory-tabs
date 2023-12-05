@@ -2,6 +2,7 @@ package folk.sisby.inventory_tabs.tabs;
 
 import folk.sisby.inventory_tabs.InventoryTabs;
 import folk.sisby.inventory_tabs.TabManager;
+import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -47,17 +48,17 @@ public interface Tab {
         return 0;
     }
 
-    default void renderBackground(GuiGraphics graphics, int x, int vertEdge, int width, int height, boolean current) {
-        int y = vertEdge - height + 4;
-        if(!current) graphics.drawTexture(TABS_TEXTURE, x, y, TabManager.TAB_WIDTH, 0, width, height);
+    default void renderBackground(GuiGraphics graphics, WidgetPosition pos, int width, int height, boolean current) {
+        int y = pos.y + (pos.up ? -height + 4 : height - 4);
+        if (!current) graphics.drawTexture(TABS_TEXTURE, pos.x, y, TabManager.TAB_WIDTH, pos.up ? 0 : (TabManager.TAB_HEIGHT * 2), width, height);
     }
 
-    default void renderForeground(GuiGraphics graphics, int x, int vertEdge, int width, int height, double mouseX, double mouseY, boolean current) {
-        int y = vertEdge - height + 4;
-        if(current) graphics.drawTexture(TABS_TEXTURE, x, y, TabManager.TAB_WIDTH, TabManager.TAB_HEIGHT, width, height);
-        int margin = Math.max(0, (width - 16) / 2);
-        graphics.drawItem(getTabIcon(), x + margin, y + margin);
-        if (new Rect2i(x + margin, y + margin, 16, 16).contains((int) mouseX, (int) mouseY)) {
+    default void renderForeground(GuiGraphics graphics, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
+        int y = pos.y + (pos.up ? -height + 4 : height - 4);
+        if (current) graphics.drawTexture(TABS_TEXTURE, pos.x, y, TabManager.TAB_WIDTH, TabManager.TAB_HEIGHT + (pos.up ? 0 : (TabManager.TAB_HEIGHT * 2)), width, height);
+        int itemPadding = Math.max(0, (width - 16) / 2);
+        graphics.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding);
+        if (new Rect2i(pos.x + itemPadding, y + itemPadding, 16, 16).contains((int) mouseX, (int) mouseY)) {
             graphics.drawTooltip(MinecraftClient.getInstance().textRenderer, getHoverText(), (int) mouseX, (int) mouseY);
         }
     }

@@ -8,6 +8,7 @@ import folk.sisby.inventory_tabs.tabs.Tab;
 import folk.sisby.inventory_tabs.tabs.VehicleInventoryTab;
 import folk.sisby.inventory_tabs.util.HandlerSlotUtil;
 import folk.sisby.inventory_tabs.util.MouseUtil;
+import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
@@ -26,7 +27,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -43,7 +43,7 @@ public class TabManager {
     private static final List<Tab> tabs = new ArrayList<>();
     private static int currentPage = 0;
     private static Tab currentTab;
-    private static List<Vector2i> tabPositions;
+    private static List<WidgetPosition> tabPositions;
     private static boolean tabOpenedRecently;
     private static boolean skipRestore;
 
@@ -147,7 +147,7 @@ public class TabManager {
             }
 
             for (int i = 0; i < tabPositions.size(); i++) {
-                Vector2i pos = tabPositions.get(i);
+                WidgetPosition pos = tabPositions.get(i);
                 Tab tab = getTab(currentPage * tabPositions.size() + i);
                 if (pos != null && tab != null && tab != currentTab) {
                     if (getTabArea(pos).contains((int) mouseX, (int) mouseY)) {
@@ -240,18 +240,18 @@ public class TabManager {
     public static void renderBackground(GuiGraphics graphics) {
         tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
         int i = 0;
-        for (Vector2i pos : tabPositions) {
+        for (WidgetPosition pos : tabPositions) {
             Tab tab = getTab(currentPage * tabPositions.size() + i);
-            if (pos != null && tab != null) tab.renderBackground(graphics, pos.x, pos.y, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
+            if (pos != null && tab != null) tab.renderBackground(graphics, pos, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
             i++;
         }
     }
 
     public static void renderForeground(GuiGraphics graphics, double mouseX, double mouseY) {
         int i = 0;
-        for (Vector2i pos : tabPositions) {
+        for (WidgetPosition pos : tabPositions) {
             Tab tab = getTab(currentPage * tabPositions.size() + i);
-            if (pos != null && tab != null) tab.renderForeground(graphics, pos.x, pos.y, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
+            if (pos != null && tab != null) tab.renderForeground(graphics, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
             i++;
         }
 
@@ -262,12 +262,12 @@ public class TabManager {
     }
 
     private static Rect2i getPageButton(boolean left) {
-        Vector2i pos = tabPositions.get(left ? 0 : tabPositions.size() - 1);
+        WidgetPosition pos = tabPositions.get(left ? 0 : tabPositions.size() - 1);
         return new Rect2i(pos.x + (left ? -BUTTON_WIDTH : TAB_WIDTH), pos.y - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT);
     }
 
-    private static Rect2i getTabArea(Vector2i pos) {
-        return new Rect2i(pos.x, pos.y - TAB_HEIGHT, TAB_WIDTH, TAB_HEIGHT);
+    private static Rect2i getTabArea(WidgetPosition pos) {
+        return new Rect2i(pos.x, pos.y + (pos.up ? -TAB_HEIGHT : TAB_HEIGHT), TAB_WIDTH, TAB_HEIGHT);
     }
     
     private static void drawButton(GuiGraphics graphics, double mouseX, double mouseY, boolean left) {
