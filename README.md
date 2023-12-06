@@ -30,7 +30,7 @@ Operates entirely on the client side, with only small tweaks when installed on-s
    - Allows accessing your full regular inventory while riding a horse or chest boat.
    - Allows accessing other vehicle inventories while riding a vehicle (usually requires sneaking).
 
-![EMI Preview](https://cdn.modrinth.com/data/VD1aynYU/images/7356435a874c5f5c587b59f4b71461da2e997df1.png)
+<center><img alt="EMI Preview" src="https://cdn.modrinth.com/data/VD1aynYU/images/7356435a874c5f5c587b59f4b71461da2e997df1.png" /></center>
 
 ## Advanced Use
 
