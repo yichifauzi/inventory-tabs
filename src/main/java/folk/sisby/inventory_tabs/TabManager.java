@@ -33,19 +33,19 @@ import java.util.Comparator;
 import java.util.List;
 
 public class TabManager {
-    private static final Identifier BUTTONS_TEXTURE = InventoryTabs.id("textures/gui/buttons.png");
+    public static final Identifier BUTTONS_TEXTURE = InventoryTabs.id("textures/gui/buttons.png");
     public static final int TAB_WIDTH = 24;
     public static final int TAB_HEIGHT = 25;
     public static final int BUTTON_WIDTH = 10;
     public static final int BUTTON_HEIGHT = 18;
 
-    private static HandledScreen<?> currentScreen;
-    private static final List<Tab> tabs = new ArrayList<>();
-    private static int currentPage = 0;
-    private static Tab currentTab;
-    private static List<WidgetPosition> tabPositions;
-    private static boolean tabOpenedRecently;
-    private static boolean skipRestore;
+    public static HandledScreen<?> currentScreen;
+    public static final List<Tab> tabs = new ArrayList<>();
+    public static int currentPage = 0;
+    public static Tab currentTab;
+    public static List<WidgetPosition> tabPositions;
+    public static boolean tabOpenedRecently;
+    public static boolean skipRestore;
 
     public static void initScreen(MinecraftClient client, HandledScreen<?> screen) {
         currentScreen = screen;
@@ -241,16 +241,16 @@ public class TabManager {
         }
     }
 
-    private static Rect2i getPageButton(boolean left) {
+    public static Rect2i getPageButton(boolean left) {
         WidgetPosition pos = tabPositions.get(left ? 0 : tabPositions.size() - 1);
         return new Rect2i(pos.x + (left ? -BUTTON_WIDTH : TAB_WIDTH), pos.y - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT);
     }
 
-    private static Rect2i getTabArea(WidgetPosition pos) {
+    public static Rect2i getTabArea(WidgetPosition pos) {
         return new Rect2i(pos.x, pos.y + (pos.up ? -TAB_HEIGHT : TAB_HEIGHT), TAB_WIDTH, TAB_HEIGHT);
     }
-    
-    private static void drawButton(GuiGraphics graphics, double mouseX, double mouseY, boolean left) {
+
+    public static void drawButton(GuiGraphics graphics, double mouseX, double mouseY, boolean left) {
         Rect2i rect = getPageButton(left);
         boolean hovered = rect.contains((int) mouseX, (int) mouseY);
         boolean active = left ? currentPage > 0 : currentPage < getMaximumPage();

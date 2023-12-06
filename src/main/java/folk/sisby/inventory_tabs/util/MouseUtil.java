@@ -9,7 +9,7 @@ import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.MinecraftClient;
 
 public class MouseUtil {
-    private static double mouseX = -1D, mouseY = -1D;
+    public static double mouseX = -1D, mouseY = -1D;
 
     public static void push() {
         mouseX = getMouseX();
