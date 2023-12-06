@@ -62,6 +62,15 @@ If a handled screen shouldn't display tabs, or should display tabs but isn't, it
 
 ### Addons
 
+```
+repositories {
+	maven { url "https://repo.sleeping.town/" }
+}
+dependencies {
+   modImplementation "folk.sisby:inventory-tabs:1.0.3"
+}
+```
+
 Addons for Inventory Tabs 4 can add new tab types and tab providers, and add advanced matching logic to current providers, provide custom tab layouts for their screens (including inverted tabs), and signal when specific tabs should be marked as open.
 
 For a practical example, check out [Portable Crafting](https://github.com/sisby-folk/portable-crafting)!
