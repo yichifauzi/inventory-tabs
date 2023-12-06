@@ -6,7 +6,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
 public class HandlerSlotUtil {
-    private static int stashSlot = -1;
+    public static int stashSlot = -1;
     public static int mainHandSwapSlot = -1;
 
     public static void push(ClientPlayerEntity player, ClientPlayerInteractionManager manager, ScreenHandler handler) {

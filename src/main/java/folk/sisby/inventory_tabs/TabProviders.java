@@ -72,7 +72,7 @@ public class TabProviders {
         return REGISTRY.values().stream().filter(p -> clazz.isAssignableFrom(p.getClass())).sorted(Comparator.comparingInt(p -> ((T) p).getPriority()).reversed()).collect(Collectors.toMap(p -> REGISTRY.inverse().get(p), p -> (T) p, (a, b) -> b, LinkedHashMap::new));
     }
 
-    private static <T> Set<T> reloadRegistryProviders(DynamicRegistryManager manager, RegistryKey<Registry<T>> registryKey, Map<Identifier, ? extends RegistryTabProvider<T>> providers, Map<String, String> overrideConfig) {
+    public static <T> Set<T> reloadRegistryProviders(DynamicRegistryManager manager, RegistryKey<Registry<T>> registryKey, Map<Identifier, ? extends RegistryTabProvider<T>> providers, Map<String, String> overrideConfig) {
         Set<T> warmValues = new HashSet<>();
         providers.values().forEach(p -> p.values.clear());
         // Construct override map
@@ -112,7 +112,7 @@ public class TabProviders {
         return warmValues;
     }
 
-    private static void refreshConfigPlaceholders() {
+    public static void refreshConfigPlaceholders() {
         Map<String, Boolean> tempMap = new HashMap<>(InventoryTabs.CONFIG.registryProviderDefaults);
         InventoryTabs.CONFIG.registryProviderDefaults.clear();
         TabProviders.REGISTRY.keySet().forEach(id -> InventoryTabs.CONFIG.registryProviderDefaults.put(id.toString(), tempMap.getOrDefault(id.toString(), true)));

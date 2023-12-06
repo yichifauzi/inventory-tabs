@@ -17,7 +17,7 @@ import java.util.List;
 public class PlayerUtil {
     public static final int REACH = 5;
     public static final double BLOCK_REACH_SQUARE = REACH * REACH;
-    private static final List<Vec3d> BLOCK_OFFSETS = List.of(
+    public static final List<Vec3d> BLOCK_OFFSETS = List.of(
             new Vec3d(0.5D, 0.5D, 0.5D),
             new Vec3d(0.2D, 0.2D, 0.2D),
             new Vec3d(0.8D, 0.2D, 0.2D),

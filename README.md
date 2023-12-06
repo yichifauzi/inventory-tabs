@@ -4,16 +4,31 @@
 <center>
 Tabs to swap between nearby screens like chests, crafting stations, and even entities.<br/>
 Requires <a href="https://modrinth.com/mod/connector">Connector</a> and <a href="https://modrinth.com/mod/forgified-fabric-api">FFAPI</a> on forge.<br/>
-<i>Colloquially: Inventory Tabs 4</i>
+<i>Colloquially: Inventory Tabs 4</i><br/>
+For creative mode, try <a href="https://modrinth.com/mod/sidekick">Sidekick</a>!
 </center>
 
 ---
 
-While a supported handled screen is open, a paginated row of tabs is shown depicting nearby intractable blocks and entities.
+While a supported screen is open, a paginated row of tabs is shown representing nearby interactive blocks and entities.
 
-By clicking on a tab, you'll instantly swap to the associated screen, carrying over any stacks.
+By clicking on a tab, you'll instantly swap to the associated screen, without the walking and clicking.
 
-Operates entirely on the client side, with a small improvement when on the server side to send anvil-changed chest names for tabs.
+Operates entirely on the client side, with only small tweaks when installed on-server.
+
+### Basic Features
+
+ - Swap between crafting stations, storage, and your inventory without leaving their screens.
+ - Supports tabs for all vanilla blocks and entities, with configuration available for modded blocks/entities/items. 
+ - Tabs spills over onto multiple pages to fit full storage rooms worth of chests.
+ - Chest tabs can be labelled using signs, item frames, or (while server modded) anvil-renaming for organisation.
+ - Stacks held on your cursor carry over to the next screen as long as your inventory isn't full.
+ - Keyboard navigation (default `TAB` and `SHIFT+TAB`) can be used to swap between tabs.
+ - Chest screens are normalized to be aligned with other screens, instead of being 1 pixel lower (configurable).
+ - Compact design supports advanced recipe viewers like [EMI](https://modrinth.com/mod/emi). `Left (Compressed)` effects are recommended.
+ - Allows a few non-vanilla actions for convenience - be wary of this for strict anticheat servers!
+   - Allows accessing your full regular inventory while riding a horse or chest boat.
+   - Allows accessing other vehicle inventories while riding a vehicle (usually requires sneaking).
 
 ## Advanced Use
 
@@ -47,7 +62,9 @@ If a handled screen shouldn't display tabs, or should display tabs but isn't, it
 
 ### Addons
 
+Addons for Inventory Tabs 4 can add new tab types and tab providers, and add advanced matching logic to current providers, provide custom tab layouts for their screens (including inverted tabs), and signal when specific tabs should be marked as open.
 
+For a practical example, check out [Portable Crafting](https://github.com/sisby-folk/portable-crafting)!
 
 ---
 
