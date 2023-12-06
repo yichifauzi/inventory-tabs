@@ -74,6 +74,11 @@ publishing {
 		}
 	}
 	repositories {
+		maven {
+			name 'SleepingTown'
+			url 'https://repo-api.sleeping.town/'
+			credentials(PasswordCredentials)
+		}
 	}
 }
 
