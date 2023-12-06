@@ -19,7 +19,7 @@ Operates entirely on the client side, with only small tweaks when installed on-s
 ### Basic Features
 
  - Swap between crafting stations, storage, and your inventory without leaving their screens.
- - Supports tabs for all vanilla blocks and entities, with configuration available for modded blocks, entities, and items. 
+ - Supports tabs for all vanilla blocks and entities, with configuration available for modded blocks/entities/items. 
  - Tabs spills over onto multiple pages to fit full storage rooms worth of chests.
  - Chest tabs can be labelled using signs, item frames, or (while server modded) anvil-renaming for organisation.
  - Stacks held on your cursor carry over to the next screen as long as your inventory isn't full.
