@@ -30,7 +30,10 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 
 public class TabManager {
     public static final Identifier BUTTONS_TEXTURE = InventoryTabs.id("textures/gui/buttons.png");
@@ -38,6 +41,8 @@ public class TabManager {
     public static final int TAB_HEIGHT = 25;
     public static final int BUTTON_WIDTH = 10;
     public static final int BUTTON_HEIGHT = 18;
+
+    public static final Map<Identifier, BiFunction<HandledScreen<?>, List<Tab>, Tab>> tabGuessers = new HashMap<>();
 
     public static HandledScreen<?> currentScreen;
     public static final List<Tab> tabs = new ArrayList<>();
@@ -72,6 +77,10 @@ public class TabManager {
                     }
                 }
             }
+        }
+        for (BiFunction<HandledScreen<?>, List<Tab>, Tab> guesser : tabGuessers.values()) {
+            Tab guessedTab = guesser.apply(screen, tabs);
+            if (guessedTab != null) return guessedTab;
         }
         // Crosshair Guesses
         if (client.crosshairTarget instanceof BlockHitResult result) {
