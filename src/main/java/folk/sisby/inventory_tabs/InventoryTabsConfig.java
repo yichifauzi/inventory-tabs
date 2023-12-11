@@ -22,12 +22,12 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("Less seamless, but trips anti-cheat less often.")
     public final Boolean rotatePlayer = false;
 
-    @Comment("Remove the 1 unit padding in container screens that makes single chest screens slightly taller")
-    @Comment("If a modded container has item stacks offset 1 unit below where they should, turn this off.")
-    public final Boolean consistentChests = true;
+    @Comment("Remove the 1 unit padding in container screens them slightly taller and offset from other screens.")
+    @Comment("If you're seeing stacks in the wrong places (offset up by 1 unit) on modded containers, turn this off.")
+    public final Boolean consistentContainers = true;
 
     @Comment("Strip nonessential features from 6-row container screens to fit them onto minimum-ratio viewports.")
-    public final Boolean compactChests = false;
+    public final Boolean compactLargeContainers = false;
 
     @Comment("Logs helpful information for setting up the config for modpackers.")
     @Comment("Each reload, logs Screen Handler IDs, Tab Provider IDs, and blocks/items/entities for each Tab Provider.")
