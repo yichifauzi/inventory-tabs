@@ -12,7 +12,7 @@ public class ShulkerBoxTabProvider extends BlockTabProvider {
     public ShulkerBoxTabProvider() {
         super();
         matches.put(InventoryTabs.id("shulker_box_block"), b -> b instanceof ShulkerBoxBlock);
-        preclusions.put(InventoryTabs.id("shulker_box_blocked"), (w, p) -> w.getBlockEntity(p) instanceof ShulkerBoxBlockEntity s && ShulkerBoxBlock.canOpen(w.getBlockState(p), w, p, s));
+        preclusions.put(InventoryTabs.id("shulker_box_blocked"), (w, p) -> w.getBlockEntity(p) instanceof ShulkerBoxBlockEntity s && !ShulkerBoxBlock.canOpen(w.getBlockState(p), w, p, s));
     }
 
     @Override
