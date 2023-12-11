@@ -56,11 +56,17 @@ public class TabProviders {
     public static final PlayerInventoryTabProvider PLAYER_INVENTORY = register(InventoryTabs.id("player_inventory"), new PlayerInventoryTabProvider());
     public static final VehicleInventoryTabProvider VEHICLE_INVENTORY = register(InventoryTabs.id("vehicle_inventory"), new VehicleInventoryTabProvider());
 
-    public static Set<EntityType<?>> warmEntities;
+    public static Set<EntityType<?>> warmEntities = new HashSet<>();
 
     public static void reload(DynamicRegistryManager manager) {
         InventoryTabs.LOGGER.info("[InventoryTabs] Reloading tab providers.");
         refreshConfigPlaceholders();
+        if (InventoryTabs.CONFIG.configLogging) {
+            InventoryTabs.LOGGER.info("[Inventory Tabs] Registered Screen Handlers:");
+            manager.get(Registry.MENU_KEY).getKeys().forEach(id -> InventoryTabs.LOGGER.info("[Inventory Tabs] {}", id.getValue().toString()));
+            InventoryTabs.LOGGER.info("[Inventory Tabs] Registered Tab Providers Available:");
+            REGISTRY.keySet().forEach(id -> InventoryTabs.LOGGER.info("[Inventory Tabs] {}", id.toString()));
+        }
         reloadRegistryProviders(manager, Registry.BLOCK_KEY, getProviders(BlockTabProvider.class), InventoryTabs.CONFIG.blockProviderOverrides);
         warmEntities = reloadRegistryProviders(manager, Registry.ENTITY_TYPE_KEY, getProviders(EntityTabProvider.class), InventoryTabs.CONFIG.entityProviderOverrides);
         reloadRegistryProviders(manager, Registry.ITEM_KEY, getProviders(ItemTabProvider.class), InventoryTabs.CONFIG.itemProviderOverrides);
@@ -94,18 +100,25 @@ public class TabProviders {
             overrides.put(registryValue, providers.get(new Identifier(override.getValue())));
         }
         // Add values to providers
+        if (InventoryTabs.CONFIG.configLogging) InventoryTabs.LOGGER.info("[Inventory Tabs] Starting provider freeze for {}", registryKey.getValue());
         for (Map.Entry<RegistryKey<T>, T> entry : manager.get(registryKey).getEntries()) {
             Holder<T> holder = manager.get(registryKey).getHolder(entry.getKey()).get();
 
             Optional<Map.Entry<RegistryValue<T>, RegistryTabProvider<T>>> override = overrides.entrySet().stream().filter(e -> e.getKey().is(holder)).findFirst();
             if (override.isPresent()) {
-                if (override.get().getValue() != null) override.get().getValue().values.add(entry.getValue());
+                if (override.get().getValue() != null) {
+                    if (InventoryTabs.CONFIG.configLogging) InventoryTabs.LOGGER.info("[Inventory Tabs] {} -> {}", entry.getKey().getValue(), REGISTRY.inverse().get(override.get().getValue()));
+                    override.get().getValue().values.add(entry.getValue());
+                }
                 continue;
             }
             for (Map.Entry<Identifier, ? extends RegistryTabProvider<T>> provider : providers.entrySet()) {
                 if (!InventoryTabs.CONFIG.registryProviderDefaults.getOrDefault(provider.getKey().toString(), true))
                     continue;
-                if (provider.getValue().consumes(entry.getValue())) break;
+                if (provider.getValue().consumes(entry.getValue())) {
+                    if (InventoryTabs.CONFIG.configLogging) InventoryTabs.LOGGER.info("[Inventory Tabs] {} -> {}", entry.getKey().getValue(), provider.getKey());
+                    break;
+                }
             }
             warmValues.add(entry.getValue());
         }
