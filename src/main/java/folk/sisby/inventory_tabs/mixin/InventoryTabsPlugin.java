@@ -1,5 +1,6 @@
 package folk.sisby.inventory_tabs.mixin;
 
+import folk.sisby.inventory_tabs.InventoryTabs;
 import net.fabricmc.loader.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -9,8 +10,8 @@ import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("deprecation")
-public class ConnectorPlugin implements IMixinConfigPlugin {
-    public static final List<String> BANNED_MIXINS = List.of(
+public class InventoryTabsPlugin implements IMixinConfigPlugin {
+    public static final List<String> FORGE_BANNED_MIXINS = List.of(
             "folk.sisby.inventory_tabs.mixin.MixinKeyBind"
     );
 
@@ -26,8 +27,13 @@ public class ConnectorPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.startsWith("folk.sisby.inventory_tabs.mixin.") && FabricLoader.INSTANCE.isModLoaded("connectormod")) {
-            return !BANNED_MIXINS.contains(mixinClassName);
+        if (mixinClassName.startsWith("folk.sisby.inventory_tabs.mixin.")) {
+            if (FabricLoader.INSTANCE.isModLoaded("connectormod") && FORGE_BANNED_MIXINS.contains(mixinClassName)) {
+                return false;
+            }
+            if (!InventoryTabs.CONFIG.consistentContainers && (mixinClassName.contains("GenericContainer") || mixinClassName.contains("ShulkerBox"))) {
+                return false;
+            }
         }
         return true;
     }

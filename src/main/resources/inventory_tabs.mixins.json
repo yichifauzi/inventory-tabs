@@ -2,14 +2,16 @@
   "required": true,
   "minVersion": "0.8",
   "package": "folk.sisby.inventory_tabs.mixin",
-  "plugin": "folk.sisby.inventory_tabs.mixin.ConnectorPlugin",
+  "plugin": "folk.sisby.inventory_tabs.mixin.InventoryTabsPlugin",
   "compatibilityLevel": "JAVA_16",
   "client": [
     "MixinGenericContainerScreen",
     "MixinGenericContainerScreenHandler",
     "MixinHandledScreen",
     "MixinKeyBind",
-    "MixinScreen"
+    "MixinScreen",
+    "MixinShulkerBoxScreen",
+    "MixinShulkerBoxScreenHandler"
   ],
   "injectors": {
     "defaultRequire": 1

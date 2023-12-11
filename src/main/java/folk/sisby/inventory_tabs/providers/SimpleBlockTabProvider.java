@@ -35,6 +35,7 @@ public class SimpleBlockTabProvider extends BlockTabProvider {
         blacklist.put(InventoryTabs.id("sculk_sensor_block"), b -> b instanceof SculkSensorBlock);
         blacklist.put(InventoryTabs.id("spawner_block"), b -> b instanceof SpawnerBlock);
         blacklist.put(InventoryTabs.id("structure_block"), b -> b instanceof StructureBlock);
+        blacklist.put(InventoryTabs.id("lectern_block"), b -> b instanceof LecternBlock);
         matches.put(InventoryTabs.id("block_entity_provider_blacklist"), b -> b instanceof BlockEntityProvider && blacklist.values().stream().noneMatch(p -> p.test(b)));
     }
 

@@ -18,12 +18,7 @@ public class InventoryTabs implements ClientModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(ID);
     public static final InventoryTabsConfig CONFIG = InventoryTabsConfig.createToml(FabricLoader.getInstance().getConfigDir(), "", ID, InventoryTabsConfig.class);
 
-    public static final KeyBind NEXT_TAB = KeyBindingHelper.registerKeyBinding(new KeyBind(
-            "key.inventory_tabs.key.next_tab",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_TAB,
-            "key.categories.inventory"
-    ));
+    public static KeyBind NEXT_TAB;
 
     public static Identifier id(String path) {
         return new Identifier(ID, path);
@@ -33,5 +28,11 @@ public class InventoryTabs implements ClientModInitializer {
     public void onInitializeClient() {
         CommonLifecycleEvents.TAGS_LOADED.register((manager, success) -> TabProviders.reload(manager));
         ClientTickEvents.END_WORLD_TICK.register(TabManager::tick);
+        NEXT_TAB = KeyBindingHelper.registerKeyBinding(new KeyBind(
+                "key.inventory_tabs.key.next_tab",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_TAB,
+                "key.categories.inventory"
+        ));
     }
 }
