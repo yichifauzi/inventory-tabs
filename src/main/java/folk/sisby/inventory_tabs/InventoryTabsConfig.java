@@ -29,6 +29,10 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("Strip nonessential features from 6-row container screens to fit them onto minimum-ratio viewports.")
     public final Boolean compactChests = false;
 
+    @Comment("Logs helpful information for setting up the config for modpackers.")
+    @Comment("Each reload, logs Screen Handler IDs, Tab Provider IDs, and blocks/items/entities for each Tab Provider.")
+    public final Boolean configLogging = false;
+
     @Comment("Screens where the tab row should be rendered.")
     public final ScreenFilter tabDisplayFilter = new ScreenFilter(AllowDeny.ALLOW, ValueList.create(""
     ), ValueList.create(""
@@ -71,6 +75,7 @@ public class InventoryTabsConfig extends WrappedConfig {
             .put("minecraft:dirt", "")
             .build();
 
+    @Comment("")
     @Comment("Whether to enable the default registry-matching logic for each tab provider.")
     @Comment("When default logic is disabled, a tab provider will only be used if overridden below!")
     @Comment("Simple Block: Blocks with block entities that can be interacted with to open a screen.")
