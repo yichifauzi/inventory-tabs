@@ -71,7 +71,7 @@ public class BlockTab implements Tab {
     }
 
     protected void refreshPreviewAtPos(World world, BlockPos previewPos) {
-        List<ItemFrameEntity> itemFrames = world.getNonSpectatingEntities(ItemFrameEntity.class, new Box(Vec3d.of(previewPos).add(0.5D, 0.5D, 0.5D), Vec3d.of(previewPos).add(0.5D, 0.5D, 0.5D)).expand(0.7));
+        List<ItemFrameEntity> itemFrames = world.getNonSpectatingEntities(ItemFrameEntity.class, new Box(Vec3d.of(previewPos).add(0.5D, 0.5D, 0.5D), Vec3d.of(previewPos).add(0.5D, 0.5D, 0.5D)).expand(0.6, 0.3, 0.6));
         if (!itemFrames.isEmpty()) {
             itemStack = itemFrames.get(0).getHeldItemStack();
             if (itemStack.hasCustomName()) hoverText = itemStack.getName().copy().formatted(Formatting.ITALIC);
