@@ -5,11 +5,13 @@ import folk.sisby.inventory_tabs.util.BlockUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -23,7 +25,6 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,12 +53,9 @@ public class BlockTab implements Tab {
     }
 
     @Override
-    public boolean open() {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        if (player == null || preclusions.values().stream().anyMatch(p -> p.test(player.getWorld(), pos))) return false;
+    public void open(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager) {
         if (InventoryTabs.CONFIG.rotatePlayer) player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, Vec3d.ofCenter(pos));
-        MinecraftClient.getInstance().interactionManager.interactBlock(player, Hand.MAIN_HAND, new BlockHitResult(pos.ofCenter(), Direction.EAST, pos, false));
-        return true;
+        interactionManager.interactBlock(player, Hand.MAIN_HAND, new BlockHitResult(pos.ofCenter(), Direction.EAST, pos, false));
     }
 
     @Override

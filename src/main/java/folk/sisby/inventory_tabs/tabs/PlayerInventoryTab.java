@@ -3,7 +3,11 @@ package folk.sisby.inventory_tabs.tabs;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
@@ -17,10 +21,8 @@ public class PlayerInventoryTab implements Tab {
     }
 
     @Override
-    public boolean open() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        client.setScreen(new InventoryScreen(client.player));
-        return true;
+    public void open(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager) {
+        MinecraftClient.getInstance().setScreen(new InventoryScreen(player));
     }
 
     @Override

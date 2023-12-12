@@ -9,6 +9,7 @@
     "MixinGenericContainerScreenHandler",
     "MixinHandledScreen",
     "MixinKeyBind",
+    "MixinMouse",
     "MixinScreen",
     "MixinShulkerBoxScreen",
     "MixinShulkerBoxScreenHandler"

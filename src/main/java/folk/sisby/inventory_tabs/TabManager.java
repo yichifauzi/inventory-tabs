@@ -7,7 +7,6 @@ import folk.sisby.inventory_tabs.tabs.ItemTab;
 import folk.sisby.inventory_tabs.tabs.Tab;
 import folk.sisby.inventory_tabs.tabs.VehicleInventoryTab;
 import folk.sisby.inventory_tabs.util.HandlerSlotUtil;
-import folk.sisby.inventory_tabs.util.MouseUtil;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -15,8 +14,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.Rect2i;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.packet.c2s.play.HandledScreenCloseC2SPacket;
@@ -44,22 +47,21 @@ public class TabManager {
 
     public static final Map<Identifier, BiFunction<HandledScreen<?>, List<Tab>, Tab>> tabGuessers = new HashMap<>();
 
+    public static boolean changingTabs;
     public static HandledScreen<?> currentScreen;
     public static final List<Tab> tabs = new ArrayList<>();
     public static int currentPage = 0;
     public static Tab currentTab;
     public static List<WidgetPosition> tabPositions;
-    public static boolean tabOpenedRecently;
     public static boolean skipRestore;
 
     public static void initScreen(MinecraftClient client, HandledScreen<?> screen) {
         currentScreen = screen;
         tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
-        if (!tabOpenedRecently) onOpenTab(guessOpenedTab(client, screen));
-        tabOpenedRecently = false;
+        if (!changingTabs) onOpenTab(guessOpenedTab(client, screen));
+        changingTabs = false;
         if (!skipRestore) {
             HandlerSlotUtil.tryPop(MinecraftClient.getInstance().player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler());
-            MouseUtil.tryPop();
         } else {
             skipRestore = false;
         }
@@ -138,7 +140,7 @@ public class TabManager {
     }
 
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) {
+        if (!changingTabs && button == 0) {
             if (getPageButton(true).contains((int) mouseX, (int) mouseY)) {
                 if (currentPage > 0) {
                     setCurrentPage(currentPage - 1);
@@ -176,7 +178,7 @@ public class TabManager {
     }
 
     public static boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
+        if (!changingTabs && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
             if (Screen.hasShiftDown()) {
                 if (tabs.indexOf(currentTab) == 0) {
                     onTabClick(tabs.get(tabs.size() - 1));
@@ -197,21 +199,23 @@ public class TabManager {
     }
 
     public static void onTabClick(Tab tab) {
-        MouseUtil.push();
-        HandlerSlotUtil.push(MinecraftClient.getInstance().player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler());
-        skipRestore = true;
-        tabOpenedRecently = true;
-        MinecraftClient.getInstance().getNetworkHandler().sendPacket(new HandledScreenCloseC2SPacket(currentScreen.getScreenHandler().syncId));
-        if (tab.open()) {
-            onOpenTab(tab);
-            if (!skipRestore) {
-                HandlerSlotUtil.tryPop(MinecraftClient.getInstance().player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler());
-                MouseUtil.tryPop();
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        ClientPlayerInteractionManager interactionManager = MinecraftClient.getInstance().interactionManager;
+        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+        if (player != null && interactionManager != null && networkHandler != null && player.getWorld() instanceof ClientWorld world) {
+            if (!tab.shouldBeRemoved(world, false)) {
+                skipRestore = true;
+                changingTabs = true;
+                HandlerSlotUtil.push(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler());
+                player.networkHandler.sendPacket(new HandledScreenCloseC2SPacket(currentScreen.getScreenHandler().syncId));
+                tab.open(player, world, currentScreen.getScreenHandler(), interactionManager);
+                onOpenTab(tab);
+                if (!skipRestore) {
+                    HandlerSlotUtil.tryPop(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler());
+                }
             }
-        } else {
-            tabOpenedRecently = false;
+            skipRestore = false;
         }
-        skipRestore = false;
     }
 
     public static void onOpenTab(Tab tab) {

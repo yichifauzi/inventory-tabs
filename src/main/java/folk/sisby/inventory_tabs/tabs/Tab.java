@@ -6,8 +6,12 @@ import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.util.math.Rect2i;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -17,9 +21,8 @@ public interface Tab {
 
     /**
      * Opens the screen associated with the tab.
-     * @return false if the process to open the screen isn't possible.
      */
-    boolean open();
+    void open(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager);
 
     /**
      * @return true if the tab should stop being displayed. Should be synced up with the provider that provides this tab.

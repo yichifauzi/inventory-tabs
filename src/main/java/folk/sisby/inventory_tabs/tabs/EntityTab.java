@@ -1,12 +1,14 @@
 package folk.sisby.inventory_tabs.tabs;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractionWithEntityC2SPacket;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -33,12 +35,9 @@ public class EntityTab implements Tab {
     }
 
     @Override
-    public boolean open() {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        if (player == null || preclusions.values().stream().anyMatch(p -> p.test(entity))) return false;
+    public void open(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager) {
         player.networkHandler.sendPacket(PlayerInteractionWithEntityC2SPacket.interact(entity, sneakInteract, player.getActiveHand()));
         if (sneakInteract) player.networkHandler.sendPacket(new ClientCommandC2SPacket(player, ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
-        return true;
     }
 
     @Override
