@@ -20,7 +20,7 @@ public abstract class RegistryTabProvider<T> implements TabProvider {
         return false;
     }
 
-    public abstract int getPriority();
+    public abstract int getRegistryPriority();
 
     public boolean isUnique() {
         return false;

@@ -2,7 +2,6 @@ package folk.sisby.inventory_tabs.tabs;
 
 import folk.sisby.inventory_tabs.InventoryTabs;
 import folk.sisby.inventory_tabs.util.BlockUtil;
-import folk.sisby.inventory_tabs.util.PlayerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -14,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -21,9 +21,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 public class BlockTab implements Tab {
@@ -31,21 +35,26 @@ public class BlockTab implements Tab {
     public final Block block;
     public final BlockPos pos;
     public final boolean unique;
+    public final Map<Identifier, BiPredicate<World, BlockPos>> preclusions;
+    public List<BlockPos> multiblockPositions;
     public ItemStack itemStack;
     public Text hoverText;
 
-    public BlockTab(int priority, World world, BlockPos pos, boolean unique) {
+    public BlockTab(World world, BlockPos pos, Map<Identifier, BiPredicate<World, BlockPos>> preclusions, int priority, boolean unique) {
         this.priority = priority;
         this.unique = unique;
         this.block = world.getBlockState(pos).getBlock();
         this.pos = pos;
+        this.preclusions = preclusions;
+        this.multiblockPositions = new ArrayList<>(List.of(pos));
+        refreshMultiblock(world);
         refreshPreview(world);
     }
 
     @Override
     public boolean open() {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        if (!PlayerUtil.inRange(player, pos)) return false;
+        if (player == null || preclusions.values().stream().anyMatch(p -> p.test(player.getWorld(), pos))) return false;
         if (InventoryTabs.CONFIG.rotatePlayer) player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, Vec3d.ofCenter(pos));
         MinecraftClient.getInstance().interactionManager.interactBlock(player, Hand.MAIN_HAND, new BlockHitResult(pos.ofCenter(), Direction.EAST, pos, false));
         return true;
@@ -53,10 +62,11 @@ public class BlockTab implements Tab {
 
     @Override
     public boolean shouldBeRemoved(World world, boolean current) {
+        if (!world.getBlockState(pos).getBlock().equals(block)) return true;
+        refreshMultiblock(world);
         refreshPreview(world);
         if (current) return false;
-        if (!world.getBlockState(pos).getBlock().equals(block)) return true;
-        return !PlayerUtil.inRange(MinecraftClient.getInstance().player, pos);
+        return preclusions.values().stream().anyMatch(p -> p.test(world, pos));
     }
 
     @Override
@@ -87,8 +97,17 @@ public class BlockTab implements Tab {
 
     protected void refreshPreview(World world) {
         itemStack = new ItemStack(block);
-        hoverText = block.getName();
-        refreshPreviewAtPos(world, pos);
+        hoverText = getDefaultHoverText(world);
+        for (BlockPos multiPos : multiblockPositions) {
+            refreshPreviewAtPos(world, multiPos);
+        }
+    }
+
+    protected Text getDefaultHoverText(World world) {
+        return block.getName();
+    }
+
+    protected void refreshMultiblock(World world) {
     }
 
     @Override
@@ -103,7 +122,7 @@ public class BlockTab implements Tab {
             return other instanceof ItemTab it && Objects.equals(block.asItem(), it.stack.getItem()) ||
                     other instanceof BlockTab bt && Objects.equals(block, bt.block);
         } else {
-            return other instanceof BlockTab bt && Objects.equals(pos, bt.pos);
+            return other instanceof BlockTab bt && Objects.equals(multiblockPositions.get(0), bt.multiblockPositions.get(0));
         }
     }
 }

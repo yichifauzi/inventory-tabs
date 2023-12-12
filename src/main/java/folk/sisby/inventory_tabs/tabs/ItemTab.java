@@ -11,19 +11,24 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
+import java.util.function.Predicate;
 
 public class ItemTab implements Tab {
     public final ItemStack stack;
     public final int slot;
     public final boolean unique;
+    public final Map<Identifier, Predicate<ItemStack>> preclusions;
 
-    public ItemTab(ItemStack stack, int slot, boolean unique) {
+    public ItemTab(ItemStack stack, int slot, Map<Identifier, Predicate<ItemStack>> preclusions, boolean unique) {
         this.stack = stack;
         this.slot = slot;
+        this.preclusions = preclusions;
         this.unique = unique;
     }
 
@@ -31,7 +36,8 @@ public class ItemTab implements Tab {
     public boolean open() {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         Screen screen = MinecraftClient.getInstance().currentScreen;
-        if (player.getInventory().getStack(slot).equals(stack) && screen instanceof HandledScreen<?> hs) {
+        if (player == null || !player.getInventory().getStack(slot).equals(stack) || preclusions.values().stream().noneMatch(p -> p.test(stack))) return false;
+        if (screen instanceof HandledScreen<?> hs) {
             ScreenHandler handler = hs.getScreenHandler();
             OptionalInt slotIndex = handler.getSlotIndex(player.getInventory(), slot);
             if (slotIndex.isPresent()) {
@@ -48,7 +54,7 @@ public class ItemTab implements Tab {
     public boolean shouldBeRemoved(World world, boolean current) {
         if (current) return false;
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        return (player == null || !player.getInventory().getStack(slot).equals(stack));
+        return player == null || !player.getInventory().getStack(slot).equals(stack) || preclusions.values().stream().noneMatch(p -> p.test(stack));
     }
 
     @Override

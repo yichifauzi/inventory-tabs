@@ -1,8 +1,6 @@
 package folk.sisby.inventory_tabs.providers;
 
 import folk.sisby.inventory_tabs.InventoryTabs;
-import folk.sisby.inventory_tabs.tabs.BlockTab;
-import folk.sisby.inventory_tabs.tabs.Tab;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonExtensionBlock;
 import net.minecraft.block.sculk.SculkCatalystBlock;
@@ -21,6 +19,7 @@ public class SimpleBlockTabProvider extends BlockTabProvider {
     public final Map<Identifier, Predicate<Block>> blacklist = new HashMap<>();
 
     public SimpleBlockTabProvider() {
+        super();
         blacklist.put(InventoryTabs.id("abstract_banner_block"), b -> b instanceof AbstractBannerBlock);
         blacklist.put(InventoryTabs.id("abstract_sign_block"), b -> b instanceof AbstractSignBlock);
         blacklist.put(InventoryTabs.id("abstract_skull_block"), b -> b instanceof AbstractSkullBlock);
@@ -50,12 +49,12 @@ public class SimpleBlockTabProvider extends BlockTabProvider {
     }
 
     @Override
-    public Tab createTab(World world, BlockPos pos) {
-        return new BlockTab(30, world, pos, isUnique());
+    public int getTabOrderPriority(World world, BlockPos pos) {
+        return 0;
     }
 
     @Override
-    public int getPriority() {
+    public int getRegistryPriority() {
         return 0;
     }
 }
