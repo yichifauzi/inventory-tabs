@@ -60,11 +60,6 @@ public class TabManager {
         tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
         if (!changingTabs) onOpenTab(guessOpenedTab(client, screen));
         changingTabs = false;
-        if (!skipRestore) {
-            HandlerSlotUtil.tryPop(MinecraftClient.getInstance().player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler());
-        } else {
-            skipRestore = false;
-        }
     }
 
     public static Tab guessOpenedTab(MinecraftClient client, HandledScreen<?> screen) {
@@ -140,7 +135,8 @@ public class TabManager {
     }
 
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!changingTabs && button == 0) {
+        if (changingTabs) return true;
+        if (button == 0) {
             if (getPageButton(true).contains((int) mouseX, (int) mouseY)) {
                 if (currentPage > 0) {
                     setCurrentPage(currentPage - 1);
@@ -171,6 +167,10 @@ public class TabManager {
         }
 
         return false;
+    }
+
+    public static boolean mouseReleased(double mouseX, double mouseY, int button) {
+        return changingTabs;
     }
 
     public static boolean isClickOutsideBounds(double mouseX, double mouseY) {
@@ -206,7 +206,7 @@ public class TabManager {
             if (!tab.shouldBeRemoved(world, false)) {
                 skipRestore = true;
                 changingTabs = true;
-                HandlerSlotUtil.push(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler());
+                HandlerSlotUtil.push(player, currentScreen.getScreenHandler());
                 player.networkHandler.sendPacket(new HandledScreenCloseC2SPacket(currentScreen.getScreenHandler().syncId));
                 tab.open(player, world, currentScreen.getScreenHandler(), interactionManager);
                 onOpenTab(tab);

@@ -11,6 +11,7 @@
     "MixinKeyBind",
     "MixinMouse",
     "MixinScreen",
+    "MixinScreenHandler",
     "MixinShulkerBoxScreen",
     "MixinShulkerBoxScreenHandler"
   ],
