@@ -3,6 +3,7 @@
 
 <center>
 Tabs to swap between nearby screens like chests, crafting stations, and even entities.<br/>
+Fully client side, with small server tweaks.<br/>
 Requires <a href="https://modrinth.com/mod/connector">Connector</a> and <a href="https://modrinth.com/mod/forgified-fabric-api">FFAPI</a> on forge.<br/>
 <i>Colloquially: Inventory Tabs 4</i><br/>
 For creative mode, try <a href="https://modrinth.com/mod/sidekick">Sidekick</a>!
@@ -10,27 +11,33 @@ For creative mode, try <a href="https://modrinth.com/mod/sidekick">Sidekick</a>!
 
 ---
 
-While a supported screen is open, a paginated row of tabs is shown representing nearby interactive blocks and entities.
+Adds a row of tabs above screens representing nearby blocks and entities.
 
-By clicking on a tab, you'll instantly swap to the associated screen, without the walking and clicking.
+By clicking on a tab you'll instantly swap to that screen, without any walking or swinging.
 
-Operates entirely on the client side, with only small tweaks when installed on-server.
+You can also use Tab and Shift+Tab to cycle through available screens.
 
 ### Basic Features
 
- - Swap between crafting stations, storage, and your inventory without leaving their screens.
- - Supports tabs for all vanilla blocks and entities, with configuration available for modded blocks/entities/items. 
- - Tabs spills over onto multiple pages to fit full storage rooms worth of chests.
- - Chest tabs can be labelled using signs, item frames, or (while server modded) anvil-renaming for organisation.
- - Stacks held on your cursor carry over to the next screen as long as your inventory isn't full.
- - Keyboard navigation (default `TAB` and `SHIFT+TAB`) can be used to swap between tabs.
- - Chest screens are normalized to be aligned with other screens, instead of being 1 pixel lower (configurable).
- - Compact design supports advanced recipe viewers like [EMI](https://modrinth.com/mod/emi). `Left (Compressed)` effects are recommended.
- - Allows a few non-vanilla actions for convenience - be wary of this for strict anticheat servers!
-   - Allows accessing your full regular inventory while riding a horse or chest boat.
-   - Allows accessing other vehicle inventories while riding a vehicle (usually requires sneaking).
+- Swap between crafting stations, storage, and your inventory without leaving their screens.
+- Works out of the box with many modded blocks - with configuration in case anything goes wrong.
+- Storage tabs can be labelled using signs, item frames, or (w/ server) anvil-renaming for organisation.
+- Stacks held on your cursor carry over to the next screen as long as your inventory isn't full.
 
-<center><img alt="EMI Preview" src="https://cdn.modrinth.com/data/VD1aynYU/images/7356435a874c5f5c587b59f4b71461da2e997df1.png" /></center>
+<center><img style="max-width: 400px" alt="Shulker Box Symphony" src="https://cdn.modrinth.com/data/VD1aynYU/images/3a5405eff19e20620cb757142aa040ca366fcb72.gif" /></center>
+
+- Container screens are realigned with other screens, instead of being 1 pixel lower.
+- Fits on-screen with [EMI](https://modrinth.com/mod/emi), even on very high GUI scales - Use `Left (Compressed)` effects.
+<center><img style="max-width: 400px" alt="EMI VGA Preview" src="https://cdn.modrinth.com/data/VD1aynYU/images/7356435a874c5f5c587b59f4b71461da2e997df1.png" /></center>
+
+#### Anti-Cheat & Convenience
+
+Inventory Tabs 4 offers no guarantees or defence against server moderation or anti-cheat - tabs provide an unfair advantage, and look outwardly suspicious to onlookers in multiplayer.<br/>
+In fact, some fully non-vanilla actions are possible for convenience, such as:
+  - Accessing your full regular inventory while riding a horse or chest boat.
+  - Accessing sneak-interact inventories without dismounting from a vehicle.
+
+---
 
 ### Modpack Configuration
 
@@ -75,6 +82,8 @@ If too many inappropriate blocks are being matched, you may want to disable the 
 
 The `block_simple` provider uses a blacklist instead of a whitelist, so it generates a lot of false-positive tabs. It's enabled by default to help with finding good/bad tabs - but if you're making a modpack, you'll probably turn it off!
 
+---
+
 ### Mod Architecture
 
 Each visible tab on the screen is a [Tab](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/tabs/Tab.java), which is responsible for rendering itself, knowing how to be opened, and knowing when it should be removed from the list of tabs (e.g. when no longer in range).
@@ -91,7 +100,7 @@ repositories {
 	maven { url "https://repo.sleeping.town/" }
 }
 dependencies {
-   modImplementation "folk.sisby:inventory-tabs:1.0.3"
+   modImplementation "folk.sisby:inventory-tabs:1.1.1"
 }
 ```
 
