@@ -26,6 +26,12 @@ public class PlayerInventoryTab implements Tab {
     }
 
     @Override
+    public void close() {
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        if (player != null) player.playerScreenHandler.setCursorStack(ItemStack.EMPTY);
+    }
+
+    @Override
     public boolean shouldBeRemoved(World world, boolean current) {
         return false;
     }
@@ -38,6 +44,11 @@ public class PlayerInventoryTab implements Tab {
     @Override
     public int getPriority() {
         return 100;
+    }
+
+    @Override
+    public boolean isInstant() {
+        return true;
     }
 
     @Override

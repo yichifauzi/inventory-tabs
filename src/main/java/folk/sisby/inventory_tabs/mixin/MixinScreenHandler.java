@@ -1,7 +1,6 @@
 package folk.sisby.inventory_tabs.mixin;
 
 import folk.sisby.inventory_tabs.TabManager;
-import folk.sisby.inventory_tabs.util.HandlerSlotUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -14,14 +13,10 @@ import java.util.List;
 
 @Mixin(ScreenHandler.class)
 public abstract class MixinScreenHandler  {
-    @Inject(method = "updateSlotStacks", at = @At(value = "TAIL"))
-    public void keepCursorWhenChangingTabs(int revision, List<ItemStack> stacks, ItemStack cursorStack, CallbackInfo ci) {
+    @Inject(method = "updateSlotStacks", at = @At("TAIL"))
+    public void finishChangingTabs(int revision, List<ItemStack> stacks, ItemStack cursorStack, CallbackInfo ci) {
         if (revision == 1 && MinecraftClient.getInstance().player != null) {
-            if (!TabManager.skipRestore) {
-                HandlerSlotUtil.tryPop(MinecraftClient.getInstance().player, MinecraftClient.getInstance().interactionManager, (ScreenHandler) (Object) this);
-            } else {
-                TabManager.skipRestore = false;
-            }
+            TabManager.finishOpeningScreen((ScreenHandler) (Object) this);
         }
     }
 }

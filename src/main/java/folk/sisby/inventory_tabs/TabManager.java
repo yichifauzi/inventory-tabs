@@ -23,6 +23,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.packet.c2s.play.HandledScreenCloseC2SPacket;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -47,19 +48,61 @@ public class TabManager {
 
     public static final Map<Identifier, BiFunction<HandledScreen<?>, List<Tab>, Tab>> tabGuessers = new HashMap<>();
 
-    public static boolean changingTabs;
+    public static Tab nextTab;
     public static HandledScreen<?> currentScreen;
     public static final List<Tab> tabs = new ArrayList<>();
     public static int currentPage = 0;
     public static Tab currentTab;
     public static List<WidgetPosition> tabPositions;
-    public static boolean skipRestore;
 
     public static void initScreen(MinecraftClient client, HandledScreen<?> screen) {
         currentScreen = screen;
         tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
-        if (!changingTabs) onOpenTab(guessOpenedTab(client, screen));
-        changingTabs = false;
+        if (nextTab == null) {
+            nextTab = guessOpenedTab(client, screen);
+            finishOpeningScreen(screen.getScreenHandler());
+        }
+    }
+
+    public static void finishOpeningScreen(ScreenHandler handler) {
+        if (nextTab != null) {
+            if (currentTab != null && currentTab != nextTab) currentTab.close();
+            HandlerSlotUtil.tryPop(MinecraftClient.getInstance().player, MinecraftClient.getInstance().interactionManager, handler);
+            currentTab = nextTab;
+            setCurrentPage(tabs.indexOf(nextTab) / tabPositions.size());
+            nextTab = null;
+        }
+    }
+
+    public static void screenDiscarded() {
+        currentTab = null;
+        nextTab = null;
+        currentPage = 0;
+    }
+
+    public static void tick(World world) {
+        if (tabs.removeIf(t -> t.shouldBeRemoved(world, t == currentTab))) {
+            sortTabs();
+        }
+        TabProviders.REGISTRY.values().forEach(tabProvider -> tabProvider.addAvailableTabs(MinecraftClient.getInstance().player, TabManager::tryAddTab));
+        if (currentTab != null && !tabs.contains(currentTab)) currentTab = null;
+    }
+
+    public static void openTab(Tab tab) {
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        ClientPlayerInteractionManager interactionManager = MinecraftClient.getInstance().interactionManager;
+        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+        if (player != null && interactionManager != null && networkHandler != null && player.getWorld() instanceof ClientWorld world) {
+            if (!tab.shouldBeRemoved(world, false)) {
+                nextTab = tab;
+                HandlerSlotUtil.push(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler(), tab.isInstant());
+                player.networkHandler.sendPacket(new HandledScreenCloseC2SPacket(currentScreen.getScreenHandler().syncId));
+                tab.open(player, world, currentScreen.getScreenHandler(), interactionManager);
+                if (tab.isInstant()) { // Instant screens don't have slot updates to wait for, so finish now.
+                    finishOpeningScreen(currentScreen.getScreenHandler());
+                }
+            }
+        }
     }
 
     public static Tab guessOpenedTab(MinecraftClient client, HandledScreen<?> screen) {
@@ -111,14 +154,6 @@ public class TabManager {
         return null;
     }
 
-    public static void tick(World world) {
-        if (tabs.removeIf(t -> t.shouldBeRemoved(world, t == currentTab))) {
-            sortTabs();
-        }
-        TabProviders.REGISTRY.values().forEach(tabProvider -> tabProvider.addAvailableTabs(MinecraftClient.getInstance().player, TabManager::tryAddTab));
-        if (currentTab != null && !tabs.contains(currentTab)) currentTab = null;
-    }
-
     public static void tryAddTab(Tab tab) {
         if (!tabs.contains(tab)) {
             tabs.add(tab);
@@ -135,7 +170,7 @@ public class TabManager {
     }
 
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (changingTabs) return true;
+        if (nextTab != null) return true;
         if (button == 0) {
             if (getPageButton(true).contains((int) mouseX, (int) mouseY)) {
                 if (currentPage > 0) {
@@ -158,7 +193,7 @@ public class TabManager {
                 Tab tab = tabs.get(currentPage * tabPositions.size() + i);
                 if (pos != null && tab != null && tab != currentTab) {
                     if (getTabArea(pos).contains((int) mouseX, (int) mouseY)) {
-                        onTabClick(tab);
+                        openTab(tab);
                         playClick();
                         return true;
                     }
@@ -170,7 +205,7 @@ public class TabManager {
     }
 
     public static boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return changingTabs;
+        return nextTab != null;
     }
 
     public static boolean isClickOutsideBounds(double mouseX, double mouseY) {
@@ -178,50 +213,24 @@ public class TabManager {
     }
 
     public static boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!changingTabs && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
+        if (nextTab == null && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
             if (Screen.hasShiftDown()) {
                 if (tabs.indexOf(currentTab) == 0) {
-                    onTabClick(tabs.get(tabs.size() - 1));
+                    openTab(tabs.get(tabs.size() - 1));
                 } else {
-                    onTabClick(tabs.get(tabs.indexOf(currentTab) - 1));
+                    openTab(tabs.get(tabs.indexOf(currentTab) - 1));
                 }
             } else {
                 if (tabs.indexOf(currentTab) == tabs.size() - 1) {
-                    onTabClick(tabs.get(0));
+                    openTab(tabs.get(0));
                 } else {
-                    onTabClick(tabs.get(tabs.indexOf(currentTab) + 1));
+                    openTab(tabs.get(tabs.indexOf(currentTab) + 1));
                 }
             }
             return true;
         }
 
         return false;
-    }
-
-    public static void onTabClick(Tab tab) {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        ClientPlayerInteractionManager interactionManager = MinecraftClient.getInstance().interactionManager;
-        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
-        if (player != null && interactionManager != null && networkHandler != null && player.getWorld() instanceof ClientWorld world) {
-            if (!tab.shouldBeRemoved(world, false)) {
-                skipRestore = true;
-                changingTabs = true;
-                HandlerSlotUtil.push(player, currentScreen.getScreenHandler());
-                player.networkHandler.sendPacket(new HandledScreenCloseC2SPacket(currentScreen.getScreenHandler().syncId));
-                tab.open(player, world, currentScreen.getScreenHandler(), interactionManager);
-                onOpenTab(tab);
-                if (!skipRestore) {
-                    HandlerSlotUtil.tryPop(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler());
-                }
-            }
-            skipRestore = false;
-        }
-    }
-
-    public static void onOpenTab(Tab tab) {
-        if (currentTab != null && currentTab != tab) currentTab.onClose(currentScreen);
-        currentTab = tab;
-        setCurrentPage(tabs.indexOf(tab) / tabPositions.size());
     }
 
     public static void setCurrentPage(int page) {
@@ -277,7 +286,6 @@ public class TabManager {
         MinecraftClient.getInstance().getSoundManager()
                 .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
     }
-
 }
 
 

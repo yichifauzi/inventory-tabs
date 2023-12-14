@@ -5,7 +5,6 @@ import folk.sisby.inventory_tabs.TabManager;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.util.math.Rect2i;
@@ -40,9 +39,9 @@ public interface Tab {
     Text getHoverText();
 
     /**
-     * Called when the screen associated with the tab is closed.
+     * Called when the screen associated with the tab is closed (for handlers that aren't destroyed when closed on the servers)
      */
-    default void onClose(HandledScreen<?> currentScreen) {}
+    default void close() {}
 
     /**
      * @return the tab's left-priority when being displayed. The player's inventory is at 100.
@@ -50,6 +49,12 @@ public interface Tab {
     default int getPriority() {
         return 0;
     }
+
+    /**
+     * @return whether the tabs open method instantly opens the screen on the client side without slot sync.
+     * Used for the survival inventory. Helps preserve cursor stacks.
+     */
+    default boolean isInstant() { return false; }
 
     default void renderBackground(GuiGraphics graphics, WidgetPosition pos, int width, int height, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinMouse {
     @Inject(method = "unlockCursor", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/InputUtil;setCursorParameters(JIDD)V"), cancellable = true)
     public void keepCursorWhenChangingTabs(CallbackInfo ci) {
-        if (TabManager.changingTabs) {
+        if (TabManager.nextTab != null) {
             ci.cancel();
         }
     }
