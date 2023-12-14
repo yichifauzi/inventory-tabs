@@ -25,7 +25,7 @@ public abstract class EntityTabProvider extends RegistryTabProvider<EntityType<?
     public final Set<EntityType<?>> failedMatches = new HashSet<>();
     public final Map<Identifier, Predicate<Entity>> preclusions = new HashMap<>();
 
-    EntityTabProvider() {
+    public EntityTabProvider() {
         preclusions.put(InventoryTabs.id("removed"), Entity::isRemoved);
         preclusions.put(InventoryTabs.id("player_in_range"), (e) -> MinecraftClient.getInstance().player != null && !PlayerUtil.inRange(MinecraftClient.getInstance().player, e));
         preclusions.put(InventoryTabs.id("vehicle"), e -> MinecraftClient.getInstance().player != null && e == MinecraftClient.getInstance().player.getVehicle());

@@ -9,6 +9,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public class ScreenSupport {
@@ -21,11 +22,11 @@ public class ScreenSupport {
             if (ALLOW.values().stream().anyMatch(p -> p.test(hs))) return true;
             try {
                 Identifier handlerId = Registry.SCREEN_HANDLER.getId(hs.getScreenHandler().getType());
-                if (InventoryTabs.CONFIG.tabDisplayFilter.deny.stream().map(Identifier::tryParse).toList().contains(handlerId)) return false;
-                if (InventoryTabs.CONFIG.tabDisplayFilter.allow.stream().map(Identifier::tryParse).toList().contains(handlerId)) return true;
+                if (InventoryTabs.CONFIG.screenOverrides.entrySet().stream().filter(e -> !e.getValue()).anyMatch(e -> Objects.equals(e.getKey(), handlerId.toString()))) return false;
+                if (InventoryTabs.CONFIG.screenOverrides.entrySet().stream().filter(Map.Entry::getValue).anyMatch(e -> Objects.equals(e.getKey(), handlerId.toString()))) return true;
             } catch (UnsupportedOperationException ignored) {
             }
-            return InventoryTabs.CONFIG.tabDisplayFilter.fallback == InventoryTabsConfig.AllowDeny.ALLOW;
+            return InventoryTabs.CONFIG.allowScreensByDefault;
         }
         return false;
     }

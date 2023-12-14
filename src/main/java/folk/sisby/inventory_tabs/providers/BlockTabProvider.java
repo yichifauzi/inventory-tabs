@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 public abstract class BlockTabProvider extends RegistryTabProvider<Block> {
     public final Map<Identifier, BiPredicate<World, BlockPos>> preclusions = new HashMap<>();
 
-    BlockTabProvider() {
+    public BlockTabProvider() {
         preclusions.put(InventoryTabs.id("player_in_range"), (w, p) -> MinecraftClient.getInstance().player != null && !PlayerUtil.inRange(MinecraftClient.getInstance().player, p));
     }
 
