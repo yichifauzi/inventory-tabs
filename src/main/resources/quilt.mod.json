@@ -39,6 +39,9 @@
 				"id": "quilted_fabric_api",
 				"versions": ">=${qfapi}"
 			}
+		],
+		"jars": [
+			"META-INF/jars/kaleido-config-${kaleidoConfig}.jar"
 		]
 	},
 	"mixin": "inventory_tabs.mixins.json",

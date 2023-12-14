@@ -66,8 +66,6 @@ public class TabProviders {
         if (InventoryTabs.CONFIG.configLogging) {
             InventoryTabs.LOGGER.info("[Inventory Tabs] Registered Screen Handlers:");
             manager.get(Registry.MENU_KEY).getIds().forEach(id -> InventoryTabs.LOGGER.info("[Inventory Tabs] {}", id.toString()));
-            InventoryTabs.LOGGER.info("[Inventory Tabs] Registered Tab Providers Available:");
-            REGISTRY.keySet().forEach(id -> InventoryTabs.LOGGER.info("[Inventory Tabs] {}", id.toString()));
         }
         reloadRegistryProviders(manager, Registry.BLOCK_KEY, getProviders(BlockTabProvider.class), InventoryTabs.CONFIG.blockProviderOverrides);
         warmEntities = reloadRegistryProviders(manager, Registry.ENTITY_TYPE_KEY, getProviders(EntityTabProvider.class), InventoryTabs.CONFIG.entityProviderOverrides);
