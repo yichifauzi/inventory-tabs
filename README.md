@@ -24,11 +24,11 @@ You can also use Tab and Shift+Tab to cycle through available screens.
 - Storage tabs can be labelled using signs, item frames, or (w/ server) anvil-renaming for organisation.
 - Stacks held on your cursor carry over to the next screen as long as your inventory isn't full.
 
-<center><img style="max-width: 400px" alt="Shulker Box Symphony" src="https://cdn.modrinth.com/data/VD1aynYU/images/3a5405eff19e20620cb757142aa040ca366fcb72.gif" /></center>
+<center><img width=640 alt="Shulker Box Symphony" src="https://cdn.modrinth.com/data/VD1aynYU/images/3a5405eff19e20620cb757142aa040ca366fcb72.gif" /></center>
 
 - Container screens are realigned with other screens, instead of being 1 pixel lower.
 - Fits on-screen with [EMI](https://modrinth.com/mod/emi), even on very high GUI scales - Use `Left (Compressed)` effects.
-<center><img style="max-width: 400px" alt="EMI VGA Preview" src="https://cdn.modrinth.com/data/VD1aynYU/images/7356435a874c5f5c587b59f4b71461da2e997df1.png" /></center>
+<center><img width=640 alt="EMI VGA Preview" src="https://cdn.modrinth.com/data/VD1aynYU/images/7356435a874c5f5c587b59f4b71461da2e997df1.png" /></center>
 
 #### Anti-Cheat & Convenience
 
