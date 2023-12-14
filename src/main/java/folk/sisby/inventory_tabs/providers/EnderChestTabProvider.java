@@ -1,8 +1,6 @@
 package folk.sisby.inventory_tabs.providers;
 
 import folk.sisby.inventory_tabs.InventoryTabs;
-import folk.sisby.inventory_tabs.tabs.BlockTab;
-import folk.sisby.inventory_tabs.tabs.Tab;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.util.math.BlockPos;
@@ -16,12 +14,12 @@ public class EnderChestTabProvider extends BlockTabProvider {
     }
 
     @Override
-    public Tab createTab(World world, BlockPos pos) {
-        return new BlockTab(-5, world, pos, isUnique());
+    public int getTabOrderPriority(World world, BlockPos pos) {
+        return -5;
     }
 
     @Override
-    public int getPriority() {
+    public int getRegistryPriority() {
         return 60;
     }
 }

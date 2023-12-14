@@ -25,7 +25,7 @@ public abstract class MixinShulkerBoxScreen extends HandledScreen<GenericContain
         this.playerInventoryTitleY = this.backgroundHeight - 93;
     }
 
-    @Inject(method = "drawBackground", at = @At(value = "TAIL"))
+    @Inject(method = "drawBackground", at = @At("TAIL"))
     public void containerHeader(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
         drawTexture(matrices, (this.width - this.backgroundWidth) / 2, (this.height - this.backgroundHeight) / 2, 0, 0, this.backgroundWidth, 7);
     }
@@ -45,7 +45,7 @@ public abstract class MixinShulkerBoxScreen extends HandledScreen<GenericContain
         return 64;
     }
 
-    @Inject(method = "drawBackground", at = @At(value = "TAIL"))
+    @Inject(method = "drawBackground", at = @At("TAIL"))
     public void containerInventory(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
         drawTexture(matrices, (this.width - this.backgroundWidth) / 2, (this.height - this.backgroundHeight) / 2 + 71, 0, 71, this.backgroundWidth, 96);
     }

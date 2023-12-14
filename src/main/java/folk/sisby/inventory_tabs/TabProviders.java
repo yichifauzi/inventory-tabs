@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import folk.sisby.inventory_tabs.providers.BlockTabProvider;
 import folk.sisby.inventory_tabs.providers.ChestBlockTabProvider;
+import folk.sisby.inventory_tabs.providers.SimpleStorageBlockTabProvider;
 import folk.sisby.inventory_tabs.providers.EnderChestTabProvider;
 import folk.sisby.inventory_tabs.providers.EntityTabProvider;
 import folk.sisby.inventory_tabs.providers.ItemTabProvider;
@@ -43,8 +44,9 @@ public class TabProviders {
     public static final ShulkerBoxTabProvider BLOCK_SHULKER_BOX = register(InventoryTabs.id("block_shulker_box"), new ShulkerBoxTabProvider());
     public static final EnderChestTabProvider BLOCK_ENDER_CHEST = register(InventoryTabs.id("block_ender_chest"), new EnderChestTabProvider());
     public static final ChestBlockTabProvider BLOCK_CHEST = register(InventoryTabs.id("block_chest"), new ChestBlockTabProvider());
-    public static final SimpleBlockTabProvider BLOCK_SIMPLE = register(InventoryTabs.id("block_simple"), new SimpleBlockTabProvider());
     public static final UniqueBlockTabProvider BLOCK_UNIQUE = register(InventoryTabs.id("block_unique"), new UniqueBlockTabProvider());
+    public static final SimpleStorageBlockTabProvider BLOCK_SIMPLE_CONTAINER = register(InventoryTabs.id("block_simple_storage"), new SimpleStorageBlockTabProvider());
+    public static final SimpleBlockTabProvider BLOCK_SIMPLE = register(InventoryTabs.id("block_simple"), new SimpleBlockTabProvider());
 
     public static final SneakEntityTabProvider ENTITY_SNEAK = register(InventoryTabs.id("entity_sneak"), new SneakEntityTabProvider());
     public static final SimpleEntityTabProvider ENTITY_SIMPLE = register(InventoryTabs.id("entity_simple"), new SimpleEntityTabProvider());
@@ -75,7 +77,7 @@ public class TabProviders {
     }
 
     public static <T extends RegistryTabProvider<?>> Map<Identifier, T> getProviders(Class<T> clazz) {
-        return REGISTRY.values().stream().filter(p -> clazz.isAssignableFrom(p.getClass())).sorted(Comparator.comparingInt(p -> ((T) p).getPriority()).reversed()).collect(Collectors.toMap(p -> REGISTRY.inverse().get(p), p -> (T) p, (a, b) -> b, LinkedHashMap::new));
+        return REGISTRY.values().stream().filter(p -> clazz.isAssignableFrom(p.getClass())).sorted(Comparator.comparingInt(p -> ((T) p).getRegistryPriority()).reversed()).collect(Collectors.toMap(p -> REGISTRY.inverse().get(p), p -> (T) p, (a, b) -> b, LinkedHashMap::new));
     }
 
     public static <T> Set<T> reloadRegistryProviders(DynamicRegistryManager manager, RegistryKey<Registry<T>> registryKey, Map<Identifier, ? extends RegistryTabProvider<T>> providers, Map<String, String> overrideConfig) {

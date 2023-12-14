@@ -6,8 +6,13 @@ import folk.sisby.inventory_tabs.TabManager;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.util.math.Rect2i;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -17,9 +22,8 @@ public interface Tab {
 
     /**
      * Opens the screen associated with the tab.
-     * @return false if the process to open the screen isn't possible.
      */
-    boolean open();
+    void open(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager);
 
     /**
      * @return true if the tab should stop being displayed. Should be synced up with the provider that provides this tab.
@@ -37,9 +41,9 @@ public interface Tab {
     Text getHoverText();
 
     /**
-     * Called when the screen associated with the tab is closed.
+     * Called when the screen associated with the tab is closed (for handlers that aren't destroyed when closed on the servers)
      */
-    default void onClose(HandledScreen<?> currentScreen) {}
+    default void close() {}
 
     /**
      * @return the tab's left-priority when being displayed. The player's inventory is at 100.
@@ -47,6 +51,12 @@ public interface Tab {
     default int getPriority() {
         return 0;
     }
+
+    /**
+     * @return whether the tabs open method instantly opens the screen on the client side without slot sync.
+     * Used for the survival inventory. Helps preserve cursor stacks.
+     */
+    default boolean isInstant() { return false; }
 
     default void renderBackground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);

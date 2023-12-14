@@ -35,7 +35,7 @@ public abstract class MixinGenericContainerScreen extends HandledScreen<GenericC
         }
     }
 
-    @Inject(method = "drawBackground", at = @At(value = "TAIL"))
+    @Inject(method = "drawBackground", at = @At("TAIL"))
     public void containerHeader(MatrixStack matrices, float delta, int mouseX, int mouseY, CallbackInfo ci) {
         drawTexture(matrices, (this.width - this.backgroundWidth) / 2, (this.height - this.backgroundHeight) / 2, 0, 0, this.backgroundWidth, 7);
     }

@@ -51,6 +51,15 @@ public abstract class MixinHandledScreen extends Screen implements InventoryTabs
         }
     }
 
+    @Inject(method = "mouseReleased", at = @At("HEAD"), cancellable = true)
+    public void mouseReleased(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> callbackInfo) {
+        if (!inventoryTabs$allowTabs) return;
+        if (TabManager.mouseReleased(mouseX, mouseY, button)) {
+            callbackInfo.setReturnValue(true);
+            callbackInfo.cancel();
+        }
+    }
+
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     public void keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> callbackInfo) {
         if (!inventoryTabs$allowTabs) return;

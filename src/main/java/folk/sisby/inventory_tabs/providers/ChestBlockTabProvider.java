@@ -17,11 +17,16 @@ public class ChestBlockTabProvider extends BlockTabProvider {
 
     @Override
     public Tab createTab(World world, BlockPos pos) {
-        return new ChestBlockTab(-10, world, pos);
+        return new ChestBlockTab(world, pos, preclusions, getTabOrderPriority(world, pos));
     }
 
     @Override
-    public int getPriority() {
+    public int getTabOrderPriority(World world, BlockPos pos) {
+        return -10;
+    }
+
+    @Override
+    public int getRegistryPriority() {
         return 50;
     }
 }
