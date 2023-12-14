@@ -90,17 +90,19 @@ public class TabManager {
     }
 
     public static void openTab(Tab tab) {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        ClientPlayerInteractionManager interactionManager = MinecraftClient.getInstance().interactionManager;
-        ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
-        if (player != null && interactionManager != null && networkHandler != null && player.getWorld() instanceof ClientWorld world) {
-            if (!tab.shouldBeRemoved(world, false)) {
-                nextTab = tab;
-                HandlerSlotUtil.push(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler(), tab.isInstant());
-                player.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(currentScreen.getScreenHandler().syncId));
-                tab.open(player, world, currentScreen.getScreenHandler(), interactionManager);
-                if (tab.isInstant()) { // Instant screens don't have slot updates to wait for, so finish now.
-                    finishOpeningScreen(currentScreen.getScreenHandler());
+        if (tab != currentTab) {
+            ClientPlayerEntity player = MinecraftClient.getInstance().player;
+            ClientPlayerInteractionManager interactionManager = MinecraftClient.getInstance().interactionManager;
+            ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
+            if (player != null && interactionManager != null && networkHandler != null && player.getWorld() instanceof ClientWorld world) {
+                if (!tab.shouldBeRemoved(world, false)) {
+                    nextTab = tab;
+                    HandlerSlotUtil.push(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler(), tab.isInstant());
+                    player.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(currentScreen.getScreenHandler().syncId));
+                    tab.open(player, world, currentScreen.getScreenHandler(), interactionManager);
+                    if (tab.isInstant()) { // Instant screens don't have slot updates to wait for, so finish now.
+                        finishOpeningScreen(currentScreen.getScreenHandler());
+                    }
                 }
             }
         }
