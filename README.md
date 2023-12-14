@@ -32,35 +32,57 @@ Operates entirely on the client side, with only small tweaks when installed on-s
 
 <center><img alt="EMI Preview" src="https://cdn.modrinth.com/data/VD1aynYU/images/7356435a874c5f5c587b59f4b71461da2e997df1.png" /></center>
 
-## Advanced Use
+### Modpack Configuration
 
-### Basic Mod Structure
+Inventory Tabs 4 is designed from the ground up to be friendlier to modpacks.<br/>
+It's configured via `config/inventory_tabs.toml`, which includes comments providing extra context - like what each tab provider does. 
+
+You can enable the `configLogging` option to log  helpful information for setting up the mod for your modpack when loading into a world.
+
+If tabs are appearing on a screen they don't fit well with, the screen can be blacklisted:
+
+```
+[screenOverrides]
+	"fwaystones:waystone" = false
+```
+
+If tabs are being made for an inappropriate block, you can manually disable their tab provider:
+
+```
+[blockProviderOverrides]
+	"cool_mod:incompatible_block" = ""
+```
+
+Or manually override it to a relevant one:
+
+```
+[blockProviderOverrides]
+	"#cool_mod:crafting_stations" = "inventory_tabs:block_unique"
+	"cool_mod:single_chest" = "inventory_tabs:block_simple"
+	"cool_mod:doubleable_chest" = "inventory_tabs:block_chest"
+```
+
+Make sure you test your configuration! These options are _not_ intended to be crash-proof.
+
+Overrides also work for entities and items, via `[entityProviderOverrides]` and `[itemProviderOverrides]` respectively.
+
+If too many inappropriate blocks are being matched, you may want to disable the default matching logic for a provider entirely:
+
+```
+[registryProviderDefaults]
+	"inventory_tabs:block_simple" = false
+```
+
+The `block_simple` provider uses a blacklist instead of a whitelist, so it generates a lot of false-positive tabs. It's enabled by default to help with finding good/bad tabs - but if you're making a modpack, you'll probably turn it off!
+
+### Mod Architecture
 
 Each visible tab on the screen is a [Tab](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/tabs/Tab.java), which is responsible for rendering itself, knowing how to be opened, and knowing when it should be removed from the list of tabs (e.g. when no longer in range).
 
 These tabs are held by the [Tab Manager](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/TabManager.java), which is effectively the "Tab Screen". It adds onto regular screen methods to do its own rendering, ticking, and mouse click handling. It's also responsible for checking if any new tabs should be added.
 
-Tabs are added via registered [Tab Providers](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/TabProviders.java). Basic providers like [Vehicle Inventory](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/VehicleInventoryTabProvider.java) check simple conditions and add a special tab. The more advanced [Registry Providers](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/RegistryTabProvider.java) are designed to be assigned a specific set of [blocks](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/BlockTabProvider.java), [entity types](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/EntityTabProvider.java), or [items](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/ItemTabProvider.java) that they're responsible for providing tabs for - which is frozen at reload time - and then searching for those around the player every tick. Using these generics, simpler concrete providers are made ([Ender Chests](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/EnderChestTabProvider.java), [Unique Block](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/UniqueBlockTabProvider.java).)  
+Tabs are added via registered [Tab Providers](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/TabProviders.java). Basic providers like [Vehicle Inventory](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/VehicleInventoryTabProvider.java) check simple conditions and add a special tab. The more advanced [Registry Providers](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/RegistryTabProvider.java) are designed to be assigned a specific set of [blocks](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/BlockTabProvider.java), [entity types](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/EntityTabProvider.java), or [items](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/ItemTabProvider.java) that they're responsible for providing tabs for - which is frozen at reload time - and then searching for those around the player every tick. Using these generics, simpler concrete providers are made ([Ender Chests](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/EnderChestTabProvider.java), [Unique Block](https://github.com/sisby-folk/inventory-tabs/blob/1.20/src/main/java/folk/sisby/inventory_tabs/providers/UniqueBlockTabProvider.java).)
 
-### Configuration
-
-Inventory Tabs 4 is designed from the ground up to be friendlier to modpacks. 
-
-Blocks, Entity Types, and Items can be manually assigned to specific concrete tab providers via their IDs.
-
-```
-[blockProviderOverrides]
-	"cool_mod:crafting_station" = "inventory_tabs:block_unique"
-	"cool_mod:single_chest" = "inventory_tabs:block_simple"
-	"cool_mod:doubleable_chest" = "inventory_tabs:block_chest"
-	"cool_mod:incompatible_block" = ""
-```
-
-Provider IDs can be set to `""` to prevent tabs being provided for that object. 
-
-All present provider IDs are automatically populated under `[registryProviderDefaults]`, where you can disable the default matching logic for each provider (e.g. the chest provider matching all AbstractChestBlocks).
-
-If a handled screen shouldn't display tabs, or should display tabs but isn't, its handler ID can be added to the `allow` and `deny` lists in `[tabDisplayFilter]`.
 
 ### Addons
 
