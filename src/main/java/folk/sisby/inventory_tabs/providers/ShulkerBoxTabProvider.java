@@ -1,8 +1,6 @@
 package folk.sisby.inventory_tabs.providers;
 
 import folk.sisby.inventory_tabs.InventoryTabs;
-import folk.sisby.inventory_tabs.tabs.ShulkerBoxBlockTab;
-import folk.sisby.inventory_tabs.tabs.Tab;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.util.math.BlockPos;
@@ -16,12 +14,12 @@ public class ShulkerBoxTabProvider extends BlockTabProvider {
     }
 
     @Override
-    public Tab createTab(World world, BlockPos pos) {
-        return new ShulkerBoxBlockTab(world, pos);
+    public int getTabOrderPriority(World world, BlockPos pos) {
+        return -50;
     }
 
     @Override
-    public int getPriority() {
+    public int getRegistryPriority() {
         return 70;
     }
 }

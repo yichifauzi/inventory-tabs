@@ -7,6 +7,8 @@ import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.block.GrindstoneBlock;
 import net.minecraft.block.LoomBlock;
 import net.minecraft.block.StonecutterBlock;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class UniqueBlockTabProvider extends BlockTabProvider {
     public UniqueBlockTabProvider() {
@@ -20,7 +22,12 @@ public class UniqueBlockTabProvider extends BlockTabProvider {
     }
 
     @Override
-    public int getPriority() {
+    public int getTabOrderPriority(World world, BlockPos pos) {
+        return 20;
+    }
+
+    @Override
+    public int getRegistryPriority() {
         return 20;
     }
 
