@@ -6,7 +6,7 @@ import folk.sisby.inventory_tabs.tabs.VehicleInventoryTab;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.RideableOpenableInventory;
+import net.minecraft.entity.RideableInventory;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class VehicleInventoryTabProvider implements TabProvider {
 
     @Override
     public void addAvailableTabs(ClientPlayerEntity player, Consumer<Tab> addTab) {
-        if (player.hasVehicle() && player.getVehicle() instanceof RideableOpenableInventory) {
+        if (player.hasVehicle() && player.getVehicle() instanceof RideableInventory) {
             addTab.accept(new VehicleInventoryTab(player.getVehicle(), preclusions));
         }
     }

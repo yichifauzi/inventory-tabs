@@ -21,10 +21,10 @@ import folk.sisby.inventory_tabs.providers.UniqueItemTabProvider;
 import folk.sisby.inventory_tabs.providers.VehicleInventoryTabProvider;
 import folk.sisby.inventory_tabs.util.RegistryValue;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.Holder;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 
 import java.util.Comparator;
@@ -101,8 +101,8 @@ public class TabProviders {
         }
         // Add values to providers
         if (InventoryTabs.CONFIG.configLogging) InventoryTabs.LOGGER.info("[Inventory Tabs] Starting provider freeze for {}", registryKey.getValue());
-        for (Map.Entry<RegistryKey<T>, T> entry : manager.get(registryKey).getEntries()) {
-            Holder<T> holder = manager.get(registryKey).getHolder(entry.getKey()).get();
+        for (Map.Entry<RegistryKey<T>, T> entry : manager.get(registryKey).getEntrySet()) {
+            RegistryEntry<T> holder = manager.get(registryKey).getEntry(entry.getKey()).get();
 
             Optional<Map.Entry<RegistryValue<T>, RegistryTabProvider<T>>> override = overrides.entrySet().stream().filter(e -> e.getKey().is(holder)).findFirst();
             if (override.isPresent()) {
