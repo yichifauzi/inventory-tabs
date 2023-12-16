@@ -22,10 +22,10 @@ import folk.sisby.inventory_tabs.providers.VehicleInventoryTabProvider;
 import folk.sisby.inventory_tabs.util.RegistryValue;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Holder;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 import java.util.Comparator;
@@ -66,7 +66,7 @@ public class TabProviders {
         refreshConfigPlaceholders();
         if (InventoryTabs.CONFIG.configLogging) {
             InventoryTabs.LOGGER.info("[Inventory Tabs] Registered Screen Handlers:");
-            manager.get(RegistryKeys.SCREEN_HANDLER_TYPE).getKeys().forEach(id -> InventoryTabs.LOGGER.info("[Inventory Tabs] {}", id.getValue().toString()));
+            manager.get(RegistryKeys.SCREEN_HANDLER).getKeys().forEach(id -> InventoryTabs.LOGGER.info("[Inventory Tabs] {}", id.getValue().toString()));
         }
         reloadRegistryProviders(manager, RegistryKeys.BLOCK, getProviders(BlockTabProvider.class), InventoryTabs.CONFIG.blockProviderOverrides);
         warmEntities = reloadRegistryProviders(manager, RegistryKeys.ENTITY_TYPE, getProviders(EntityTabProvider.class), InventoryTabs.CONFIG.entityProviderOverrides);
@@ -102,8 +102,8 @@ public class TabProviders {
         }
         // Add values to providers
         if (InventoryTabs.CONFIG.configLogging) InventoryTabs.LOGGER.info("[Inventory Tabs] Starting provider freeze for {}", registryKey.getValue());
-        for (Map.Entry<RegistryKey<T>, T> entry : manager.get(registryKey).getEntries()) {
-            Holder<T> holder = manager.getHolderProvider().getLookup(registryKey).orElseThrow().getHolderOrThrow(entry.getKey());
+        for (Map.Entry<RegistryKey<T>, T> entry : manager.get(registryKey).getEntrySet()) {
+            RegistryEntry<T> holder = manager.createRegistryLookup().getOptional(registryKey).orElseThrow().getOrThrow(entry.getKey());
 
             Optional<Map.Entry<RegistryValue<T>, RegistryTabProvider<T>>> override = overrides.entrySet().stream().filter(e -> e.getKey().is(holder)).findFirst();
             if (override.isPresent()) {

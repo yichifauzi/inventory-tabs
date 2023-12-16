@@ -2,11 +2,6 @@ package folk.sisby.inventory_tabs.providers;
 
 import folk.sisby.inventory_tabs.InventoryTabs;
 import net.minecraft.block.*;
-import net.minecraft.block.piston.PistonExtensionBlock;
-import net.minecraft.block.sculk.SculkCatalystBlock;
-import net.minecraft.block.sculk.SculkSensorBlock;
-import net.minecraft.block.sculk.SculkShriekerBlock;
-import net.minecraft.block.sign.AbstractSignBlock;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

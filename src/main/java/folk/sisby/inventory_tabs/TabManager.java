@@ -1,6 +1,5 @@
 package folk.sisby.inventory_tabs;
 
-import com.mojang.blaze3d.platform.InputUtil;
 import folk.sisby.inventory_tabs.duck.InventoryTabsScreen;
 import folk.sisby.inventory_tabs.tabs.BlockTab;
 import folk.sisby.inventory_tabs.tabs.EntityTab;
@@ -11,7 +10,7 @@ import folk.sisby.inventory_tabs.util.HandlerSlotUtil;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -19,11 +18,12 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.packet.c2s.play.HandledScreenCloseC2SPacket;
+import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -84,7 +84,7 @@ public class TabManager {
 
     public static void tick(ClientWorld world) {
         if (holdTabCooldown > 0) {
-            if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), InventoryTabs.NEXT_TAB.boundKey.getKeyCode())) {
+            if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), InventoryTabs.NEXT_TAB.boundKey.getCode())) {
                 holdTabCooldown--;
             } else {
                 holdTabCooldown = 0;
@@ -106,7 +106,7 @@ public class TabManager {
                 if (!tab.shouldBeRemoved(world, false)) {
                     nextTab = tab;
                     HandlerSlotUtil.push(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler(), tab.isInstant());
-                    player.networkHandler.sendPacket(new HandledScreenCloseC2SPacket(currentScreen.getScreenHandler().syncId));
+                    player.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(currentScreen.getScreenHandler().syncId));
                     tab.open(player, world, currentScreen.getScreenHandler(), interactionManager);
                     if (tab.isInstant()) { // Instant screens don't have slot updates to wait for, so finish now.
                         finishOpeningScreen(currentScreen.getScreenHandler());
@@ -253,25 +253,25 @@ public class TabManager {
         return tabs.size() / (tabPositions.size() + 1);
     }
 
-    public static void renderBackground(GuiGraphics graphics) {
+    public static void renderBackground(DrawContext drawContext) {
         tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
         for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
             WidgetPosition pos = tabPositions.get(i);
             Tab tab = tabs.get(currentPage * tabPositions.size() + i);
-            if (pos != null && tab != null) tab.renderBackground(graphics, pos, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
+            if (pos != null && tab != null) tab.renderBackground(drawContext, pos, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
         }
     }
 
-    public static void renderForeground(GuiGraphics graphics, double mouseX, double mouseY) {
+    public static void renderForeground(DrawContext drawContext, double mouseX, double mouseY) {
         for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
             WidgetPosition pos = tabPositions.get(i);
             Tab tab = tabs.get(currentPage * tabPositions.size() + i);
-            if (pos != null && tab != null) tab.renderForeground(graphics, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
+            if (pos != null && tab != null) tab.renderForeground(drawContext, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
         }
 
         if (getMaximumPage() > 0) {
-            drawButton(graphics, mouseX, mouseY, true);
-            drawButton(graphics, mouseX, mouseY, false);
+            drawButton(drawContext, mouseX, mouseY, true);
+            drawButton(drawContext, mouseX, mouseY, false);
         }
     }
 
@@ -284,19 +284,19 @@ public class TabManager {
         return new Rect2i(pos.x, pos.y + (pos.up ? -TAB_HEIGHT : TAB_HEIGHT), TAB_WIDTH, TAB_HEIGHT);
     }
 
-    public static void drawButton(GuiGraphics graphics, double mouseX, double mouseY, boolean left) {
+    public static void drawButton(DrawContext drawContext, double mouseX, double mouseY, boolean left) {
         Rect2i rect = getPageButton(left);
         boolean hovered = rect.contains((int) mouseX, (int) mouseY);
         boolean active = left ? currentPage > 0 : currentPage < getMaximumPage();
         int u = BUTTON_WIDTH * (left ? 0 : 1);
         int v = BUTTON_HEIGHT * (active ? hovered ? 2 : 1 : 0);
-        graphics.drawTexture(BUTTONS_TEXTURE, rect.getX(), rect.getY(), u, v, rect.getWidth(), rect.getHeight());
-        if (hovered) graphics.drawTooltip(currentScreen.textRenderer, Text.literal((currentPage + 1) + "/" + (getMaximumPage() + 1)), (int) mouseX, (int) mouseY);
+        drawContext.drawTexture(BUTTONS_TEXTURE, rect.getX(), rect.getY(), u, v, rect.getWidth(), rect.getHeight());
+        if (hovered) drawContext.drawTooltip(currentScreen.textRenderer, Text.literal((currentPage + 1) + "/" + (getMaximumPage() + 1)), (int) mouseX, (int) mouseY);
     }
 
     public static void playClick() {
         MinecraftClient.getInstance().getSoundManager()
-                .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
+                .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK.comp_349(), 1.0F));
     }
 }
 

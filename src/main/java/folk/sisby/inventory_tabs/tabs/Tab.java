@@ -4,7 +4,7 @@ import folk.sisby.inventory_tabs.InventoryTabs;
 import folk.sisby.inventory_tabs.TabManager;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.util.math.Rect2i;
@@ -56,18 +56,18 @@ public interface Tab {
      */
     default boolean isInstant() { return false; }
 
-    default void renderBackground(GuiGraphics graphics, WidgetPosition pos, int width, int height, boolean current) {
+    default void renderBackground(DrawContext drawContext, WidgetPosition pos, int width, int height, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
-        if (!current) graphics.drawTexture(TABS_TEXTURE, pos.x, y, TabManager.TAB_WIDTH, pos.up ? 0 : (TabManager.TAB_HEIGHT * 2), width, height);
+        if (!current) drawContext.drawTexture(TABS_TEXTURE, pos.x, y, TabManager.TAB_WIDTH, pos.up ? 0 : (TabManager.TAB_HEIGHT * 2), width, height);
     }
 
-    default void renderForeground(GuiGraphics graphics, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
+    default void renderForeground(DrawContext drawContext, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
-        if (current) graphics.drawTexture(TABS_TEXTURE, pos.x, y, TabManager.TAB_WIDTH, TabManager.TAB_HEIGHT + (pos.up ? 0 : (TabManager.TAB_HEIGHT * 2)), width, height);
+        if (current) drawContext.drawTexture(TABS_TEXTURE, pos.x, y, TabManager.TAB_WIDTH, TabManager.TAB_HEIGHT + (pos.up ? 0 : (TabManager.TAB_HEIGHT * 2)), width, height);
         int itemPadding = Math.max(0, (width - 16) / 2);
-        graphics.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding);
+        drawContext.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding);
         if (new Rect2i(pos.x + itemPadding, y + itemPadding, 16, 16).contains((int) mouseX, (int) mouseY)) {
-            graphics.drawTooltip(MinecraftClient.getInstance().textRenderer, getHoverText(), (int) mouseX, (int) mouseY);
+            drawContext.drawTooltip(MinecraftClient.getInstance().textRenderer, getHoverText(), (int) mouseX, (int) mouseY);
         }
     }
 }

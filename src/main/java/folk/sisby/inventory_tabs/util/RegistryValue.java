@@ -2,16 +2,16 @@ package folk.sisby.inventory_tabs.util;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Holder;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public record RegistryValue<T>(Either<Holder<T>, TagKey<T>> value) {
+public record RegistryValue<T>(Either<RegistryEntry<T>, TagKey<T>> value) {
     public Either<T, TagKey<T>> getValue() {
-        return this.value.mapLeft(Holder::value);
+        return this.value.mapLeft(RegistryEntry::comp_349);
     }
 
     public boolean isTag() {
@@ -25,7 +25,7 @@ public record RegistryValue<T>(Either<Holder<T>, TagKey<T>> value) {
         } else {
             Identifier id = Identifier.tryParse(value);
             if (id == null) return null;
-            return manager.getHolderProvider().getLookup(registry).orElseThrow().getHolder(RegistryKey.of(registry, id)).map(h -> new RegistryValue<>(Either.left(h))).orElse(null);
+            return manager.createRegistryLookup().getOptional(registry).orElseThrow().getOptional(RegistryKey.of(registry, id)).map(h -> new RegistryValue<>(Either.left(h))).orElse(null);
         }
     }
 
@@ -40,7 +40,7 @@ public record RegistryValue<T>(Either<Holder<T>, TagKey<T>> value) {
                 );
     }
 
-    public boolean is(Holder<T> value) {
+    public boolean is(RegistryEntry<T> value) {
         return this.value.map((v) -> v.equals(value), value::isIn);
     }
 }

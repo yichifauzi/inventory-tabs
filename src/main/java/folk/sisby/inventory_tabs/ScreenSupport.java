@@ -21,7 +21,7 @@ public class ScreenSupport {
             if (DENY.values().stream().anyMatch(p -> p.test(hs))) return false;
             if (ALLOW.values().stream().anyMatch(p -> p.test(hs))) return true;
             try {
-                Identifier handlerId = Registries.SCREEN_HANDLER_TYPE.getId(hs.getScreenHandler().getType());
+                Identifier handlerId = Registries.SCREEN_HANDLER.getId(hs.getScreenHandler().getType());
                 if (InventoryTabs.CONFIG.screenOverrides.entrySet().stream().filter(e -> !e.getValue()).anyMatch(e -> Objects.equals(e.getKey(), handlerId.toString()))) return false;
                 if (InventoryTabs.CONFIG.screenOverrides.entrySet().stream().filter(Map.Entry::getValue).anyMatch(e -> Objects.equals(e.getKey(), handlerId.toString()))) return true;
             } catch (UnsupportedOperationException ignored) {

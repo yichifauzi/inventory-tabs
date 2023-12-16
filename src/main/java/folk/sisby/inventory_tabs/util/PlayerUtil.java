@@ -30,7 +30,7 @@ public class PlayerUtil {
     );
 
     public static boolean inRange(PlayerEntity player, BlockPos pos) {
-        if (pos.ofCenter().squaredDistanceTo(player.getEyePos()) > BLOCK_REACH_SQUARE) return false;
+        if (pos.toCenterPos().squaredDistanceTo(player.getEyePos()) > BLOCK_REACH_SQUARE) return false;
         BlockHitResult result = raycast(player, pos);
         return pos.equals(result.getBlockPos());
     }

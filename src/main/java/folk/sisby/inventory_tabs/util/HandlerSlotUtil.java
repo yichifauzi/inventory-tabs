@@ -3,7 +3,7 @@ package folk.sisby.inventory_tabs.util;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.network.packet.c2s.play.SlotClickC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
@@ -27,7 +27,7 @@ public class HandlerSlotUtil {
                                 player
                         );
                     } else {
-                        player.networkHandler.sendPacket(new SlotClickC2SPacket(
+                        player.networkHandler.sendPacket(new ClickSlotC2SPacket(
                                 handler.syncId,
                                 handler.getRevision(),
                                 screenSlot,

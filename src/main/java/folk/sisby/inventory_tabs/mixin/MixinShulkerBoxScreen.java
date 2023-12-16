@@ -1,6 +1,6 @@
 package folk.sisby.inventory_tabs.mixin;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ShulkerBoxScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -31,27 +31,27 @@ public abstract class MixinShulkerBoxScreen extends HandledScreen<GenericContain
     }
 
     @Inject(method = "drawBackground", at = @At("TAIL"))
-    public void containerHeader(GuiGraphics graphics, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        graphics.drawTexture(TEXTURE, (this.width - this.backgroundWidth) / 2, (this.height - this.backgroundHeight) / 2, 0, 0, this.backgroundWidth, 7);
+    public void containerHeader(DrawContext drawContext, float delta, int mouseX, int mouseY, CallbackInfo ci) {
+        drawContext.drawTexture(TEXTURE, (this.width - this.backgroundWidth) / 2, (this.height - this.backgroundHeight) / 2, 0, 0, this.backgroundWidth, 7);
     }
 
-    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V", ordinal = 0), index = 2)
+    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V", ordinal = 0), index = 2)
     public int containerY(int original) {
         return original + 7;
     }
 
-    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V", ordinal = 0), index = 4)
+    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V", ordinal = 0), index = 4)
     public int containerV(int original) {
         return original + 8;
     }
 
-    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V", ordinal = 0), index = 6)
+    @ModifyArg(method = "drawBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTexture(Lnet/minecraft/util/Identifier;IIIIII)V", ordinal = 0), index = 6)
     public int containerHeight(int original) {
         return 64;
     }
 
     @Inject(method = "drawBackground", at = @At("TAIL"))
-    public void containerInventory(GuiGraphics graphics, float delta, int mouseX, int mouseY, CallbackInfo ci) {
-        graphics.drawTexture(TEXTURE, (this.width - this.backgroundWidth) / 2, (this.height - this.backgroundHeight) / 2 + 71, 0, 71, this.backgroundWidth, 96);
+    public void containerInventory(DrawContext drawContext, float delta, int mouseX, int mouseY, CallbackInfo ci) {
+        drawContext.drawTexture(TEXTURE, (this.width - this.backgroundWidth) / 2, (this.height - this.backgroundHeight) / 2 + 71, 0, 71, this.backgroundWidth, 96);
     }
 }

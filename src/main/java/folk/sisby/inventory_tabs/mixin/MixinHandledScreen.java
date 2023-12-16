@@ -3,7 +3,7 @@ package folk.sisby.inventory_tabs.mixin;
 import folk.sisby.inventory_tabs.ScreenSupport;
 import folk.sisby.inventory_tabs.TabManager;
 import folk.sisby.inventory_tabs.duck.InventoryTabsScreen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -37,9 +37,9 @@ public abstract class MixinHandledScreen extends Screen implements InventoryTabs
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    protected void drawForegroundTabs(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    protected void drawForegroundTabs(DrawContext drawContext, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!inventoryTabs$allowTabs) return;
-        TabManager.renderForeground(graphics, mouseX, mouseY);
+        TabManager.renderForeground(drawContext, mouseX, mouseY);
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)

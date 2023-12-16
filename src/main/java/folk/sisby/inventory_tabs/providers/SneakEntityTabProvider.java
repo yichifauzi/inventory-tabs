@@ -2,14 +2,14 @@ package folk.sisby.inventory_tabs.providers;
 
 import folk.sisby.inventory_tabs.InventoryTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.RideableOpenableInventory;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.RideableInventory;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 
 public class SneakEntityTabProvider extends EntityTabProvider {
     public SneakEntityTabProvider () {
         super();
-        warmMatches.put(InventoryTabs.id("rideable_openable_inventory"), e -> e instanceof RideableOpenableInventory);
-        preclusions.put(InventoryTabs.id("untamed"), e -> e instanceof HorseBaseEntity h && !h.isTame());
+        warmMatches.put(InventoryTabs.id("rideable_openable_inventory"), e -> e instanceof RideableInventory);
+        preclusions.put(InventoryTabs.id("untamed"), e -> e instanceof AbstractHorseEntity h && !h.isTame());
     }
 
     @Override
@@ -19,7 +19,7 @@ public class SneakEntityTabProvider extends EntityTabProvider {
 
     @Override
     public int getTabOrderPriority(Entity entity) {
-        return entity instanceof RideableOpenableInventory ? 45 : 40;
+        return entity instanceof RideableInventory ? 45 : 40;
     }
 
     @Override

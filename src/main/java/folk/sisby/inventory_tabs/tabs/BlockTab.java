@@ -55,7 +55,7 @@ public class BlockTab implements Tab {
     @Override
     public void open(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager) {
         if (InventoryTabs.CONFIG.rotatePlayer) player.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, Vec3d.ofCenter(pos));
-        interactionManager.interactBlock(player, Hand.MAIN_HAND, new BlockHitResult(pos.ofCenter(), Direction.EAST, pos, false));
+        interactionManager.interactBlock(player, Hand.MAIN_HAND, new BlockHitResult(pos.toCenterPos(), Direction.EAST, pos, false));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class BlockTab implements Tab {
     }
 
     protected void refreshPreviewAtPos(World world, BlockPos previewPos) {
-        List<ItemFrameEntity> itemFrames = world.getNonSpectatingEntities(ItemFrameEntity.class, new Box(previewPos.ofCenter(), previewPos.ofCenter()).expand(0.6, 0.3, 0.6));
+        List<ItemFrameEntity> itemFrames = world.getNonSpectatingEntities(ItemFrameEntity.class, new Box(previewPos.toCenterPos(), previewPos.toCenterPos()).expand(0.6, 0.3, 0.6));
         if (!itemFrames.isEmpty()) {
             itemStack = itemFrames.get(0).getHeldItemStack();
             if (itemStack.hasCustomName()) hoverText = itemStack.getName().copy().formatted(Formatting.ITALIC);
