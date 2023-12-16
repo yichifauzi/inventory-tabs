@@ -19,6 +19,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -55,6 +56,7 @@ public class TabManager {
     public static int currentPage = 0;
     public static Tab currentTab;
     public static List<WidgetPosition> tabPositions;
+    public static int holdTabCooldown = 0;
 
     public static void initScreen(MinecraftClient client, HandledScreen<?> screen) {
         currentScreen = screen;
@@ -81,7 +83,14 @@ public class TabManager {
         currentPage = 0;
     }
 
-    public static void tick(World world) {
+    public static void tick(ClientWorld world) {
+        if (holdTabCooldown > 0) {
+            if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), InventoryTabs.NEXT_TAB.boundKey.getCode())) {
+                holdTabCooldown--;
+            } else {
+                holdTabCooldown = 0;
+            }
+        }
         if (tabs.removeIf(t -> t.shouldBeRemoved(world, t == currentTab))) {
             sortTabs();
         }
@@ -216,7 +225,8 @@ public class TabManager {
     }
 
     public static boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (nextTab == null && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
+        if (holdTabCooldown == 0 && nextTab == null && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
+            holdTabCooldown = 3;
             if (Screen.hasShiftDown()) {
                 if (tabs.indexOf(currentTab) == 0) {
                     openTab(tabs.get(tabs.size() - 1));

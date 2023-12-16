@@ -7,5 +7,6 @@ accessible field net/minecraft/client/gui/screen/ingame/HandledScreen background
 mutable field net/minecraft/client/gui/screen/ingame/HandledScreen playerInventoryTitle Lnet/minecraft/text/Text;
 accessible field net/minecraft/client/gui/screen/ingame/HandledScreen x I
 accessible field net/minecraft/client/gui/screen/ingame/HandledScreen y I
+accessible field net/minecraft/client/option/KeyBinding boundKey Lnet/minecraft/client/util/InputUtil$Key;
 accessible method net/minecraft/client/gui/screen/ingame/HandledScreen drawItem (Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V
 accessible method net/minecraft/block/entity/SignBlockEntity getTexts (Z)[Lnet/minecraft/text/Text;

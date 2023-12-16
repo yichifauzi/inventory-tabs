@@ -12,7 +12,6 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("deprecation")
 public class InventoryTabs implements ClientModInitializer {
     public static final String ID = "inventory_tabs";
     public static final Logger LOGGER = LoggerFactory.getLogger(ID);
