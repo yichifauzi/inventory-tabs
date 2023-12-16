@@ -5,11 +5,9 @@ minotaur = "2.6.0"
 
 mc = "1.18.2"
 fl = "0.15.1"
-ql = "0.19.0"
-qm = "1.18.2+build.26"
+yarn = "1.18.2+build.4"
 fapi = "0.67.0+1.18.2"
-qfapi = "1.0.0-beta.28+0.67.0-1.18.2"
-kaleidoConfig = "0.1.0+1.1.0-beta.3"
+kaleidoConfig = "0.1.1+1.1.0-beta.3"
 
 [plugins]
 loom = { id = "fabric-loom", version.ref = "loom" }
@@ -19,8 +17,6 @@ minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 [libraries]
 mc = { group = "mojang", name = "minecraft", version.ref = "mc" }
 fl = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fl" }
-ql = { group = "org.quiltmc", name = "quilt-loader", version.ref = "ql" }
-qm = { group = "org.quiltmc", name = "quilt-mappings", version.ref = "qm" }
+yarn = { group = "net.fabricmc", name = "yarn", version.ref = "yarn" }
 fapi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fapi" }
-qfapi = { group = "org.quiltmc.quilted-fabric-api", name = "quilted-fabric-api", version.ref = "qfapi" }
 kaleidoConfig = { group = "folk.sisby", name = "kaleido-config", version.ref = "kaleidoConfig" }

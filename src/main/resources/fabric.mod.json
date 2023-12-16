@@ -27,7 +27,7 @@
   ],
   "accessWidener": "inventory_tabs.accesswidener",
   "depends": {
-    "fabricloader": ">=0.14.21",
+    "fabricloader": ">=${fl}",
     "fabric-api": ">=${fapi}",
     "minecraft": ">=${mc}"
   }
