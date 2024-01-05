@@ -7,6 +7,11 @@ import folk.sisby.kaleido.lib.quiltconfig.api.values.ValueMap;
 import java.util.Map;
 
 public class InventoryTabsConfig extends WrappedConfig {
+    @Comment("How many ticks to wait before moving to the next tab when the keybind is held")
+    @Comment("Used to smooth out the visual difference between instant screens (like the player inventory) and ping-dependent screens")
+    @Comment("Can be lowered for shenanigans")
+    public final Integer holdTabCooldown = 3;
+
     @Comment("Whether to allow interacting with entities through blocks")
     @Comment("More seamless, but may be considered cheating by the server")
     public final Boolean ignoreWalls = true;
