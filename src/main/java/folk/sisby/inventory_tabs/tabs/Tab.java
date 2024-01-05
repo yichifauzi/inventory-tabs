@@ -1,15 +1,12 @@
 package folk.sisby.inventory_tabs.tabs;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import folk.sisby.inventory_tabs.InventoryTabs;
-import folk.sisby.inventory_tabs.TabManager;
+import folk.sisby.inventory_tabs.util.DrawUtil;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
@@ -20,12 +17,14 @@ import net.minecraft.world.World;
 
 public interface Tab {
     Identifier TABS_TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
-    int TAB_TEXTURE_WIDTH = 26;
-    int TAB_TEXTURE_HEIGHT = 32;
-    int TAB_TEXTURE_U = 26;
+    int TAB_TEXTURE_WIDTH = 28;
+    int TAB_TEXTURE_HEIGHT_SELECTED = 32;
+    int TAB_TEXTURE_HEIGHT_UNSELECTED = 30;
+    int TAB_TEXTURE_U = 28;
     int TAB_TEXTURE_V_UNSELECTED = 2;
+    int TAB_TEXTURE_V_UNSELECTED_INVERTED = 64;
     int TAB_TEXTURE_V_SELECTED = 32;
-    int TAB_TEXTURE_V_INVERTED_OFFSET = 64;
+    int TAB_TEXTURE_V_SELECTED_INVERTED = 96;
 
     /**
      * Opens the screen associated with the tab.
@@ -68,13 +67,13 @@ public interface Tab {
     default void renderBackground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
         RenderSystem.setShaderTexture(0, TABS_TEXTURE);
-        if (!current) DrawableHelper.drawTexture(matrices, pos.x, y, width, height, 6, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT, TAB_TEXTURE_U, TAB_TEXTURE_V_UNSELECTED + (pos.up ? 0 : TAB_TEXTURE_V_INVERTED_OFFSET));
+        if (!current) DrawUtil.drawCrunched(screen, matrices, TABS_TEXTURE, pos.x, y, width, height, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT_UNSELECTED, TAB_TEXTURE_U, pos.up ? TAB_TEXTURE_V_UNSELECTED : TAB_TEXTURE_V_UNSELECTED_INVERTED);
     }
 
     default void renderForeground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
-        RenderSystem.setShaderTexture(0, TABS_TEXTURE);
-        if (current) DrawableHelper.drawTexture(matrices, pos.x, y, width, height, 6, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT, TAB_TEXTURE_U, TAB_TEXTURE_V_SELECTED + (pos.up ? 0 : TAB_TEXTURE_V_INVERTED_OFFSET));
+
+        if (current) DrawUtil.drawCrunched(screen, matrices, TABS_TEXTURE, pos.x, y, width, height, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT_SELECTED, TAB_TEXTURE_U,  pos.up ? TAB_TEXTURE_V_SELECTED : TAB_TEXTURE_V_SELECTED_INVERTED);
         int itemPadding = Math.max(0, (width - 16) / 2);
         screen.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding, null);
     }
