@@ -98,7 +98,7 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		detectLoaders = false
 		dependencies {
 		}
-		changelog = "Changelog: https://github.com/sisby-folk/inventory-tabs/releases/tag/v" + baseVersion
+		changelog = rootProject.file("CHANGELOG.md").text + "\nChangelog: https://github.com/sisby-folk/inventory-tabs/releases/tag/v" + baseVersion
 		syncBodyFrom = rootProject.file("README.md").text
 	}
 }
@@ -117,6 +117,7 @@ if (System.getenv("GITHUB_TOKEN")) {
 		releaseAssets remapJar.archiveFile
 		allowUploadToExisting true
 		generateReleaseNotes true
+		body rootProject.file("CHANGELOG.md").text
 	}
 	tasks.githubRelease.dependsOn remapJar
 }

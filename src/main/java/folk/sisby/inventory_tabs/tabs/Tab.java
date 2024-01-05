@@ -18,7 +18,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public interface Tab {
-    Identifier TABS_TEXTURE = InventoryTabs.id("textures/gui/tabs.png");
+    Identifier TABS_TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
+    int TAB_TEXTURE_WIDTH = 26;
+    int TAB_TEXTURE_HEIGHT = 32;
+    int TAB_TEXTURE_U = 26;
+    int TAB_TEXTURE_V_UNSELECTED = 2;
+    int TAB_TEXTURE_V_SELECTED = 32;
+    int TAB_TEXTURE_V_INVERTED_OFFSET = 64;
 
     /**
      * Opens the screen associated with the tab.
@@ -61,13 +67,13 @@ public interface Tab {
     default void renderBackground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
         RenderSystem.setShaderTexture(0, TABS_TEXTURE);
-        if (!current) screen.drawTexture(matrices, pos.x, y, TabManager.TAB_WIDTH, pos.up ? 0 : (TabManager.TAB_HEIGHT * 2), width, height);
+        if (!current) screen.drawNineSlicedTexture(TABS_TEXTURE, pos.x, y, width, height, 6, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT, TAB_TEXTURE_U, TAB_TEXTURE_V_UNSELECTED + (pos.up ? 0 : TAB_TEXTURE_V_INVERTED_OFFSET));
     }
 
     default void renderForeground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
         RenderSystem.setShaderTexture(0, TABS_TEXTURE);
-        if (current) screen.drawTexture(matrices, pos.x, y, TabManager.TAB_WIDTH, TabManager.TAB_HEIGHT + (pos.up ? 0 : (TabManager.TAB_HEIGHT * 2)), width, height);
+        if (current) screen.drawNineSlicedTexture(TABS_TEXTURE, pos.x, y, width, height, 6, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT, TAB_TEXTURE_U, TAB_TEXTURE_V_SELECTED + (pos.up ? 0 : TAB_TEXTURE_V_INVERTED_OFFSET));
         int itemPadding = Math.max(0, (width - 16) / 2);
         screen.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding, null);
     }
