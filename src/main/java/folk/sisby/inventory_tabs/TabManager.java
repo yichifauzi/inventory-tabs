@@ -224,8 +224,8 @@ public class TabManager {
     }
 
     public static boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (holdTabCooldown == 0 && nextTab == null && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
-            holdTabCooldown = 3;
+        if (holdTabCooldown <= 0 && nextTab == null && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
+            holdTabCooldown = InventoryTabs.CONFIG.holdTabCooldown;
             if (Screen.hasShiftDown()) {
                 if (tabs.indexOf(currentTab) == 0) {
                     openTab(tabs.get(tabs.size() - 1));
