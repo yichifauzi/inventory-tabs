@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import folk.sisby.inventory_tabs.InventoryTabs;
 import folk.sisby.inventory_tabs.TabManager;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.MinecraftClient;
@@ -67,13 +68,13 @@ public interface Tab {
     default void renderBackground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
         RenderSystem.setShaderTexture(0, TABS_TEXTURE);
-        if (!current) screen.drawNineSlicedTexture(TABS_TEXTURE, pos.x, y, width, height, 6, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT, TAB_TEXTURE_U, TAB_TEXTURE_V_UNSELECTED + (pos.up ? 0 : TAB_TEXTURE_V_INVERTED_OFFSET));
+        if (!current) DrawableHelper.drawTexture(matrices, pos.x, y, width, height, 6, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT, TAB_TEXTURE_U, TAB_TEXTURE_V_UNSELECTED + (pos.up ? 0 : TAB_TEXTURE_V_INVERTED_OFFSET));
     }
 
     default void renderForeground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
         int y = pos.y + (pos.up ? -height + 4 : height - 4);
         RenderSystem.setShaderTexture(0, TABS_TEXTURE);
-        if (current) screen.drawNineSlicedTexture(TABS_TEXTURE, pos.x, y, width, height, 6, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT, TAB_TEXTURE_U, TAB_TEXTURE_V_SELECTED + (pos.up ? 0 : TAB_TEXTURE_V_INVERTED_OFFSET));
+        if (current) DrawableHelper.drawTexture(matrices, pos.x, y, width, height, 6, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT, TAB_TEXTURE_U, TAB_TEXTURE_V_SELECTED + (pos.up ? 0 : TAB_TEXTURE_V_INVERTED_OFFSET));
         int itemPadding = Math.max(0, (width - 16) / 2);
         screen.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding, null);
     }
