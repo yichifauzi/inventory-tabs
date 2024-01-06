@@ -12,7 +12,7 @@ import java.util.Set;
 @SuppressWarnings("deprecation")
 public class InventoryTabsPlugin implements IMixinConfigPlugin {
     public static final List<String> FORGE_BANNED_MIXINS = List.of(
-            "folk.sisby.inventory_tabs.mixin.MixinKeyBind"
+            "folk.sisby.inventory_tabs.mixin.MixinKeyBinding"
     );
 
     @Override
