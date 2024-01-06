@@ -98,7 +98,7 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		detectLoaders = false
 		dependencies {
 		}
-		changelog = rootProject.file("CHANGELOG.md").text + "\nChangelog: https://github.com/sisby-folk/inventory-tabs/releases/tag/v" + baseVersion
+		changelog = rootProject.file("CHANGELOG.md").text + "<br/>Changelog: https://github.com/sisby-folk/inventory-tabs/releases/tag/v" + baseVersion
 		syncBodyFrom = rootProject.file("README.md").text
 	}
 }
