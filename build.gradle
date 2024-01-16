@@ -98,7 +98,7 @@ if (System.getenv("MODRINTH_TOKEN")) {
 		detectLoaders = false
 		dependencies {
 		}
-		changelog = rootProject.file("CHANGELOG.md").text + "\nChangelog: https://github.com/sisby-folk/inventory-tabs/releases/tag/v" + baseVersion
+		changelog = rootProject.file("CHANGELOG.md").text + "<br/>\nChangelog: https://github.com/sisby-folk/inventory-tabs/releases/tag/v$baseVersion"
 		syncBodyFrom = rootProject.file("README.md").text
 	}
 }
@@ -109,7 +109,7 @@ if (System.getenv("GITHUB_TOKEN")) {
 		token System.getenv("GITHUB_TOKEN")
 		owner "sisby-folk"
 		repo "inventory-tabs"
-		tagName 'v' + baseVersion
+		tagName "v$baseVersion"
 		releaseName baseVersion
 		targetCommitish defaultBranch
 		draft false
