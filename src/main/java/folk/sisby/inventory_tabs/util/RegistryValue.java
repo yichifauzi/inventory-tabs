@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public record RegistryValue<T>(Either<RegistryEntry<T>, TagKey<T>> value) {
     public Either<T, TagKey<T>> getValue() {
-        return this.value.mapLeft(RegistryEntry::comp_349);
+        return this.value.mapLeft(RegistryEntry::value);
     }
 
     public boolean isTag() {
