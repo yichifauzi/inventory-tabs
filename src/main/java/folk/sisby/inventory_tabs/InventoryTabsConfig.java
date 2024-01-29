@@ -49,6 +49,7 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("")
     @Comment("Manually set the left bound offset for a given screen")
     @Comment("Positive values expand the left boundary, allowing more tabs to be drawn")
+    @Comment("null means the player inventory")
     @Comment("")
     public final Map<String, Integer> leftBoundOffsetOverride = ValueMap.builder(0).put("null", 0).build();
 
@@ -57,6 +58,7 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("")
     @Comment("Manually set the right bound offset for a given screen")
     @Comment("Positive values expand the right boundary, allowing more tabs to be drawn")
+    @Comment("null means the player inventory")
     @Comment("")
     public final Map<String, Integer> rightBoundOffsetOverride = ValueMap.builder(0).put("null", 0).build();
 
