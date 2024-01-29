@@ -71,7 +71,7 @@ public class TabManager {
             if (currentTab != null && currentTab != nextTab) currentTab.close();
             HandlerSlotUtil.tryPop(MinecraftClient.getInstance().player, MinecraftClient.getInstance().interactionManager, handler);
             currentTab = nextTab;
-            setCurrentPage(tabs.indexOf(nextTab) / tabPositions.size());
+            setCurrentPage(tabPositions.isEmpty() ? 0 : tabs.indexOf(nextTab) / tabPositions.size());
             nextTab = null;
         }
     }
