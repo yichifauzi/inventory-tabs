@@ -7,6 +7,7 @@ import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class ControlHintToast implements Toast {
@@ -20,7 +21,7 @@ public class ControlHintToast implements Toast {
     {
         this.title = title;
         this.keyBinding = keybinding;
-        keyHint = Text.translatable("toast.inventory_tabs.disabled.key_hint", keyBinding.getBoundKeyLocalizedText().copy().formatted(Formatting.YELLOW)).formatted(Formatting.BLUE);
+        keyHint = new TranslatableText("toast.inventory_tabs.disabled.key_hint", keyBinding.getBoundKeyLocalizedText().copy().formatted(Formatting.YELLOW)).formatted(Formatting.BLUE);
         titleWidth = MinecraftClient.getInstance().textRenderer.getWidth(title);
         hintWidth = MinecraftClient.getInstance().textRenderer.getWidth(keyHint);
     }
