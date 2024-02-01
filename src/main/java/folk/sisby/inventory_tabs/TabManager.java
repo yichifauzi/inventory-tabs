@@ -2,11 +2,7 @@ package folk.sisby.inventory_tabs;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import folk.sisby.inventory_tabs.duck.InventoryTabsScreen;
-import folk.sisby.inventory_tabs.tabs.BlockTab;
-import folk.sisby.inventory_tabs.tabs.EntityTab;
-import folk.sisby.inventory_tabs.tabs.ItemTab;
-import folk.sisby.inventory_tabs.tabs.Tab;
-import folk.sisby.inventory_tabs.tabs.VehicleInventoryTab;
+import folk.sisby.inventory_tabs.tabs.*;
 import folk.sisby.inventory_tabs.util.HandlerSlotUtil;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.block.entity.BlockEntity;
@@ -28,17 +24,14 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public class TabManager {
@@ -57,6 +50,7 @@ public class TabManager {
     public static Tab currentTab;
     public static List<WidgetPosition> tabPositions;
     public static int holdTabCooldown = 0;
+    public static boolean enabled = true;
 
     public static void initScreen(MinecraftClient client, HandledScreen<?> screen) {
         currentScreen = screen;
@@ -140,7 +134,8 @@ public class TabManager {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             for (Tab tab : tabs) {
                 if (tab instanceof BlockTab bt) {
-                    if (pos.equals(bt.pos) || blockEntity == world.getBlockEntity(bt.pos) || bt.multiblockPositions.contains(pos)) return tab;
+                    if (pos.equals(bt.pos) || blockEntity == world.getBlockEntity(bt.pos) || bt.multiblockPositions.contains(pos))
+                        return tab;
                 }
             }
         } else if (client.crosshairTarget instanceof EntityHitResult result) {
@@ -183,7 +178,7 @@ public class TabManager {
 
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (nextTab != null) return true;
-        if (button == 0) {
+        if (enabled && button == 0) {
             if (getPageButton(true).contains((int) mouseX, (int) mouseY)) {
                 if (currentPage > 0) {
                     setCurrentPage(currentPage - 1);
@@ -225,7 +220,11 @@ public class TabManager {
     }
 
     public static boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (holdTabCooldown <= 0 && nextTab == null && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
+        if (InventoryTabs.TOGGLE_TABS.matchesKey(keyCode, scanCode)) {
+            enabled = !enabled;
+            if (!enabled) MinecraftClient.getInstance().getToastManager().add(new ControlHintToast(Text.translatable("toast.inventory_tabs.disabled.title").formatted(Formatting.BOLD), InventoryTabs.TOGGLE_TABS));
+        }
+        if (enabled && holdTabCooldown <= 0 && nextTab == null && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
             holdTabCooldown = InventoryTabs.CONFIG.holdTabCooldown;
             if (Screen.hasShiftDown()) {
                 if (tabs.indexOf(currentTab) == 0) {
@@ -255,29 +254,32 @@ public class TabManager {
     }
 
     public static void renderBackground(MatrixStack matrices) {
-        tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
-        for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
-            WidgetPosition pos = tabPositions.get(i);
-            Tab tab = tabs.get(currentPage * tabPositions.size() + i);
-            if (pos != null && tab != null) tab.renderBackground(currentScreen, matrices, pos, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
+        if (enabled) {
+            tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
+            for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
+                WidgetPosition pos = tabPositions.get(i);
+                Tab tab = tabs.get(currentPage * tabPositions.size() + i);
+                if (pos != null && tab != null) tab.renderBackground(currentScreen, matrices, pos, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
+            }
         }
     }
 
     public static void renderForeground(MatrixStack matrices, double mouseX, double mouseY) {
-        for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
-            WidgetPosition pos = tabPositions.get(i);
-            Tab tab = tabs.get(currentPage * tabPositions.size() + i);
-            if (pos != null && tab != null) tab.renderForeground(currentScreen, matrices, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
+        if (enabled) {
+            for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
+                WidgetPosition pos = tabPositions.get(i);
+                Tab tab = tabs.get(currentPage * tabPositions.size() + i);
+                if (pos != null && tab != null) tab.renderForeground(currentScreen, matrices, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
         }
         for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
             WidgetPosition pos = tabPositions.get(i);
             Tab tab = tabs.get(currentPage * tabPositions.size() + i);
-            if (pos != null && tab != null) tab.renderTooltips(currentScreen, matrices, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY,tab == currentTab);
-        }
-
-        if (getMaximumPage() > 0) {
-            drawButton(matrices, mouseX, mouseY, true);
-            drawButton(matrices, mouseX, mouseY, false);
+            if (pos != null && tab != null) tab.renderTooltips(currentScreen, matrices, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY, tab == currentTab);
+            }
+            if (getMaximumPage() > 0) {
+                drawButton(matrices, mouseX, mouseY, true);
+                drawButton(matrices, mouseX, mouseY, false);
+            }
         }
     }
 
@@ -298,7 +300,8 @@ public class TabManager {
         int v = BUTTON_HEIGHT * (active ? hovered ? 2 : 1 : 0);
         RenderSystem.setShaderTexture(0, BUTTONS_TEXTURE);
         currentScreen.drawTexture(matrices, rect.getX(), rect.getY(), u, v, rect.getWidth(), rect.getHeight());
-        if (hovered) currentScreen.renderTooltip(matrices, Text.literal((currentPage + 1) + "/" + (getMaximumPage() + 1)), (int) mouseX, (int) mouseY);
+        if (hovered)
+            currentScreen.renderTooltip(matrices, Text.literal((currentPage + 1) + "/" + (getMaximumPage() + 1)), (int) mouseX, (int) mouseY);
     }
 
     public static void playClick() {
