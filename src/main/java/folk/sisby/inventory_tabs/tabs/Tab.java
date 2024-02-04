@@ -1,6 +1,5 @@
 package folk.sisby.inventory_tabs.tabs;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import folk.sisby.inventory_tabs.util.DrawUtil;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -17,6 +16,8 @@ import net.minecraft.world.World;
 
 public interface Tab {
     Identifier TABS_TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
+    int TAB_INSET_HEIGHT_SELECTED = 4;
+    int TAB_INSET_HEIGHT_UNSELECTED = 0;
     int TAB_TEXTURE_WIDTH = 28;
     int TAB_TEXTURE_HEIGHT_SELECTED = 32;
     int TAB_TEXTURE_HEIGHT_UNSELECTED = 30;
@@ -49,7 +50,8 @@ public interface Tab {
     /**
      * Called when the screen associated with the tab is closed (for handlers that aren't destroyed when closed on the servers)
      */
-    default void close() {}
+    default void close() {
+    }
 
     /**
      * @return the tab's left-priority when being displayed. The player's inventory is at 100.
@@ -62,24 +64,22 @@ public interface Tab {
      * @return whether the tabs open method instantly opens the screen on the client side without slot sync.
      * Used for the survival inventory. Helps preserve cursor stacks.
      */
-    default boolean isInstant() { return false; }
-
-    default void renderBackground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, boolean current) {
-        int y = pos.y + (pos.up ? -height + 4 : height - 4);
-        RenderSystem.setShaderTexture(0, TABS_TEXTURE);
-        if (!current) DrawUtil.drawCrunched(screen, matrices, TABS_TEXTURE, pos.x, y, width, height, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT_UNSELECTED, TAB_TEXTURE_U, pos.up ? TAB_TEXTURE_V_UNSELECTED : TAB_TEXTURE_V_UNSELECTED_INVERTED);
+    default boolean isInstant() {
+        return false;
     }
 
-    default void renderForeground(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
-        int y = pos.y + (pos.up ? -height + 4 : height - 4);
-
-        if (current) DrawUtil.drawCrunched(screen, matrices, TABS_TEXTURE, pos.x, y, width, height, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT_SELECTED, TAB_TEXTURE_U,  pos.up ? TAB_TEXTURE_V_SELECTED : TAB_TEXTURE_V_SELECTED_INVERTED);
+    default void render(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
+        int y = pos.y + (pos.up ? -height : height);
+        int drawHeight = height + (current ? TAB_INSET_HEIGHT_SELECTED : TAB_INSET_HEIGHT_UNSELECTED);
+        int textureHeight = current ? TAB_TEXTURE_HEIGHT_SELECTED : TAB_TEXTURE_HEIGHT_UNSELECTED;
+        int v = current ? (pos.up ? TAB_TEXTURE_V_SELECTED : TAB_TEXTURE_V_SELECTED_INVERTED) : (pos.up ? TAB_TEXTURE_V_UNSELECTED : TAB_TEXTURE_V_UNSELECTED_INVERTED);
+        DrawUtil.drawCrunched(screen, matrices, TABS_TEXTURE, pos.x, y, width, drawHeight, TAB_TEXTURE_WIDTH, textureHeight, TAB_TEXTURE_U, v);
         int itemPadding = Math.max(0, (width - 16) / 2);
         screen.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding, null);
     }
 
     default void renderTooltips(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
-        int y = pos.y + (pos.up ? -height + 4 : height - 4);
+        int y = pos.y + (pos.up ? -height : height);
         int itemPadding = Math.max(0, (width - 16) / 2);
         if (new Rect2i(pos.x + itemPadding, y + itemPadding, 16, 16).contains((int) mouseX, (int) mouseY)) {
             screen.renderTooltip(matrices, getHoverText(), (int) mouseX, (int) mouseY);

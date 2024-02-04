@@ -11,7 +11,6 @@
     "MixinKeyBinding",
     "MixinMinecraftClient",
     "MixinMouse",
-    "MixinScreen",
     "MixinScreenHandler",
     "MixinShulkerBoxScreen",
     "MixinShulkerBoxScreenHandler"
