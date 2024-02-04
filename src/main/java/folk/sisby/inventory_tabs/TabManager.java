@@ -176,8 +176,9 @@ public class TabManager {
     }
 
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (nextTab != null) return true;
-        if (enabled && button == 0) {
+        if (isLocked()) return true;
+        if (isHidden()) return false;
+        if (button == 0) {
             if (getPageButton(true).contains((int) mouseX, (int) mouseY)) {
                 if (currentPage > 0) {
                     setCurrentPage(currentPage - 1);
@@ -211,7 +212,7 @@ public class TabManager {
     }
 
     public static boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return nextTab != null;
+        return isLocked();
     }
 
     public static boolean isClickOutsideBounds(double mouseX, double mouseY) {
@@ -223,7 +224,8 @@ public class TabManager {
             enabled = !enabled;
             if (!enabled) MinecraftClient.getInstance().getToastManager().add(new ControlHintToast(Text.translatable("toast.inventory_tabs.disabled.title").formatted(Formatting.BOLD), InventoryTabs.TOGGLE_TABS));
         }
-        if (enabled && holdTabCooldown <= 0 && nextTab == null && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
+        if (isHidden() || isLocked()) return false;
+        if (holdTabCooldown <= 0 && InventoryTabs.NEXT_TAB.matchesKey(keyCode, scanCode)) {
             holdTabCooldown = InventoryTabs.CONFIG.holdTabCooldown;
             if (Screen.hasShiftDown()) {
                 if (tabs.indexOf(currentTab) == 0) {
@@ -252,17 +254,16 @@ public class TabManager {
         return tabs.size() / (tabPositions.size() + 1);
     }
 
-    public static void renderForeground(DrawContext drawContext, double mouseX, double mouseY) {
-        if (enabled) {
-            for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
-                WidgetPosition pos = tabPositions.get(i);
-                Tab tab = tabs.get(currentPage * tabPositions.size() + i);
-                if (pos != null && tab != null) tab.render(drawContext, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY, tab == currentTab);
-            }
-            if (getMaximumPage() > 0) {
-                drawButton(drawContext, mouseX, mouseY, true);
-                drawButton(drawContext, mouseX, mouseY, false);
-            }
+    public static void render(DrawContext drawContext, double mouseX, double mouseY) {
+        if (isHidden()) return;
+        for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
+            WidgetPosition pos = tabPositions.get(i);
+            Tab tab = tabs.get(currentPage * tabPositions.size() + i);
+            if (pos != null && tab != null) tab.render(drawContext, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY, tab == currentTab);
+        }
+        if (getMaximumPage() > 0) {
+            drawButton(drawContext, mouseX, mouseY, true);
+            drawButton(drawContext, mouseX, mouseY, false);
         }
     }
 
@@ -289,6 +290,14 @@ public class TabManager {
     public static void playClick() {
         MinecraftClient.getInstance().getSoundManager()
                 .play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK.value(), 1.0F));
+    }
+
+    public static boolean isHidden() {
+        return !enabled || currentScreen == null;
+    }
+
+    public static boolean isLocked() {
+        return nextTab != null;
     }
 }
 
