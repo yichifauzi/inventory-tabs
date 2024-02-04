@@ -36,7 +36,7 @@ import java.util.function.BiFunction;
 public class TabManager {
     public static final Identifier BUTTONS_TEXTURE = InventoryTabs.id("textures/gui/buttons.png");
     public static final int TAB_WIDTH = 24;
-    public static final int TAB_HEIGHT = 25;
+    public static final int TAB_HEIGHT = 21; // Without Inset
     public static final int BUTTON_WIDTH = 10;
     public static final int BUTTON_HEIGHT = 18;
 
@@ -252,23 +252,12 @@ public class TabManager {
         return tabs.size() / (tabPositions.size() + 1);
     }
 
-    public static void renderBackground(DrawContext drawContext) {
-        if (enabled) {
-            tabPositions = ((InventoryTabsScreen) currentScreen).getTabPositions(TAB_WIDTH);
-            for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
-                WidgetPosition pos = tabPositions.get(i);
-                Tab tab = tabs.get(currentPage * tabPositions.size() + i);
-                if (pos != null && tab != null) tab.renderBackground(drawContext, pos, TAB_WIDTH, TAB_HEIGHT, tab == currentTab);
-            }
-        }
-    }
-
     public static void renderForeground(DrawContext drawContext, double mouseX, double mouseY) {
         if (enabled) {
             for (int i = 0; i < Math.min(tabPositions.size(), tabs.size() - currentPage * tabPositions.size()); i++) {
                 WidgetPosition pos = tabPositions.get(i);
                 Tab tab = tabs.get(currentPage * tabPositions.size() + i);
-                if (pos != null && tab != null) tab.renderForeground(drawContext, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY, tab == currentTab);
+                if (pos != null && tab != null) tab.render(drawContext, pos, TAB_WIDTH, TAB_HEIGHT, mouseX, mouseY, tab == currentTab);
             }
             if (getMaximumPage() > 0) {
                 drawButton(drawContext, mouseX, mouseY, true);

@@ -16,6 +16,8 @@ import net.minecraft.world.World;
 
 public interface Tab {
     Identifier TABS_TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
+    int TAB_INSET_HEIGHT_SELECTED = 4;
+    int TAB_INSET_HEIGHT_UNSELECTED = 0;
     int TAB_TEXTURE_WIDTH = 26;
     int TAB_TEXTURE_HEIGHT_SELECTED = 32;
     int TAB_TEXTURE_HEIGHT_UNSELECTED = 30;
@@ -63,14 +65,12 @@ public interface Tab {
      */
     default boolean isInstant() { return false; }
 
-    default void renderBackground(DrawContext drawContext, WidgetPosition pos, int width, int height, boolean current) {
-        int y = pos.y + (pos.up ? -height + 4 : height - 4);
-        if (!current) DrawUtil.drawCrunched(drawContext, TABS_TEXTURE, pos.x, y, width, height, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT_UNSELECTED, TAB_TEXTURE_U, pos.up ? TAB_TEXTURE_V_UNSELECTED : TAB_TEXTURE_V_UNSELECTED_INVERTED);
-    }
-
-    default void renderForeground(DrawContext drawContext, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
-        int y = pos.y + (pos.up ? -height + 4 : height - 4);
-        if (current) DrawUtil.drawCrunched(drawContext, TABS_TEXTURE, pos.x, y, width, height, TAB_TEXTURE_WIDTH, TAB_TEXTURE_HEIGHT_SELECTED, TAB_TEXTURE_U,  pos.up ? TAB_TEXTURE_V_SELECTED : TAB_TEXTURE_V_SELECTED_INVERTED);
+    default void render(DrawContext drawContext, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
+        int y = pos.y + (pos.up ? -height : height);
+        int drawHeight = height + (current ? TAB_INSET_HEIGHT_SELECTED : TAB_INSET_HEIGHT_UNSELECTED);
+        int textureHeight = current ? TAB_TEXTURE_HEIGHT_SELECTED : TAB_TEXTURE_HEIGHT_UNSELECTED;
+        int v = current ? (pos.up ? TAB_TEXTURE_V_SELECTED : TAB_TEXTURE_V_SELECTED_INVERTED) : (pos.up ? TAB_TEXTURE_V_UNSELECTED : TAB_TEXTURE_V_UNSELECTED_INVERTED);
+        DrawUtil.drawCrunched(drawContext, TABS_TEXTURE, pos.x, y, width, drawHeight, TAB_TEXTURE_WIDTH, textureHeight, TAB_TEXTURE_U, v);
         int itemPadding = Math.max(0, (width - 16) / 2);
         drawContext.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding);
         if (new Rect2i(pos.x + itemPadding, y + itemPadding, 16, 16).contains((int) mouseX, (int) mouseY)) {
