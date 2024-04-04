@@ -26,8 +26,7 @@ public class PlayerInventoryTab implements Tab {
     }
 
     @Override
-    public void close() {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+    public void close(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager) {
         if (player != null) player.playerScreenHandler.setCursorStack(ItemStack.EMPTY);
     }
 

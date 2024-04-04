@@ -50,7 +50,7 @@ public interface Tab {
     /**
      * Called when the screen associated with the tab is closed (for handlers that aren't destroyed when closed on the servers)
      */
-    default void close() {}
+    default void close(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager) {}
 
     /**
      * @return the tab's left-priority when being displayed. The player's inventory is at 100.
@@ -64,6 +64,12 @@ public interface Tab {
      * Used for the survival inventory. Helps preserve cursor stacks.
      */
     default boolean isInstant() { return false; }
+
+    /**
+     * @return whether the tab can only be safely opened through the player inventory screen.
+     * Helps prevent lockups, but might flicker.
+     */
+    default boolean isBuffered() { return false; }
 
     default void render(DrawContext drawContext, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
         int y = pos.y + (pos.up ? -height : height);

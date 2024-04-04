@@ -19,6 +19,7 @@ import folk.sisby.inventory_tabs.providers.SimpleEntityTabProvider;
 import folk.sisby.inventory_tabs.providers.SimpleItemTabProvider;
 import folk.sisby.inventory_tabs.providers.SimpleStorageBlockTabProvider;
 import folk.sisby.inventory_tabs.providers.SneakEntityTabProvider;
+import folk.sisby.inventory_tabs.providers.SneakItemTabProvider;
 import folk.sisby.inventory_tabs.providers.TabProvider;
 import folk.sisby.inventory_tabs.providers.UniqueBlockTabProvider;
 import folk.sisby.inventory_tabs.providers.UniqueItemTabProvider;
@@ -61,6 +62,7 @@ public class TabProviders {
     public static final SimpleEntityTabProvider ENTITY_SIMPLE = register(InventoryTabs.id("entity_simple"), new SimpleEntityTabProvider());
 
     public static final ItemTabProvider ITEM_UNIQUE = register(InventoryTabs.id("item_unique"), new UniqueItemTabProvider());
+    public static final ItemTabProvider ITEM_SNEAK = register(InventoryTabs.id("item_sneak"), new SneakItemTabProvider());
     public static final ItemTabProvider ITEM_SIMPLE = register(InventoryTabs.id("item_simple"), new SimpleItemTabProvider());
 
     // Single-Purpose

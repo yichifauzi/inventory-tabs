@@ -7,6 +7,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
@@ -21,23 +22,50 @@ import java.util.function.Predicate;
 
 public class ItemTab implements Tab {
     public final ItemStack stack;
-    public final int slot;
+    public int slot;
     public final boolean unique;
+    public final boolean sneakInteract;
     public final Map<Identifier, Predicate<ItemStack>> preclusions;
+    public ItemStack swappedStack = null;
+    public int swappedSlot = -1;
 
-    public ItemTab(ItemStack stack, int slot, Map<Identifier, Predicate<ItemStack>> preclusions, boolean unique) {
+    public ItemTab(ItemStack stack, int slot, Map<Identifier, Predicate<ItemStack>> preclusions, boolean unique, boolean sneakInteract) {
         this.stack = stack;
         this.slot = slot;
         this.preclusions = preclusions;
         this.unique = unique;
+        this.sneakInteract = sneakInteract;
+    }
+
+    public ItemTab(ItemStack stack, int slot, Map<Identifier, Predicate<ItemStack>> preclusions, boolean unique) {
+        this(stack, slot, preclusions, unique, false);
+    }
+
+    @Override
+    public void close(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager) {
+        if (player == null) return;
+        if (swappedSlot != -1) {
+            ItemStack inSwappedSlot = player.getInventory().getStack(swappedSlot);
+            if (ItemStack.areEqual(inSwappedSlot, swappedStack)) {
+                int slotIndex = handler.getSlotIndex(player.getInventory(), swappedSlot).getAsInt();
+                interactionManager.clickSlot(handler.syncId, slotIndex, player.getInventory().selectedSlot, SlotActionType.SWAP, player);
+            }
+        }
     }
 
     @Override
     public void open(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager) {
         int slotIndex = handler.getSlotIndex(player.getInventory(), slot).getAsInt();
-        interactionManager.clickSlot(handler.syncId, slotIndex, player.getInventory().selectedSlot, SlotActionType.SWAP, player);
+        if (slotIndex != player.getInventory().selectedSlot) interactionManager.clickSlot(handler.syncId, slotIndex, player.getInventory().selectedSlot, SlotActionType.SWAP, player);
+        if (sneakInteract) player.networkHandler.sendPacket(new ClientCommandC2SPacket(player, ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
         interactionManager.interactItem(player, Hand.MAIN_HAND);
-        HandlerSlotUtil.mainHandSwapSlot = slot;
+        if (sneakInteract) player.networkHandler.sendPacket(new ClientCommandC2SPacket(player, ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
+        if (unique && slotIndex != player.getInventory().selectedSlot) HandlerSlotUtil.mainHandSwapSlot = slot; // Can't swap back for non-uniques
+        if (!unique) {
+            this.swappedSlot = this.slot;
+            this.swappedStack = player.getInventory().getStack(this.slot);
+            this.slot = player.getInventory().selectedSlot;
+        }
     }
 
     @Override
@@ -49,6 +77,11 @@ public class ItemTab implements Tab {
         if (preclusions.values().stream().anyMatch(p -> p.test(stack))) return true;
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> hs && hs.getScreenHandler().getSlotIndex(player.getInventory(), slot).isEmpty()) return true;
         return false;
+    }
+
+    @Override
+    public boolean isBuffered() {
+        return true;
     }
 
     @Override
