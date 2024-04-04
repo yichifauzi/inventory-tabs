@@ -2,9 +2,12 @@ package folk.sisby.inventory_tabs;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
 import folk.sisby.inventory_tabs.providers.BlockTabProvider;
 import folk.sisby.inventory_tabs.providers.ChestBlockTabProvider;
-import folk.sisby.inventory_tabs.providers.SimpleStorageBlockTabProvider;
 import folk.sisby.inventory_tabs.providers.EnderChestTabProvider;
 import folk.sisby.inventory_tabs.providers.EntityTabProvider;
 import folk.sisby.inventory_tabs.providers.ItemTabProvider;
@@ -14,12 +17,14 @@ import folk.sisby.inventory_tabs.providers.ShulkerBoxTabProvider;
 import folk.sisby.inventory_tabs.providers.SimpleBlockTabProvider;
 import folk.sisby.inventory_tabs.providers.SimpleEntityTabProvider;
 import folk.sisby.inventory_tabs.providers.SimpleItemTabProvider;
+import folk.sisby.inventory_tabs.providers.SimpleStorageBlockTabProvider;
 import folk.sisby.inventory_tabs.providers.SneakEntityTabProvider;
+import folk.sisby.inventory_tabs.providers.SneakItemTabProvider;
 import folk.sisby.inventory_tabs.providers.TabProvider;
 import folk.sisby.inventory_tabs.providers.UniqueBlockTabProvider;
 import folk.sisby.inventory_tabs.providers.UniqueItemTabProvider;
 import folk.sisby.inventory_tabs.providers.VehicleInventoryTabProvider;
-import folk.sisby.inventory_tabs.util.RegistryValue;
+import folk.sisby.inventory_tabs.util.RegistryMatcher;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -27,10 +32,12 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -52,6 +59,7 @@ public class TabProviders {
     public static final SimpleEntityTabProvider ENTITY_SIMPLE = register(InventoryTabs.id("entity_simple"), new SimpleEntityTabProvider());
 
     public static final ItemTabProvider ITEM_UNIQUE = register(InventoryTabs.id("item_unique"), new UniqueItemTabProvider());
+    public static final ItemTabProvider ITEM_SNEAK = register(InventoryTabs.id("item_sneak"), new SneakItemTabProvider());
     public static final ItemTabProvider ITEM_SIMPLE = register(InventoryTabs.id("item_simple"), new SimpleItemTabProvider());
 
     // Single-Purpose
@@ -64,8 +72,11 @@ public class TabProviders {
         InventoryTabs.LOGGER.info("[InventoryTabs] Reloading tab providers.");
         refreshConfigPlaceholders();
         if (InventoryTabs.CONFIG.configLogging) {
-            InventoryTabs.LOGGER.info("[Inventory Tabs] Registered Screen Handlers:");
-            manager.get(Registry.MENU_KEY).getKeys().forEach(id -> InventoryTabs.LOGGER.info("[Inventory Tabs] {}", id.getValue().toString()));
+            Map<String, List<RegistryKey<ScreenHandlerType<?>>>> types = manager.get(Registry.MENU_KEY).getKeys().stream().filter(k -> ScreenSupport.allowTabs(k) == null && InventoryTabs.CONFIG.allowScreensByDefault).collect(Collectors.groupingBy(k -> k.getValue().getNamespace()));
+            if (!types.isEmpty()) {
+                InventoryTabs.LOGGER.warn("[Inventory Tabs] {} Automatically tabbed screen handlers:", types.values().stream().mapToInt(Collection::size).sum());
+                types.forEach((namespace, ids) -> InventoryTabs.LOGGER.info(" | {}: {}", namespace, ids.stream().map(RegistryKey::getValue).map(Identifier::getPath).collect(Collectors.joining(", "))));
+            }
         }
         reloadRegistryProviders(manager, Registry.BLOCK_KEY, getProviders(BlockTabProvider.class), InventoryTabs.CONFIG.blockProviderOverrides);
         warmEntities = reloadRegistryProviders(manager, Registry.ENTITY_TYPE_KEY, getProviders(EntityTabProvider.class), InventoryTabs.CONFIG.entityProviderOverrides);
@@ -80,47 +91,107 @@ public class TabProviders {
 
     public static <T> Set<T> reloadRegistryProviders(DynamicRegistryManager manager, RegistryKey<Registry<T>> registryKey, Map<Identifier, ? extends RegistryTabProvider<T>> providers, Map<String, String> overrideConfig) {
         Set<T> warmValues = new HashSet<>();
+        Set<String> valueNamespaces = new HashSet<>();
+        Multiset<TagKey<T>> tagSizes = HashMultiset.create();
+        Map<TagKey<T>, Identifier> tagProviders = new HashMap<>();
+        Multimap<Identifier, TagKey<T>> providerTags = HashMultimap.create();
+        Multimap<Identifier, Identifier> providerValues = HashMultimap.create();
         providers.values().forEach(p -> p.values.clear());
         // Construct override map
-        Map<RegistryValue<T>, RegistryTabProvider<T>> overrides = new HashMap<>();
+        Map<RegistryMatcher<T>, RegistryTabProvider<T>> unsortedOverrides = new HashMap<>();
         for (Map.Entry<String, String> override : overrideConfig.entrySet()) {
-            RegistryValue<T> registryValue = RegistryValue.fromRegistryString(manager, registryKey, override.getKey());
-            if (registryValue == null) {
+            RegistryMatcher<T> registryMatcher = RegistryMatcher.fromRegistryString(manager, registryKey, override.getKey());
+            if (registryMatcher == null) {
                 InventoryTabs.LOGGER.warn("[Inventory Tabs] Unknown override registry value ID {}, skipping...", override.getKey());
                 continue;
             }
             if (override.getValue().isEmpty()) {
-                overrides.put(registryValue, null);
+                unsortedOverrides.put(registryMatcher, null);
                 continue;
             }
             if (Identifier.tryParse(override.getValue()) == null || providers.get(Identifier.tryParse(override.getValue())) == null) {
                 InventoryTabs.LOGGER.warn("[Inventory Tabs] Unknown override tab provider ID {}, skipping...", override.getValue());
                 continue;
             }
-            overrides.put(registryValue, providers.get(new Identifier(override.getValue())));
+            unsortedOverrides.put(registryMatcher, providers.get(new Identifier(override.getValue())));
         }
+        Map<RegistryMatcher<T>, RegistryTabProvider<T>> overrides = new LinkedHashMap<>();
+        unsortedOverrides.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getKey().priority())).forEach(e -> overrides.put(e.getKey(), e.getValue()));
+
         // Add values to providers
-        if (InventoryTabs.CONFIG.configLogging) InventoryTabs.LOGGER.info("[Inventory Tabs] Starting provider freeze for {}", registryKey.getValue());
         for (Map.Entry<RegistryKey<T>, T> entry : manager.get(registryKey).getEntrySet()) {
             RegistryEntry<T> holder = manager.get(registryKey).getEntry(entry.getKey()).get();
 
-            Optional<Map.Entry<RegistryValue<T>, RegistryTabProvider<T>>> override = overrides.entrySet().stream().filter(e -> e.getKey().is(holder)).findFirst();
+            Optional<Map.Entry<RegistryMatcher<T>, RegistryTabProvider<T>>> override = overrides.entrySet().stream().filter(e -> e.getKey().is(holder)).findFirst();
             if (override.isPresent()) {
                 if (override.get().getValue() != null) {
-                    if (InventoryTabs.CONFIG.configLogging) InventoryTabs.LOGGER.info("[Inventory Tabs] {} -> {}", entry.getKey().getValue(), REGISTRY.inverse().get(override.get().getValue()));
+                    Identifier providerId = REGISTRY.inverse().get(override.get().getValue());
+                    if (InventoryTabs.CONFIG.configLogging && (InventoryTabs.CONFIG.configLoggingVanilla || !entry.getKey().getValue().getNamespace().equals("minecraft"))) {
+                        holder.streamTags().forEach(tag -> {
+                            if (tagProviders.containsKey(tag) && !providerId.equals(tagProviders.get(tag))) {
+                                if (tagProviders.get(tag) != null) {
+                                    providerTags.remove(tagProviders.get(tag), tag);
+                                    tagProviders.put(tag, null);
+                                }
+                            } else {
+                                tagProviders.put(tag, providerId);
+                            }
+                        });
+                    }
                     override.get().getValue().values.add(entry.getValue());
                 }
                 continue;
             }
             for (Map.Entry<Identifier, ? extends RegistryTabProvider<T>> provider : providers.entrySet()) {
-                if (!InventoryTabs.CONFIG.registryProviderDefaults.getOrDefault(provider.getKey().toString(), true))
-                    continue;
+                if (!InventoryTabs.CONFIG.registryProviderDefaults.getOrDefault(provider.getKey().toString(), true)) continue;
                 if (provider.getValue().consumes(entry.getValue())) {
-                    if (InventoryTabs.CONFIG.configLogging) InventoryTabs.LOGGER.info("[Inventory Tabs] {} -> {}", entry.getKey().getValue(), provider.getKey());
+                    if (InventoryTabs.CONFIG.configLogging && (InventoryTabs.CONFIG.configLoggingVanilla || !entry.getKey().getValue().getNamespace().equals("minecraft"))) {
+                        Identifier providerId = provider.getKey();
+                        holder.streamTags().forEach(tag -> {
+                            if (tagProviders.containsKey(tag) && !providerId.equals(tagProviders.get(tag))) {
+                                if (tagProviders.get(tag) != null) {
+                                    tagSizes.setCount(tag, 0);
+                                    providerTags.remove(tagProviders.get(tag), tag);
+                                    tagProviders.put(tag, null);
+                                }
+                            } else {
+                                tagSizes.add(tag);
+                                providerTags.put(providerId, tag);
+                                tagProviders.put(tag, providerId);
+                            }
+                        });
+                        providerValues.put(providerId, entry.getKey().getValue());
+                        valueNamespaces.add(entry.getKey().getValue().getNamespace());
+                    }
                     break;
                 }
             }
             warmValues.add(entry.getValue());
+        }
+        if (InventoryTabs.CONFIG.configLogging) {
+            providerTags.asMap().values().forEach(tags -> tags.removeIf(tag -> !"c".equals(tag.id().getNamespace()) && !valueNamespaces.contains(tag.id().getNamespace())));
+            if (!providerTags.isEmpty()) {
+                InventoryTabs.LOGGER.warn("[Inventory Tabs] {} Re-assignable provider tags for {}:", providerTags.size(), registryKey.getValue());
+                providerTags.asMap().forEach((provider, tags) -> {
+                    if (!tags.isEmpty()) {
+                        InventoryTabs.LOGGER.info(" | {}", provider);
+                        tags.stream().collect(Collectors.groupingBy(t -> t.id().getNamespace())).entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e -> {
+                            InventoryTabs.LOGGER.info(" |  | #{} - {}", e.getKey(), e.getValue().stream().sorted(Comparator.<TagKey<T>>comparingInt(tagSizes::count).reversed()).map(s -> "%s (%s)".formatted(s.id().getPath(), tagSizes.count(s))).collect(Collectors.joining(", ")));
+                        });
+                    }
+                });
+            }
+            if (!providerValues.isEmpty()) {
+                InventoryTabs.LOGGER.warn("[Inventory Tabs] {} Re-assignable provider values for {}:", providerValues.size(), registryKey.getValue());
+                providerValues.asMap().forEach((provider, values) -> {
+                    if (!values.isEmpty()) {
+                        InventoryTabs.LOGGER.info(" | {}", provider);
+                        values.stream().collect(Collectors.groupingBy(Identifier::getNamespace)).entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e -> {
+                            InventoryTabs.LOGGER.info(" |  | {} - {}", e.getKey(), e.getValue().stream().map(Identifier::getPath).sorted().collect(Collectors.joining(", ")));
+                        });
+                    }
+                });
+            }
         }
         return warmValues;
     }

@@ -30,7 +30,11 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("Emits helpful information for setting up this config when joining a world")
     @Comment("Logs all registered screen handler IDs for use in screen overrides")
     @Comment("Logs all registry tab provider contents (blocks etc) to help find bad tabs")
-    public final Boolean configLogging = false;
+    public final Boolean configLogging = true;
+
+    @Comment("Whether to log vanilla tab provider contents")
+    @Comment("For development purposes, not modpack configuration")
+    public final Boolean configLoggingVanilla = false;
 
     @Comment("Whether to show tabs on screens that aren't specified below")
     public final Boolean allowScreensByDefault = true;
@@ -77,6 +81,7 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("")
     public final Map<String, String> blockProviderOverrides = ValueMap.builder("")
             .put("minecraft:crafting_table", "inventory_tabs:block_unique")
+            .put("#minecraft:doors", "")
             .put("minecraft:fletching_table", "")
             .build();
 

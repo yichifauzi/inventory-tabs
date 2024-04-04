@@ -30,6 +30,10 @@ public abstract class ItemTabProvider extends RegistryTabProvider<Item> {
     }
 
     public Tab createTab(ItemStack stack, int slot) {
-        return new ItemTab(stack, slot, preclusions, isUnique());
+        return new ItemTab(stack, slot, preclusions, isUnique(), doSneakInteract());
+    }
+
+    public boolean doSneakInteract() {
+        return false;
     }
 }
