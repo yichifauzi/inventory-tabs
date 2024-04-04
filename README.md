@@ -84,6 +84,8 @@ If too many inappropriate blocks are being matched, you may want to disable the 
 
 The `block_simple` provider uses a blacklist instead of a whitelist, so it generates a lot of false-positive tabs. It's enabled by default to help with finding good/bad tabs.
 
+There's full-pack example of this configuration in [TQuilt Modded](https://github.com/sisby-folk/tinkerers-quilt/blob/1.20_modded/config/inventory_tabs.toml)  
+
 ---
 
 ### Mod Architecture
