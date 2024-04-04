@@ -44,7 +44,7 @@ In fact, some fully non-vanilla actions are possible for convenience, such as:
 Inventory Tabs 4 is designed from the ground up to be friendlier to modpacks.<br/>
 It's configured via `config/inventory_tabs.toml`, which includes comments providing extra context - like what each tab provider does. 
 
-You can enable the `configLogging` option to log  helpful information for setting up the mod for your modpack when loading into a world.
+By default, helpful information for setting up the mod for your modpack is logged when loading into a world. Toggle `configLogging` to disable this.
 
 If tabs are appearing on a screen they don't fit well with, the screen can be blacklisted:
 
@@ -58,6 +58,7 @@ If tabs are being made for an inappropriate block, you can manually disable thei
 ```
 [blockProviderOverrides]
 	"cool_mod:incompatible_block" = ""
+	"really_cool_mod:*" = ""
 ```
 
 Or manually override it to a relevant one:
@@ -66,6 +67,7 @@ Or manually override it to a relevant one:
 [blockProviderOverrides]
 	"#cool_mod:crafting_stations" = "inventory_tabs:block_unique"
 	"cool_mod:single_chest" = "inventory_tabs:block_simple"
+	"cool_mod:*_cabinet" = "inventory_tabs:block_simple_storage"
 	"cool_mod:doubleable_chest" = "inventory_tabs:block_chest"
 ```
 
@@ -80,7 +82,7 @@ If too many inappropriate blocks are being matched, you may want to disable the 
 	"inventory_tabs:block_simple" = false
 ```
 
-The `block_simple` provider uses a blacklist instead of a whitelist, so it generates a lot of false-positive tabs. It's enabled by default to help with finding good/bad tabs - but if you're making a modpack, you'll probably turn it off!
+The `block_simple` provider uses a blacklist instead of a whitelist, so it generates a lot of false-positive tabs. It's enabled by default to help with finding good/bad tabs.
 
 ---
 
@@ -100,7 +102,7 @@ repositories {
 	maven { url "https://repo.sleeping.town/" }
 }
 dependencies {
-   modImplementation "folk.sisby:inventory-tabs:1.1.1"
+   modImplementation "folk.sisby:inventory-tabs:1.2.0"
 }
 ```
 
