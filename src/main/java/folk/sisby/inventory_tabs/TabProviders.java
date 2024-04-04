@@ -26,6 +26,8 @@ import folk.sisby.inventory_tabs.providers.UniqueItemTabProvider;
 import folk.sisby.inventory_tabs.providers.VehicleInventoryTabProvider;
 import folk.sisby.inventory_tabs.util.RegistryMatcher;
 import net.minecraft.entity.EntityType;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;

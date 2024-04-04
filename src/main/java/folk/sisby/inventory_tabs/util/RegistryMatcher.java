@@ -1,13 +1,13 @@
 package folk.sisby.inventory_tabs.util;
 
 import com.mojang.datafixers.util.Either;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import org.jetbrains.annotations.Nullable;
 
 public record RegistryMatcher<T>(Either<Either<RegistryEntry<T>, TagKey<T>>, Pair<String, String>> value) {
@@ -34,7 +34,7 @@ public record RegistryMatcher<T>(Either<Either<RegistryEntry<T>, TagKey<T>>, Pai
         } else {
             Identifier id = Identifier.tryParse(value);
             if (id == null) return null;
-            return manager.createRegistryLookup().getOptional(registry).orElseThrow().getOptional(RegistryKey.of(registry, id)).map(h -> new RegistryMatcher<>(Either.left(Either.left(h)))).orElse(null);
+            return manager.get(registry).getEntry(RegistryKey.of(registry, id)).map(h -> new RegistryMatcher<>(Either.left(Either.left(h)))).orElse(null);
         }
     }
 
