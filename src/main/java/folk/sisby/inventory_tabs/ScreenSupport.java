@@ -31,8 +31,11 @@ public class ScreenSupport {
             if (DENY.values().stream().anyMatch(p -> p.test(hs))) return false;
             if (ALLOW.values().stream().anyMatch(p -> p.test(hs))) return true;
             try {
-                Boolean override = allowTabs(Registries.SCREEN_HANDLER.getKey(hs.getScreenHandler().getType()).orElseThrow());
-                if (override != null) return override;
+                ScreenHandlerType<?> type = hs.getScreenHandler().getType();
+                if (type != null) {
+                    Boolean override = allowTabs(Registries.SCREEN_HANDLER.getKey(type).orElseThrow());
+                    if (override != null) return override;
+                }
             } catch (UnsupportedOperationException ignored) {
             }
             return InventoryTabs.CONFIG.allowScreensByDefault;
