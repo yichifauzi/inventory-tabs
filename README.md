@@ -30,12 +30,12 @@ You can also use Tab and Shift+Tab to cycle through available screens.
 - Fits on-screen with [EMI](https://modrinth.com/mod/emi), even on very high GUI scales - Use `Left (Compressed)` effects.
 <center><img width=640 alt="EMI VGA Preview" src="https://cdn.modrinth.com/data/VD1aynYU/images/7356435a874c5f5c587b59f4b71461da2e997df1.png" /></center>
 
-#### Anti-Cheat & Convenience
+#### Anti-Cheat & Fairness
 
 Inventory Tabs 4 offers no guarantees or defence against server moderation or anti-cheat - tabs provide an unfair advantage, and look outwardly suspicious to onlookers in multiplayer.<br/>
-In fact, some fully non-vanilla actions are possible for convenience, such as:
-  - Accessing your full regular inventory while riding a horse or chest boat.
-  - Accessing sneak-interact inventories without dismounting from a vehicle.
+Notably, the mod allows some usually impossible actions for the sake of convenience, e.g.
+  - The full player inventory can be accessed while riding a horse or chest boat.
+  - Sneak-interact inventories can be accessed without dismounting from a vehicle.
 
 ---
 

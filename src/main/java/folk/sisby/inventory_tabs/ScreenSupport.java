@@ -19,6 +19,7 @@ public class ScreenSupport {
     public static Map<Identifier, Predicate<HandledScreen<?>>> DENY = new HashMap<>();
     public static Map<Identifier, Predicate<HandledScreen<?>>> ALLOW = new HashMap<>();
     public static Map<Identifier, Pair<Integer, Integer>> SCREEN_BOUND_OFFSETS = new HashMap<>();
+    public static Map<Identifier, Boolean> SCREEN_INVERTS = new HashMap<>();
 
     public static Boolean allowTabs(RegistryKey<ScreenHandlerType<?>> type) {
         if (InventoryTabs.CONFIG.screenOverrides.entrySet().stream().filter(e -> !e.getValue()).anyMatch(e -> Objects.equals(e.getKey(), type.getValue().toString()))) return false;
@@ -48,5 +49,6 @@ public class ScreenSupport {
         ALLOW.put(InventoryTabs.id("horse_screen"), hs -> hs instanceof HorseScreen);
         InventoryTabs.CONFIG.leftBoundOffsetOverride.forEach((screenHandlerId, offset) -> SCREEN_BOUND_OFFSETS.put(screenHandlerId.equals("null") ? null : new Identifier(screenHandlerId), new Pair<>(offset, 0)));
         InventoryTabs.CONFIG.rightBoundOffsetOverride.forEach((screenHandlerId, offset) -> SCREEN_BOUND_OFFSETS.merge(screenHandlerId.equals("null") ? null : new Identifier(screenHandlerId), new Pair<>(0, offset), (o, n) -> new Pair<>(o.getLeft(), n.getRight())));
+        InventoryTabs.CONFIG.invertedTabsOverride.forEach((screenHandlerId, doInvert) -> SCREEN_INVERTS.put(screenHandlerId.equals("null") ? null : new Identifier(screenHandlerId), doInvert));
     }
 }
