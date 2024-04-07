@@ -58,7 +58,7 @@ public class ItemTab implements Tab {
         int slotIndex = handler.getSlotIndex(player.getInventory(), slot).getAsInt();
         if (slotIndex != player.getInventory().selectedSlot) interactionManager.clickSlot(handler.syncId, slotIndex, player.getInventory().selectedSlot, SlotActionType.SWAP, player);
         if (sneakInteract) player.networkHandler.sendPacket(new ClientCommandC2SPacket(player, ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY));
-        interactionManager.interactItem(player, Hand.MAIN_HAND);
+        interactionManager.interactItem(player, world, Hand.MAIN_HAND);
         if (sneakInteract) player.networkHandler.sendPacket(new ClientCommandC2SPacket(player, ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY));
         if (unique && slotIndex != player.getInventory().selectedSlot) HandlerSlotUtil.mainHandSwapSlot = slot; // Can't swap back for non-uniques
         if (!unique) {

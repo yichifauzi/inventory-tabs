@@ -74,7 +74,7 @@ public class TabProviders {
         InventoryTabs.LOGGER.info("[InventoryTabs] Reloading tab providers.");
         refreshConfigPlaceholders();
         if (InventoryTabs.CONFIG.configLogging) {
-            Map<String, List<RegistryKey<ScreenHandlerType<?>>>> types = manager.get(Registry.MENU_KEY).getKeys().stream().filter(k -> ScreenSupport.allowTabs(k) == null && InventoryTabs.CONFIG.allowScreensByDefault).collect(Collectors.groupingBy(k -> k.getValue().getNamespace()));
+            Map<String, List<RegistryKey<ScreenHandlerType<?>>>> types = manager.get(Registry.MENU_KEY).getEntrySet().stream().map(Map.Entry::getKey).filter(k -> ScreenSupport.allowTabs(k) == null && InventoryTabs.CONFIG.allowScreensByDefault).collect(Collectors.groupingBy(k -> k.getValue().getNamespace()));
             if (!types.isEmpty()) {
                 InventoryTabs.LOGGER.warn("[Inventory Tabs] {} Automatically tabbed screen handlers:", types.values().stream().mapToInt(Collection::size).sum());
                 types.forEach((namespace, ids) -> InventoryTabs.LOGGER.info(" | {}: {}", namespace, ids.stream().map(RegistryKey::getValue).map(Identifier::getPath).collect(Collectors.joining(", "))));
