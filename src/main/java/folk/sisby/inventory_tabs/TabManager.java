@@ -284,7 +284,7 @@ public class TabManager {
 
     public static Rect2i getPageButton(boolean left) {
         WidgetPosition pos = tabPositions.get(left ? 0 : tabPositions.size() - 1);
-        return new Rect2i(pos.x + (left ? -BUTTON_WIDTH : TAB_WIDTH), pos.y - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT);
+        return new Rect2i(pos.x + (left ? -BUTTON_WIDTH : TAB_WIDTH), pos.y - (pos.up ? BUTTON_HEIGHT : 0), BUTTON_WIDTH, BUTTON_HEIGHT);
     }
 
     public static Rect2i getTabArea(WidgetPosition pos) {
