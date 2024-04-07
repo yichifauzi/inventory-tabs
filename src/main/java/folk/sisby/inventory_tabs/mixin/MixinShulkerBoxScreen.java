@@ -26,8 +26,8 @@ public abstract class MixinShulkerBoxScreen extends HandledScreen<GenericContain
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void containerTextHeight(ShulkerBoxScreenHandler handler, PlayerInventory inventory, Text title, CallbackInfo ci) {
-        this.backgroundHeight -= 2;
-        this.playerInventoryTitleY = this.backgroundHeight - 93;
+        this.backgroundHeight -= 1;
+        this.playerInventoryTitleY = this.backgroundHeight - 94;
     }
 
     @Inject(method = "drawBackground", at = @At("TAIL"))
