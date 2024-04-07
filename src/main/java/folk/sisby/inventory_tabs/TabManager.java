@@ -288,7 +288,7 @@ public class TabManager {
     }
 
     public static Rect2i getTabArea(WidgetPosition pos) {
-        return new Rect2i(pos.x, pos.y + (pos.up ? -TAB_HEIGHT : TAB_HEIGHT), TAB_WIDTH, TAB_HEIGHT);
+        return new Rect2i(pos.x, pos.y + (pos.up ? -TAB_HEIGHT : 0), TAB_WIDTH, TAB_HEIGHT);
     }
 
     public static void drawButton(MatrixStack matrices, double mouseX, double mouseY, boolean left) {
