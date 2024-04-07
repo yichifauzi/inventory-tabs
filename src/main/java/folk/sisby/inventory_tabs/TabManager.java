@@ -64,7 +64,7 @@ public class TabManager {
 
     public static void finishOpeningScreen(ScreenHandler handler) {
         if (nextTab != null) {
-            if (currentTab != null && currentTab != nextTab) currentTab.close();
+            if (currentTab != null && currentTab != nextTab) currentTab.close(MinecraftClient.getInstance().player, MinecraftClient.getInstance().world, handler, MinecraftClient.getInstance().interactionManager);
             HandlerSlotUtil.tryPop(MinecraftClient.getInstance().player, MinecraftClient.getInstance().interactionManager, handler);
             currentTab = nextTab;
             setCurrentPage(tabPositions.isEmpty() ? 0 : tabs.indexOf(nextTab) / tabPositions.size());
@@ -73,7 +73,10 @@ public class TabManager {
     }
 
     public static void screenDiscarded() {
-        currentTab = null;
+        if (currentTab != null) {
+            currentTab.close(MinecraftClient.getInstance().player, MinecraftClient.getInstance().world, MinecraftClient.getInstance().player != null ? MinecraftClient.getInstance().player.currentScreenHandler : null, MinecraftClient.getInstance().interactionManager);
+            currentTab = null;
+        }
         nextTab = null;
         currentPage = 0;
     }
@@ -93,6 +96,17 @@ public class TabManager {
         if (currentTab != null && !tabs.contains(currentTab)) currentTab = null;
     }
 
+    public static void openTabImmediate(Tab tab, ClientPlayerEntity player, ClientPlayerInteractionManager interactionManager, ClientWorld world) {
+        nextTab = tab;
+        HandlerSlotUtil.push(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler(), tab.isInstant());
+        player.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(currentScreen.getScreenHandler().syncId));
+        tab.open(player, world, currentScreen.getScreenHandler(), interactionManager);
+        if (tab.isInstant()) { // Instant screens don't have slot updates to wait for, so finish now.
+            finishOpeningScreen(currentScreen.getScreenHandler());
+        }
+    }
+
+
     public static void openTab(Tab tab) {
         if (tab != currentTab) {
             ClientPlayerEntity player = MinecraftClient.getInstance().player;
@@ -100,13 +114,8 @@ public class TabManager {
             ClientPlayNetworkHandler networkHandler = MinecraftClient.getInstance().getNetworkHandler();
             if (player != null && interactionManager != null && networkHandler != null && player.getWorld() instanceof ClientWorld world) {
                 if (!tab.shouldBeRemoved(world, false)) {
-                    nextTab = tab;
-                    HandlerSlotUtil.push(player, MinecraftClient.getInstance().interactionManager, currentScreen.getScreenHandler(), tab.isInstant());
-                    player.networkHandler.sendPacket(new CloseHandledScreenC2SPacket(currentScreen.getScreenHandler().syncId));
-                    tab.open(player, world, currentScreen.getScreenHandler(), interactionManager);
-                    if (tab.isInstant()) { // Instant screens don't have slot updates to wait for, so finish now.
-                        finishOpeningScreen(currentScreen.getScreenHandler());
-                    }
+                    if (tab.isBuffered()) openTabImmediate(new PlayerInventoryTab(), player, interactionManager, world);
+                    openTabImmediate(tab, player, interactionManager, world);
                 }
             }
         }
@@ -276,7 +285,7 @@ public class TabManager {
 
     public static Rect2i getPageButton(boolean left) {
         WidgetPosition pos = tabPositions.get(left ? 0 : tabPositions.size() - 1);
-        return new Rect2i(pos.x + (left ? -BUTTON_WIDTH : TAB_WIDTH), pos.y - BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT);
+        return new Rect2i(pos.x + (left ? -BUTTON_WIDTH : TAB_WIDTH), pos.y - (pos.up ? BUTTON_HEIGHT : 0), BUTTON_WIDTH, BUTTON_HEIGHT);
     }
 
     public static Rect2i getTabArea(WidgetPosition pos) {

@@ -24,10 +24,11 @@ public class ChestUtil {
     }
 
     public static List<BlockPos> getChestMultiblockPos(World world, BlockPos pos) {
+        BlockState blockState = world.getBlockState(pos);
+        if (!blockState.contains(Properties.CHEST_TYPE) || blockState.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE) return List.of(pos);
         List<BlockPos> list = new ArrayList<>();
         list.add(pos);
         list.add(getOtherChestBlockPos(world, pos));
-        BlockState blockState = world.getBlockState(pos);
         if (blockState.contains(Properties.CHEST_TYPE) && blockState.get(ChestBlock.CHEST_TYPE) == ChestType.RIGHT) Collections.reverse(list);
         return list;
     }

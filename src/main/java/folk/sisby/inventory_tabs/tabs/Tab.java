@@ -16,16 +16,13 @@ import net.minecraft.world.World;
 
 public interface Tab {
     Identifier TABS_TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
-    int TAB_INSET_HEIGHT_SELECTED = 4;
-    int TAB_INSET_HEIGHT_UNSELECTED = 0;
-    int TAB_TEXTURE_WIDTH = 28;
-    int TAB_TEXTURE_HEIGHT_SELECTED = 32;
-    int TAB_TEXTURE_HEIGHT_UNSELECTED = 30;
-    int TAB_TEXTURE_U = 28;
-    int TAB_TEXTURE_V_UNSELECTED = 2;
-    int TAB_TEXTURE_V_UNSELECTED_INVERTED = 64;
-    int TAB_TEXTURE_V_SELECTED = 32;
-    int TAB_TEXTURE_V_SELECTED_INVERTED = 96;
+    int TEXTURE_WIDTH = 28;
+    int TEXTURE_U = 28;
+    int[] TEXTURE_V = new int[]{2, 32, 64, 96};
+    int[] TEXTURE_HEIGHT = new int[]{30, 32, 28, 32};
+    int[] Y_OFFSET = new int[]{0, 0, 0, -4};
+    int[] ITEM_Y_OFFSET = new int[]{0, 0, -3, -3};
+    int[] HEIGHT_OFFSET = new int[]{0, 4, 0, 4};
 
     /**
      * Opens the screen associated with the tab.
@@ -50,7 +47,7 @@ public interface Tab {
     /**
      * Called when the screen associated with the tab is closed (for handlers that aren't destroyed when closed on the servers)
      */
-    default void close() {
+    default void close(ClientPlayerEntity player, ClientWorld world, ScreenHandler handler, ClientPlayerInteractionManager interactionManager) {
     }
 
     /**
@@ -68,20 +65,33 @@ public interface Tab {
         return false;
     }
 
+    /**
+     * @return whether the tab can only be safely opened through the player inventory screen.
+     * Helps prevent lockups, but might flicker.
+     */
+    default boolean isBuffered() {
+        return false;
+    }
+
     default void render(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
-        int y = pos.y + (pos.up ? -height : height);
-        int drawHeight = height + (current ? TAB_INSET_HEIGHT_SELECTED : TAB_INSET_HEIGHT_UNSELECTED);
-        int textureHeight = current ? TAB_TEXTURE_HEIGHT_SELECTED : TAB_TEXTURE_HEIGHT_UNSELECTED;
-        int v = current ? (pos.up ? TAB_TEXTURE_V_SELECTED : TAB_TEXTURE_V_SELECTED_INVERTED) : (pos.up ? TAB_TEXTURE_V_UNSELECTED : TAB_TEXTURE_V_UNSELECTED_INVERTED);
-        DrawUtil.drawCrunched(screen, matrices, TABS_TEXTURE, pos.x, y, width, drawHeight, TAB_TEXTURE_WIDTH, textureHeight, TAB_TEXTURE_U, v);
+        int type = pos.up ? (!current ? 0 : 1) : (!current ? 2 : 3);
+        int y = pos.y + (pos.up ? -height : 0);
+        int drawHeight = height + HEIGHT_OFFSET[type];
+        int drawY = y + Y_OFFSET[type];
+        DrawUtil.drawCrunched(screen, matrices, TABS_TEXTURE, pos.x, drawY, width, drawHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT[type], TEXTURE_U, TEXTURE_V[type]);
         int itemPadding = Math.max(0, (width - 16) / 2);
-        screen.drawItem(getTabIcon(), pos.x + itemPadding, y + itemPadding, null);
+        int itemX = pos.x + itemPadding;
+        int itemY = y + itemPadding + ITEM_Y_OFFSET[type];
+        screen.drawItem(getTabIcon(), itemX, itemY, null);
     }
 
     default void renderTooltips(HandledScreen<?> screen, MatrixStack matrices, WidgetPosition pos, int width, int height, double mouseX, double mouseY, boolean current) {
-        int y = pos.y + (pos.up ? -height : height);
+        int type = pos.up ? (!current ? 0 : 1) : (!current ? 2 : 3);
+        int y = pos.y + (pos.up ? -height : 0);
         int itemPadding = Math.max(0, (width - 16) / 2);
-        if (new Rect2i(pos.x + itemPadding, y + itemPadding, 16, 16).contains((int) mouseX, (int) mouseY)) {
+        int itemX = pos.x + itemPadding;
+        int itemY = y + itemPadding + ITEM_Y_OFFSET[type];
+        if (new Rect2i(itemX, itemY, 16, 16).contains((int) mouseX, (int) mouseY)) {
             screen.renderTooltip(matrices, getHoverText(), (int) mouseX, (int) mouseY);
         }
     }

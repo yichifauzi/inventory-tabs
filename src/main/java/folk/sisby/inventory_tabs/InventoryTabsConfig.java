@@ -30,10 +30,17 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("Emits helpful information for setting up this config when joining a world")
     @Comment("Logs all registered screen handler IDs for use in screen overrides")
     @Comment("Logs all registry tab provider contents (blocks etc) to help find bad tabs")
-    public final Boolean configLogging = false;
+    public final Boolean configLogging = true;
+
+    @Comment("Whether to log vanilla tab provider contents")
+    @Comment("For development purposes, not modpack configuration")
+    public final Boolean configLoggingVanilla = false;
 
     @Comment("Whether to show tabs on screens that aren't specified below")
     public final Boolean allowScreensByDefault = true;
+
+    @Comment("Whether to show tabs on the bottom of screens that aren't specified below")
+    public final Boolean invertTabsByDefault = false;
 
     @Comment("")
     @Comment("-------------------------------")
@@ -51,7 +58,7 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("Positive values expand the left boundary, allowing more tabs to be drawn")
     @Comment("null means the player inventory")
     @Comment("")
-    public final Map<String, Integer> leftBoundOffsetOverride = ValueMap.builder(0).put("null", 0).build();
+    public final Map<String, Integer> leftBoundOffsetOverride = ValueMap.builder(0).put("minecraft:loom", 0).build();
 
     @Comment("")
     @Comment("-------------------------------")
@@ -60,7 +67,16 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("Positive values expand the right boundary, allowing more tabs to be drawn")
     @Comment("null means the player inventory")
     @Comment("")
-    public final Map<String, Integer> rightBoundOffsetOverride = ValueMap.builder(0).put("null", 0).build();
+    public final Map<String, Integer> rightBoundOffsetOverride = ValueMap.builder(0).put("minecraft:loom", 0).build();
+
+    @Comment("")
+    @Comment("-------------------------------")
+    @Comment("")
+    @Comment("Manually choose where to place tabs on a given screen")
+    @Comment("false means above, true means below")
+    @Comment("null key means the player inventory")
+    @Comment("")
+    public final Map<String, Boolean> invertedTabsOverride = ValueMap.builder(false).put("minecraft:beacon", false).build();
 
     @Comment("")
     @Comment("-------------------------------")
@@ -77,6 +93,7 @@ public class InventoryTabsConfig extends WrappedConfig {
     @Comment("")
     public final Map<String, String> blockProviderOverrides = ValueMap.builder("")
             .put("minecraft:crafting_table", "inventory_tabs:block_unique")
+            .put("#minecraft:doors", "")
             .put("minecraft:fletching_table", "")
             .build();
 
