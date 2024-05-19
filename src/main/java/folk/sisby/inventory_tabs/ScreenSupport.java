@@ -12,6 +12,7 @@ import net.minecraft.util.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -37,7 +38,7 @@ public class ScreenSupport {
                     Boolean override = allowTabs(Registries.SCREEN_HANDLER.getKey(type).orElseThrow());
                     if (override != null) return override;
                 }
-            } catch (UnsupportedOperationException ignored) {
+            } catch (UnsupportedOperationException | NoSuchElementException ignored) {
             }
             return InventoryTabs.CONFIG.allowScreensByDefault;
         }
