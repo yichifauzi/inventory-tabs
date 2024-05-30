@@ -7,16 +7,17 @@ import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 
 public class ControlHintToast implements Toast {
+    private static final Identifier TEXTURE = Identifier.of("toast/advancement");
     protected Text title;
     protected Text keyHint;
     protected KeyBinding keyBinding;
     protected int titleWidth;
     protected int hintWidth;
 
-    public ControlHintToast(Text title, KeyBinding keybinding)
-    {
+    public ControlHintToast(Text title, KeyBinding keybinding) {
         this.title = title;
         this.keyBinding = keybinding;
         keyHint = Text.translatable("toast.inventory_tabs.disabled.key_hint", keyBinding.getBoundKeyLocalizedText().copy().formatted(Formatting.YELLOW)).formatted(Formatting.BLUE);
@@ -27,9 +28,9 @@ public class ControlHintToast implements Toast {
 
     @Override
     public Visibility draw(DrawContext context, ToastManager manager, long elapsedTime) {
-        context.drawNineSlicedTexture(TEXTURE, 0, 0, getWidth(), getHeight(), 4, 160, 32, 0, 0);
-        context.drawText(manager.getClient().textRenderer, title, (getWidth() - titleWidth)/2, 7, 0xFFFFFF, false);
-        context.drawText(manager.getClient().textRenderer, keyHint, (getWidth() - hintWidth)/2, 18, 0xFFFFFF, false);
+        context.drawGuiTexture(TEXTURE, 0, 0, getWidth(), getHeight());
+        context.drawText(manager.getClient().textRenderer, title, (getWidth() - titleWidth) / 2, 7, 0xFFFFFF, false);
+        context.drawText(manager.getClient().textRenderer, keyHint, (getWidth() - hintWidth) / 2, 18, 0xFFFFFF, false);
 
         double time = 2000 * manager.getNotificationDisplayTimeMultiplier();
 

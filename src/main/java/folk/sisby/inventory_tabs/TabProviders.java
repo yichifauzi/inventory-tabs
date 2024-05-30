@@ -116,7 +116,7 @@ public class TabProviders {
                 InventoryTabs.LOGGER.warn("[Inventory Tabs] Unknown override tab provider ID {}, skipping...", override.getValue());
                 continue;
             }
-            unsortedOverrides.put(registryMatcher, providers.get(new Identifier(override.getValue())));
+            unsortedOverrides.put(registryMatcher, providers.get(Identifier.of(override.getValue())));
         }
         Map<RegistryMatcher<T>, RegistryTabProvider<T>> overrides = new LinkedHashMap<>();
         unsortedOverrides.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getKey().priority())).forEach(e -> overrides.put(e.getKey(), e.getValue()));

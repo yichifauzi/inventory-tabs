@@ -86,7 +86,7 @@ public class ItemTab implements Tab {
 
     @Override
     public Text getHoverText() {
-        return stack.hasCustomName() ? stack.getName().copy().formatted(Formatting.ITALIC) : stack.getName();
+        return !stack.getName().equals(stack.getItem().getName(stack)) ? stack.getName().copy().formatted(Formatting.ITALIC) : stack.getName();
     }
 
     @Override

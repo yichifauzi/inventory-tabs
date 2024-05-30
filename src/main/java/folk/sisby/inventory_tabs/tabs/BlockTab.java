@@ -81,7 +81,7 @@ public class BlockTab implements Tab {
         List<ItemFrameEntity> itemFrames = world.getNonSpectatingEntities(ItemFrameEntity.class, new Box(previewPos.toCenterPos(), previewPos.toCenterPos()).expand(0.6, 0.3, 0.6));
         if (!itemFrames.isEmpty()) {
             itemStack = itemFrames.get(0).getHeldItemStack();
-            if (itemStack.hasCustomName()) hoverText = itemStack.getName().copy().formatted(Formatting.ITALIC);
+            if (!itemStack.getName().equals(itemStack.getItem().getName(itemStack))) hoverText = itemStack.getName().copy().formatted(Formatting.ITALIC);
         }
         if (world.getBlockEntity(previewPos) instanceof LockableContainerBlockEntity lcbe && lcbe.hasCustomName()) {
             hoverText = lcbe.getCustomName().copy().formatted(Formatting.ITALIC);

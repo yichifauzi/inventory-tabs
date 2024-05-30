@@ -48,8 +48,8 @@ public class ScreenSupport {
     static {
         DENY.put(InventoryTabs.id("creative_screen"), hs -> hs instanceof CreativeInventoryScreen);
         ALLOW.put(InventoryTabs.id("horse_screen"), hs -> hs instanceof HorseScreen);
-        InventoryTabs.CONFIG.leftBoundOffsetOverride.forEach((screenHandlerId, offset) -> SCREEN_BOUND_OFFSETS.put(screenHandlerId.equals("null") ? null : new Identifier(screenHandlerId), new Pair<>(offset, 0)));
-        InventoryTabs.CONFIG.rightBoundOffsetOverride.forEach((screenHandlerId, offset) -> SCREEN_BOUND_OFFSETS.merge(screenHandlerId.equals("null") ? null : new Identifier(screenHandlerId), new Pair<>(0, offset), (o, n) -> new Pair<>(o.getLeft(), n.getRight())));
-        InventoryTabs.CONFIG.invertedTabsOverride.forEach((screenHandlerId, doInvert) -> SCREEN_INVERTS.put(screenHandlerId.equals("null") ? null : new Identifier(screenHandlerId), doInvert));
+        InventoryTabs.CONFIG.leftBoundOffsetOverride.forEach((screenHandlerId, offset) -> SCREEN_BOUND_OFFSETS.put(screenHandlerId.equals("null") ? null : Identifier.of(screenHandlerId), new Pair<>(offset, 0)));
+        InventoryTabs.CONFIG.rightBoundOffsetOverride.forEach((screenHandlerId, offset) -> SCREEN_BOUND_OFFSETS.merge(screenHandlerId.equals("null") ? null : Identifier.of(screenHandlerId), new Pair<>(0, offset), (o, n) -> new Pair<>(o.getLeft(), n.getRight())));
+        InventoryTabs.CONFIG.invertedTabsOverride.forEach((screenHandlerId, doInvert) -> SCREEN_INVERTS.put(screenHandlerId.equals("null") ? null : Identifier.of(screenHandlerId), doInvert));
     }
 }

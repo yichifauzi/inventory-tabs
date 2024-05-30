@@ -15,11 +15,18 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public interface Tab {
-    Identifier TABS_TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
+    Identifier[] TABS_TEXTURE = new Identifier[]{
+            Identifier.ofVanilla("textures/gui/sprites/container/creative_inventory/tab_top_unselected_2.png"),
+            Identifier.ofVanilla("textures/gui/sprites/container/creative_inventory/tab_top_selected_2.png"),
+            Identifier.ofVanilla("textures/gui/sprites/container/creative_inventory/tab_bottom_unselected_2.png"),
+            Identifier.ofVanilla("textures/gui/sprites/container/creative_inventory/tab_bottom_selected_2.png")
+    };
     int TEXTURE_WIDTH = 26;
-    int TEXTURE_U = 26;
-    int[] TEXTURE_V = new int[]{2, 32, 64, 96};
-    int[] TEXTURE_HEIGHT = new int[]{30, 32, 28, 32};
+    int TEXTURE_HEIGHT = 32;
+    int TEXTURE_U = 0;
+    int[] TEXTURE_V = new int[]{2, 0, 0, 0};
+    int REGION_WIDTH = 26;
+    int[] REGION_HEIGHT = new int[]{30, 32, 28, 32};
     int[] Y_OFFSET = new int[]{0, 0, 0, -4};
     int[] ITEM_Y_OFFSET = new int[]{0, 0, -3, -3};
     int[] HEIGHT_OFFSET = new int[]{0, 4, 0, 4};
@@ -78,7 +85,7 @@ public interface Tab {
         int y = pos.y + (pos.up ? -height : 0);
         int drawHeight = height + HEIGHT_OFFSET[type];
         int drawY = y + Y_OFFSET[type];
-        DrawUtil.drawCrunched(drawContext, TABS_TEXTURE, pos.x, drawY, width, drawHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT[type], TEXTURE_U, TEXTURE_V[type]);
+        DrawUtil.drawCrunched(drawContext, TABS_TEXTURE[type], pos.x, drawY, width, drawHeight, REGION_WIDTH, REGION_HEIGHT[type], TEXTURE_U, TEXTURE_V[type], TEXTURE_WIDTH, TEXTURE_HEIGHT);
         int itemPadding = Math.max(0, (width - 16) / 2);
         int itemX = pos.x + itemPadding;
         int itemY = y + itemPadding + ITEM_Y_OFFSET[type];

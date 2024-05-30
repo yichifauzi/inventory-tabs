@@ -21,7 +21,7 @@ public class InventoryTabs implements ClientModInitializer {
     public static KeyBinding TOGGLE_TABS;
 
     public static Identifier id(String path) {
-        return new Identifier(ID, path);
+        return Identifier.of(ID, path);
     }
 
     @Override
