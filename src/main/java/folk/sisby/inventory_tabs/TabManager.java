@@ -2,7 +2,13 @@ package folk.sisby.inventory_tabs;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import folk.sisby.inventory_tabs.duck.InventoryTabsScreen;
-import folk.sisby.inventory_tabs.tabs.*;
+import folk.sisby.inventory_tabs.tabs.BlockTab;
+import folk.sisby.inventory_tabs.tabs.EntityTab;
+import folk.sisby.inventory_tabs.tabs.ItemTab;
+import folk.sisby.inventory_tabs.tabs.PlayerInventoryTab;
+import folk.sisby.inventory_tabs.tabs.Tab;
+import folk.sisby.inventory_tabs.tabs.VehicleInventoryTab;
+import folk.sisby.inventory_tabs.util.RaycastCache;
 import folk.sisby.inventory_tabs.util.HandlerSlotUtil;
 import folk.sisby.inventory_tabs.util.WidgetPosition;
 import net.minecraft.block.entity.BlockEntity;
@@ -32,7 +38,11 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 public class TabManager {
@@ -52,6 +62,7 @@ public class TabManager {
     public static List<WidgetPosition> tabPositions;
     public static int holdTabCooldown = 0;
     public static boolean enabled = true;
+    public static Map<BlockPos, RaycastCache> blockRaycastCache = new HashMap<>();
 
     public static void initScreen(MinecraftClient client, HandledScreen<?> screen) {
         currentScreen = screen;
@@ -82,6 +93,8 @@ public class TabManager {
     }
 
     public static void tick(ClientWorld world) {
+        blockRaycastCache.values().removeIf(timer -> !timer.validThisTick && timer.ticksInvalid >= InventoryTabs.CONFIG.blockRaycastTimeout);
+        blockRaycastCache.values().forEach(RaycastCache::tick);
         if (holdTabCooldown > 0) {
             if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), InventoryTabs.NEXT_TAB.boundKey.getCode())) {
                 holdTabCooldown--;
