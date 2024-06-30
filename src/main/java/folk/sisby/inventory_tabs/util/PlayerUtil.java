@@ -1,6 +1,7 @@
 package folk.sisby.inventory_tabs.util;
 
 import folk.sisby.inventory_tabs.InventoryTabs;
+import folk.sisby.inventory_tabs.TabManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
@@ -15,8 +16,6 @@ import net.minecraft.world.RaycastContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static folk.sisby.inventory_tabs.util.BlockLineOfSightTimerUtil.*;
 
 public class PlayerUtil {
     public static final int REACH = 5;
@@ -37,15 +36,15 @@ public class PlayerUtil {
 
     public static BlockHitResult raycast(PlayerEntity player, BlockPos pos) {
         List<Vec3d> blockOffsets = new ArrayList<>();
-        BlockLosTimer blockLosTimer = getBlockLosTimer(pos);
-        if (blockLosTimer != null && blockLosTimer.lastViableOffset != null) {
-            blockOffsets.add(blockLosTimer.lastViableOffset);
+        RaycastCache raycastCache = TabManager.blockRaycastCache.get(pos);
+        if (raycastCache != null && raycastCache.lastValidOffset != null) {
+            blockOffsets.add(raycastCache.lastValidOffset);
         }
         blockOffsets.addAll(generateRandomVec3dList(9, new Vec3d(0.0D, 0.0D, 0.0D), new Vec3d(1.0D, 1.0D, 1.0D)));
         for (Vec3d offset : blockOffsets) {
             BlockHitResult hitResult = player.getWorld().raycast(new RaycastContext(player.getEyePos(), Vec3d.of(pos).add(offset), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, player));
             if (hitResult.getType() != HitResult.Type.MISS && hitResult.getBlockPos().equals(pos)) {
-                refreshBlockLosTimer(pos, offset);
+                TabManager.blockRaycastCache.computeIfAbsent(pos, p -> new RaycastCache()).hit(offset);
                 return hitResult;
             }
         }
