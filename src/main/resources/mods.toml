@@ -11,7 +11,7 @@ modId = 'inventory_tabs'
 version = '${version}'
 displayName = 'Inventory Tabs'
 description = 'Allows swapping to other in-world screens (blocks, entities, etc) via tabs.'
-authors = ["KQP", "LiamMCW", "Andrew6rant (Andrew Grant)", "Sisby folk"]
+authors = "KQP, LiamMCW, Andrew6rant, Sisby folk"
 displayURL = 'https://modrinth.com/mod/inventory-tabs'
 
 [[dependencies.inventory_tabs]]
