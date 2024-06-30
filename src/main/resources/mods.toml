@@ -1,0 +1,33 @@
+modLoader = 'javafml'
+loaderVersion = '[40,)'
+license = 'LGPL-3.0-only'
+logoFile = 'assets/inventory_tabs/icon.png'
+
+[properties]
+"connector:placeholder"=true
+
+[[mods]]
+modId = 'inventory_tabs'
+version = '${version}'
+displayName = 'Inventory Tabs'
+description = 'Allows swapping to other in-world screens (blocks, entities, etc) via tabs.'
+authors = ["KQP", "LiamMCW", "Andrew6rant (Andrew Grant)", "Sisby folk"]
+displayURL = 'https://modrinth.com/mod/inventory-tabs'
+
+[[dependencies.inventory_tabs]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${mc},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.inventory_tabs]]
+modId = "connectormod"
+mandatory = true
+versionRange = "*"
+
+
+[[dependencies.inventory_tabs]]
+modId = "fabric_api"
+mandatory = true
+versionRange = "[${fapi},)"
